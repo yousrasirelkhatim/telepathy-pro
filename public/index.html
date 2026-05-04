@@ -1020,15 +1020,16 @@ html { scroll-behavior: smooth; }
 <div class="toast" id="toast"></div>
 <div class="password-modal-overlay" id="passwordModal">
   <div class="password-modal">
-    <h2>🔐 كلمة المرور</h2>
-    <p>أدخل كلمة المرور لإنشاء غرفة جديدة</p>
+    <h2>� كود التحدي</h2>
+    <p>أدخل الكود لإنشاء غرفة جديدة (يستهلك جلسة واحدة)</p>
     <div class="password-input-group">
-      <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور" maxlength="20">
+      <input type="text" id="passwordInput" placeholder="مثال: TP-AB12CD34" maxlength="24" style="text-align:center;letter-spacing:2px;font-weight:700;text-transform:uppercase">
     </div>
     <div class="modal-buttons">
-      <button class="btn-modal-submit" onclick="confirmPassword()">✓ تحقق</button>
+      <button class="btn-modal-submit" onclick="confirmPassword()">✓ تحقق وابدأ</button>
       <button class="btn-modal-cancel" onclick="closePasswordModal()">✕ إلغاء</button>
     </div>
+    <p style="margin-top:14px;font-size:.82rem;color:rgba(255,255,255,.5)">لا تملك كوداً؟ <a href="/" style="color:#a855f7">احصل على كود من هنا</a></p>
   </div>
 </div>
 
@@ -1056,7 +1057,7 @@ html { scroll-behavior: smooth; }
         <input type="text" class="input-field" id="playerName" placeholder="أدخل اسمك..." maxlength="20">
       </div>
       <button class="btn btn-primary" onclick="showPasswordModal()" style="margin-bottom:12px">
-        ⚡ إنشاء غرفة جديدة
+        ⚡ ابدأ تحدي جديد (يلزم كود)
       </button>
       <button class="btn btn-secondary" onclick="showJoin()">
         🔗 الانضمام لغرفة
@@ -1263,8 +1264,9 @@ html { scroll-behavior: smooth; }
         <div class="comparison-grid" id="comparisonGrid"></div>
 
         <div class="share-area">
-          <button class="btn btn-primary" onclick="shareResult()">📤 مشاركة النتيجة</button>
-          <button class="btn btn-secondary" onclick="newChallenge()" style="margin-top:12px">🔄 تحدي جديد</button>
+          <button class="btn btn-primary" onclick="openShareCard()">📸 إنشاء بطاقة جميلة</button>
+          <button class="btn btn-secondary" onclick="shareResult()" style="margin-top:10px">📤 مشاركة نصية</button>
+          <button class="btn btn-secondary" onclick="newChallenge()" style="margin-top:10px">🔄 تحدي جديد</button>
         </div>
       </div>
     </div>
@@ -2080,6 +2082,107 @@ document.addEventListener('pointermove', (e) => {
 </script>
 
 <!-- 2026 modernization layer: PWA, Audio, Voice, Gemini Nano, QR, Replay -->
+<script src="/js/codes.js" defer></script>
+<script src="/js/share-card.js" defer></script>
 <script src="/app-2026.js" defer></script>
+
+<!-- Share Card Modal -->
+<div id="shareCardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:500;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:linear-gradient(160deg,#1a1535,#0d0a25);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:28px;max-width:540px;width:100%;max-height:95vh;overflow-y:auto;font-family:'Tajawal',sans-serif;color:#fff">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <h3 style="font-size:1.3rem;font-weight:900">📸 بطاقة المشاركة</h3>
+      <button onclick="closeShareCard()" style="background:rgba(255,255,255,.08);border:0;color:#fff;width:34px;height:34px;border-radius:50%;font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="sc-tpl" data-tpl="fun"      style="flex:1;padding:10px;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#a855f7);color:#fff;border:0;font-weight:700;cursor:pointer">⚡ شبابي</button>
+      <button class="sc-tpl" data-tpl="romantic" style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.12);font-weight:700;cursor:pointer">💞 رومانسي</button>
+      <button class="sc-tpl" data-tpl="luxury"   style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.12);font-weight:700;cursor:pointer">👑 فاخر</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div>
+        <label style="font-size:.85rem;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">صورة لاعب 1 (اختياري)</label>
+        <input type="file" id="scPhoto1" accept="image/*" style="width:100%;font-size:.78rem;color:rgba(255,255,255,.7)" />
+      </div>
+      <div>
+        <label style="font-size:.85rem;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">صورة لاعب 2 (اختياري)</label>
+        <input type="file" id="scPhoto2" accept="image/*" style="width:100%;font-size:.78rem;color:rgba(255,255,255,.7)" />
+      </div>
+    </div>
+
+    <div style="background:rgba(0,0,0,.3);border-radius:14px;padding:10px;margin-bottom:14px;text-align:center">
+      <canvas id="scPreview" style="max-width:100%;height:auto;border-radius:10px"></canvas>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button onclick="downloadShareCard()" style="flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#ff5b93,#a855f7);color:#fff;border:0;font-weight:700;cursor:pointer;font-size:.95rem">⬇️ تنزيل</button>
+      <button onclick="shareShareCard()" style="flex:1;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:700;cursor:pointer;font-size:.95rem">📤 مشاركة</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let __scTemplate = 'fun';
+  let __scCanvas = null;
+
+  function openShareCard() {
+    document.getElementById('shareCardModal').style.display = 'flex';
+    renderShareCard();
+  }
+  function closeShareCard() {
+    document.getElementById('shareCardModal').style.display = 'none';
+  }
+  document.querySelectorAll('.sc-tpl').forEach(b => {
+    b.onclick = () => {
+      __scTemplate = b.dataset.tpl;
+      document.querySelectorAll('.sc-tpl').forEach(x => {
+        x.style.background = 'rgba(255,255,255,.05)';
+        x.style.border = '1px solid rgba(255,255,255,.12)';
+      });
+      const grads = { fun:'linear-gradient(135deg,#00d4ff,#a855f7)', romantic:'linear-gradient(135deg,#ff5b93,#a855f7)', luxury:'linear-gradient(135deg,#ffd700,#7c3aed)' };
+      b.style.background = grads[__scTemplate];
+      b.style.border = '0';
+      renderShareCard();
+    };
+  });
+  ['scPhoto1','scPhoto2'].forEach(id => {
+    document.getElementById(id).addEventListener('change', renderShareCard);
+  });
+
+  async function getResultData() {
+    const pct = parseInt((document.getElementById('finalPercent')||{textContent:'0'}).textContent) || 0;
+    const n1 = (window.playerNames && window.playerNames.player1) || 'لاعب 1';
+    const n2 = (window.playerNames && window.playerNames.player2) || 'لاعب 2';
+    const f1 = document.getElementById('scPhoto1').files[0];
+    const f2 = document.getElementById('scPhoto2').files[0];
+    const [p1, p2] = await Promise.all([
+      f1 ? TPCard.fileToDataURL(f1) : null,
+      f2 ? TPCard.fileToDataURL(f2) : null,
+    ]);
+    return { pct, name1: n1, name2: n2, photo1: p1, photo2: p2, template: __scTemplate, siteUrl: location.host };
+  }
+  async function renderShareCard() {
+    if (typeof TPCard === 'undefined') return;
+    const data = await getResultData();
+    const c = await TPCard.render(data);
+    const prev = document.getElementById('scPreview');
+    prev.width = c.width; prev.height = c.height;
+    prev.getContext('2d').drawImage(c, 0, 0);
+    __scCanvas = c;
+  }
+  function downloadShareCard() {
+    if (!__scCanvas) return;
+    TPCard.download(__scCanvas, 'telepathy-result.png');
+    if (window.TPCodes && TPCodes.bumpShares) TPCodes.bumpShares();
+  }
+  function shareShareCard() {
+    if (!__scCanvas) return;
+    TPCard.share(__scCanvas, { text: 'نتيجتنا في تحدي التخاطر! 🧠⚡ جرّبها: ' + location.origin });
+    if (window.TPCodes && TPCodes.bumpShares) TPCodes.bumpShares();
+  }
+  // Expose for app-2026.js
+  window.openShareCard = openShareCard;
+</script>
 </body>
 </html>

@@ -7,9 +7,18 @@
       "**/node_modules/**"
     ],
     "rewrites": [
+      { "source": "/admin", "destination": "/admin.html" },
+      { "source": "/play",  "destination": "/index.html" },
+      { "source": "**",     "destination": "/home.html" }
+    ],
+    "headers": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "**/*.@(js|css|svg|png|jpg|webp)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
       }
     ]
   },

@@ -109,33 +109,58 @@
   window.Audio2026 = Audio2026;
 
   /* ------------------------------------------------------------------ *
-   * 3) Hashed password verification (replaces plaintext check)
+   * 3) Access-code verification (replaces password)
+   *    Uses /js/codes.js (TPCodes.consume) to atomically consume one
+   *    session of an access code before allowing room creation.
    * ------------------------------------------------------------------ */
-  const PASSWORD_HASH = '59c3597850fe99828c6f069436ae0647e556c8f7fad93aac1a8712019f056831';
-
-  async function sha256(str) {
-    const buf = new TextEncoder().encode(str);
-    const hash = await crypto.subtle.digest('SHA-256', buf);
-    return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  // Override the inline confirmPassword
   const originalShowToast = window.showToast || ((m) => alert(m));
+
+  // Auto-fill from URL ?code= or sessionStorage
+  function getInitialAccessCode() {
+    const p = new URLSearchParams(location.search);
+    return (p.get('code') || sessionStorage.getItem('tp_access_code') || '').toUpperCase();
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const code = getInitialAccessCode();
+    if (code) {
+      const inp = document.getElementById('passwordInput');
+      if (inp) inp.value = code;
+    }
+  });
+
+  // Override the inline confirmPassword to validate + consume access code
   window.confirmPassword = async function () {
     const input = document.getElementById('passwordInput');
-    const pwd = input.value;
-    const h = await sha256(pwd);
-    if (h !== PASSWORD_HASH) {
-      originalShowToast('كلمة المرور خاطئة ❌');
-      input.value = '';
-      input.focus();
-      Audio2026.noMatch();
+    const code = (input.value || '').toUpperCase().trim();
+    if (!code) { originalShowToast('أدخل الكود أولاً'); input.focus(); return; }
+    if (typeof TPCodes === 'undefined') {
+      originalShowToast('تعذّر تحميل وحدة الأكواد. حدّث الصفحة.');
       return;
     }
-    Audio2026.go();
-    document.getElementById('passwordModal').classList.remove('show');
-    input.value = '';
-    if (typeof window.createRoom === 'function') window.createRoom();
+    input.disabled = true;
+    try {
+      const res = await TPCodes.consume(code);
+      if (!res.ok) {
+        originalShowToast('✕ ' + (res.message || 'كود غير صالح'));
+        Audio2026.noMatch();
+        input.disabled = false;
+        input.focus();
+        return;
+      }
+      Audio2026.go();
+      sessionStorage.setItem('tp_access_code', code);
+      window.__activeAccessCode = code;
+      window.__codeRemaining = res.remaining;
+      document.getElementById('passwordModal').classList.remove('show');
+      input.disabled = false;
+      input.value = '';
+      if (typeof window.createRoom === 'function') window.createRoom();
+      // (best-effort) bump global session counter
+      if (TPCodes.bumpSessions) TPCodes.bumpSessions();
+    } catch (e) {
+      originalShowToast('خطأ في الاتصال — حاول مرة أخرى');
+      input.disabled = false;
+    }
   };
 
   /* ------------------------------------------------------------------ *

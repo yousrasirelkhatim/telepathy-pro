@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Telepathy Challenge — تحدي التخاطر | اكتشفوا توافق عقولكم</title>
+<meta name="description" content="لعبة تخاطر زوجية ممتعة. اشترِ كود واحصل على 5 جلسات تحدي مشترك. مثالية للأزواج، الأصدقاء، والشركات." />
+<meta name="theme-color" content="#0a0a1a" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<meta property="og:title" content="Telepathy Challenge - تحدي التخاطر" />
+<meta property="og:description" content="هل تفكران بنفس الطريقة؟ اكتشفا الإجابة الآن." />
+<meta property="og:image" content="/icon.svg" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:'Tajawal',system-ui,sans-serif;background:#05050f;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:radial-gradient(ellipse at top,#1a0d3e 0%,#05050f 60%,#000 100%)}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:0}
+  img{max-width:100%;display:block}
+
+  /* Floating glow blobs */
+  .blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:.55;pointer-events:none;z-index:0;animation:float 18s ease-in-out infinite}
+  .blob.b1{width:520px;height:520px;background:#a855f7;top:-150px;right:-120px}
+  .blob.b2{width:460px;height:460px;background:#ff5b93;bottom:-100px;left:-100px;animation-delay:-8s}
+  .blob.b3{width:380px;height:380px;background:#00d4ff;top:50%;left:30%;animation-delay:-4s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.1)}}
+
+  /* Stars */
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:1;background-image:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(2px 2px at 60% 70%,#fff,transparent),radial-gradient(1px 1px at 80% 10%,#fff,transparent),radial-gradient(1px 1px at 40% 90%,#fff,transparent),radial-gradient(2px 2px at 90% 50%,#fff,transparent);background-size:200% 200%;opacity:.3;animation:twinkle 6s linear infinite}
+  @keyframes twinkle{50%{opacity:.5}}
+
+  .container{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:24px}
+
+  /* Nav */
+  nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:rgba(10,10,30,.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.06);border-radius:18px;margin-bottom:48px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.25rem}
+  .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#ff5b93,#a855f7,#00d4ff);border-radius:11px;display:grid;place-items:center;font-size:1.2rem;box-shadow:0 8px 24px rgba(168,85,247,.5)}
+  .nav-link{padding:10px 18px;border-radius:12px;font-weight:600;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.95rem;transition:.2s;color:#fff}
+  .nav-link:hover{background:rgba(255,255,255,.1)}
+
+  /* Hero */
+  .hero{text-align:center;padding:40px 0 70px}
+  .hero-badge{display:inline-block;padding:8px 18px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);border-radius:999px;font-size:.85rem;font-weight:600;color:#d8b4fe;margin-bottom:22px;letter-spacing:.5px}
+  .hero h1{font-size:clamp(2.2rem,7vw,4.5rem);font-weight:900;line-height:1.15;margin-bottom:24px;background:linear-gradient(135deg,#fff 0%,#d8b4fe 50%,#fda4af 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:clamp(1rem,2.5vw,1.3rem);color:rgba(255,255,255,.75);max-width:680px;margin:0 auto 36px;line-height:1.7}
+
+  .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+  .btn{padding:18px 38px;border-radius:16px;font-size:1.05rem;font-weight:700;transition:.25s;display:inline-flex;align-items:center;gap:10px;color:#fff}
+  .btn-primary{background:linear-gradient(135deg,#ff5b93,#a855f7);box-shadow:0 12px 32px rgba(168,85,247,.5)}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(168,85,247,.7)}
+  .btn-secondary{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);backdrop-filter:blur(10px)}
+  .btn-secondary:hover{background:rgba(255,255,255,.13)}
+
+  .hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:22px;color:rgba(255,255,255,.55);font-size:.9rem}
+  .hero-stats span{display:flex;align-items:center;gap:6px}
+
+  /* Code entry inline */
+  .code-strip{margin:36px auto 0;max-width:520px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:8px;display:flex;gap:8px}
+  .code-strip input{flex:1;background:transparent;border:0;color:#fff;font-family:inherit;font-size:1.05rem;padding:14px 18px;outline:none;letter-spacing:2px;text-align:center;font-weight:700}
+  .code-strip input::placeholder{color:rgba(255,255,255,.3);letter-spacing:normal;font-weight:500}
+  .code-strip button{background:linear-gradient(135deg,#00d4ff,#a855f7);color:#fff;padding:14px 26px;border-radius:12px;font-weight:700;font-size:.95rem}
+  .code-msg{margin-top:14px;font-size:.9rem;min-height:22px}
+  .code-msg.ok{color:#34d399}
+  .code-msg.err{color:#fb7185}
+
+  /* Sections */
+  .section{padding:80px 0}
+  .section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;margin-bottom:14px}
+  .section-sub{text-align:center;color:rgba(255,255,255,.6);font-size:1.05rem;max-width:600px;margin:0 auto 48px}
+
+  /* Pricing */
+  .pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+  .price-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:34px 28px;position:relative;transition:.3s;backdrop-filter:blur(20px)}
+  .price-card:hover{transform:translateY(-6px);border-color:rgba(168,85,247,.4);box-shadow:0 20px 60px rgba(168,85,247,.25)}
+  .price-card.popular{border-color:rgba(255,91,147,.5);background:linear-gradient(160deg,rgba(255,91,147,.1),rgba(168,85,247,.05))}
+  .badge-pop{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff5b93,#a855f7);padding:6px 18px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.5px}
+  .price-icon{font-size:2.4rem;margin-bottom:14px}
+  .price-name{font-size:1.4rem;font-weight:800;margin-bottom:6px}
+  .price-desc{color:rgba(255,255,255,.55);font-size:.92rem;margin-bottom:22px;min-height:42px}
+  .price-amount{font-size:2.6rem;font-weight:900;background:linear-gradient(135deg,#fff,#d8b4fe);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .price-currency{font-size:1rem;color:rgba(255,255,255,.5);font-weight:600}
+  .price-unit{color:rgba(255,255,255,.5);font-size:.9rem;margin-bottom:24px}
+  .price-features{list-style:none;margin-bottom:28px}
+  .price-features li{padding:8px 0;color:rgba(255,255,255,.8);font-size:.95rem;display:flex;gap:10px;align-items:start}
+  .price-features li::before{content:"✓";color:#34d399;font-weight:900;flex-shrink:0}
+  .price-card .btn{width:100%;justify-content:center}
+
+  /* Features */
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px}
+  .feat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;text-align:center;transition:.3s}
+  .feat:hover{transform:translateY(-4px);background:rgba(255,255,255,.05)}
+  .feat-icon{font-size:2.5rem;margin-bottom:14px;display:inline-block;background:linear-gradient(135deg,#ff5b93,#a855f7);width:70px;height:70px;line-height:70px;border-radius:18px;box-shadow:0 8px 24px rgba(168,85,247,.4)}
+  .feat h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+  .feat p{color:rgba(255,255,255,.6);font-size:.92rem;line-height:1.6}
+
+  /* How It Works */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+  .step{padding:28px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);position:relative}
+  .step-num{position:absolute;top:-20px;right:24px;width:48px;height:48px;background:linear-gradient(135deg,#00d4ff,#a855f7);border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:1.3rem;box-shadow:0 8px 20px rgba(168,85,247,.5)}
+  .step h3{font-size:1.2rem;font-weight:800;margin:14px 0 8px}
+  .step p{color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.7}
+
+  /* Business CTA */
+  .biz{margin-top:30px;padding:48px;background:linear-gradient(135deg,rgba(255,91,147,.15),rgba(168,85,247,.1),rgba(0,212,255,.1));border:1.5px solid rgba(255,255,255,.1);border-radius:28px;text-align:center;backdrop-filter:blur(20px)}
+  .biz h2{font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:900;margin-bottom:14px}
+  .biz p{color:rgba(255,255,255,.75);max-width:580px;margin:0 auto 26px;font-size:1.05rem}
+
+  /* FAQ */
+  .faq{max-width:760px;margin:0 auto}
+  details{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 22px;margin-bottom:12px;cursor:pointer;transition:.2s}
+  details[open]{background:rgba(255,255,255,.05)}
+  summary{font-weight:700;font-size:1.05rem;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-size:1.5rem;color:#a855f7;transition:.2s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details p{margin-top:14px;color:rgba(255,255,255,.7);line-height:1.7}
+
+  /* Footer */
+  footer{padding:40px 0;text-align:center;color:rgba(255,255,255,.4);font-size:.9rem;border-top:1px solid rgba(255,255,255,.06);margin-top:60px}
+  footer a{color:#a855f7}
+
+  /* Modal */
+  .modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
+  .modal.open{display:flex}
+  .modal-box{background:linear-gradient(160deg,#1a1535,#0d0a25);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:36px 32px;max-width:480px;width:100%;text-align:center;animation:slideUp .3s}
+  .modal h3{font-size:1.5rem;font-weight:900;margin-bottom:12px}
+  .modal p{color:rgba(255,255,255,.7);margin-bottom:22px;line-height:1.6}
+  .modal .close-x{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.08);border:0;color:#fff;width:34px;height:34px;border-radius:50%;font-size:1.2rem}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+
+  /* Mobile */
+  @media (max-width:600px){
+    nav{padding:14px 18px;flex-wrap:wrap;gap:10px}
+    .container{padding:18px}
+    .hero{padding:20px 0 50px}
+    .section{padding:60px 0}
+    .biz{padding:32px 22px}
+  }
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="stars"></div>
+
+<div class="container">
+
+  <nav>
+    <div class="logo"><div class="logo-icon">🧠</div><span>Telepathy</span></div>
+    <a href="#pricing" class="nav-link">الأسعار</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">✨ الإصدار الجديد 2026</div>
+    <h1>هل تفكران بنفس الطريقة؟</h1>
+    <p>تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.</p>
+
+    <div class="hero-cta">
+      <a href="#pricing" class="btn btn-primary">🛒 احصل على كودك</a>
+      <button class="btn btn-secondary" id="enterCodeBtn">🔑 لديّ كود — ابدأ التحدي</button>
+    </div>
+
+    <div class="hero-stats">
+      <span>⚡ بدء فوري</span>
+      <span>📱 يعمل على الجوال</span>
+      <span>🎁 5 تحديات لكل كود</span>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <h2 class="section-title">لماذا تحدي التخاطر؟</h2>
+    <p class="section-sub">تجربة مختلفة كلياً عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم</p>
+    <div class="features">
+      <div class="feat"><div class="feat-icon">🧠</div><h3>٤ مراحل ذكية</h3><p>من الأشياء البسيطة إلى الذكريات والمشاعر العميقة</p></div>
+      <div class="feat"><div class="feat-icon">⚡</div><h3>نتيجة فورية</h3><p>اعرفا نسبة توافقكم بمعادلة تحليل لغوي ذكية</p></div>
+      <div class="feat"><div class="feat-icon">🎨</div><h3>بطاقة قابلة للمشاركة</h3><p>صورة جميلة احترافية جاهزة لـ Instagram وWhatsApp</p></div>
+      <div class="feat"><div class="feat-icon">🌐</div><h3>يعمل أونلاين</h3><p>كل واحد على جواله — تتزامن الإجابات تلقائياً</p></div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section" id="pricing">
+    <h2 class="section-title">اختر الباقة المناسبة</h2>
+    <p class="section-sub">دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.</p>
+
+    <div class="pricing">
+      <div class="price-card">
+        <div class="price-icon">💝</div>
+        <div class="price-name">فردي</div>
+        <div class="price-desc">مثالي لأمسية ممتعة مع الشريك أو صديق</div>
+        <div><span class="price-amount">10</span><span class="price-currency"> $</span></div>
+        <div class="price-unit">دفعة واحدة</div>
+        <ul class="price-features">
+          <li>5 جلسات تحدي كاملة</li>
+          <li>بطاقة نتيجة قابلة للتنزيل</li>
+          <li>قوالب تصميم متعددة</li>
+          <li>صلاحية الكود سنة كاملة</li>
+        </ul>
+        <button class="btn btn-secondary" data-buy="individual">اشترِ الآن</button>
+      </div>
+
+      <div class="price-card popular">
+        <div class="badge-pop">⭐ الأكثر طلباً</div>
+        <div class="price-icon">🏪</div>
+        <div class="price-name">باقة شركات صغيرة</div>
+        <div class="price-desc">لمطاعم، كافيهات، ومتاجر صغيرة</div>
+        <div><span class="price-amount">200</span><span class="price-currency"> $</span></div>
+        <div class="price-unit">50 كود — توفير 60%</div>
+        <ul class="price-features">
+          <li>50 كود، كل كود = 5 جلسات</li>
+          <li>إجمالي 250 جلسة لعميلكم</li>
+          <li>لوحة إدارة الأكواد</li>
+          <li>إمكانية تخصيص اسم البزنس على البطاقة</li>
+          <li>دعم فني مباشر</li>
+        </ul>
+        <button class="btn btn-primary" data-buy="business-50">طلب الباقة</button>
+      </div>
+
+      <div class="price-card">
+        <div class="price-icon">🏬</div>
+        <div class="price-name">باقة شركات كبرى</div>
+        <div class="price-desc">للمولات، الفنادق، وسلاسل المطاعم</div>
+        <div><span class="price-amount">350</span><span class="price-currency"> $</span></div>
+        <div class="price-unit">100 كود — توفير 65%</div>
+        <ul class="price-features">
+          <li>100 كود، إجمالي 500 جلسة</li>
+          <li>لوحة إدارة وتقارير شاملة</li>
+          <li>اسم وشعار البزنس على البطاقة</li>
+          <li>QR لكل كود لطباعته</li>
+          <li>أولوية في الدعم</li>
+        </ul>
+        <button class="btn btn-secondary" data-buy="business-100">طلب الباقة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section">
+    <h2 class="section-title">كيف يعمل؟</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><h3>اشترِ كودك</h3><p>اختر الباقة المناسبة وادفع آمناً. يصلك الكود فوراً على واتساب.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>أدخلوا الكود</h3><p>اضغط "ابدأ التحدي"، أدخل الكود، شارك رمز الغرفة مع شريكك.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>العبوا واستمتعوا</h3><p>٢٠ جولة من التخاطر، نتيجة فورية، وبطاقة جميلة لمشاركتها.</p></div>
+    </div>
+  </section>
+
+  <!-- BUSINESS -->
+  <section class="section">
+    <div class="biz">
+      <h2>🏢 للأعمال — حوّل عملاءك إلى ذكريات</h2>
+      <p>هل تملك مطعماً، كافيه، أو فندقاً؟ قدّم لعملائك تجربة فريدة. كود على فاتورتهم = ذكرى لن ينسوها وصورة يشاركونها مع علامتك التجارية.</p>
+      <a href="https://wa.me/?text=أرغب%20بمعرفة%20المزيد%20عن%20باقات%20الأعمال" class="btn btn-primary">تواصل معنا الآن</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <h2 class="section-title">أسئلة شائعة</h2>
+    <div class="faq">
+      <details><summary>هل يلزم تنزيل تطبيق؟</summary><p>لا. تعمل اللعبة من المتصفح مباشرة على الجوال والكمبيوتر، ويمكنك "تثبيتها" كتطبيق إذا أحببت.</p></details>
+      <details><summary>كم مدة كل جلسة؟</summary><p>حوالي 10-15 دقيقة. ٤ مراحل × ٥ جولات بمؤقت 15 ثانية للجولة.</p></details>
+      <details><summary>كم شخصاً يمكنه اللعب؟</summary><p>لاعبان فقط في كل غرفة — هذا يجعل التجربة عميقة وشخصية.</p></details>
+      <details><summary>هل يمكنني استخدام كودي على عدة أجهزة؟</summary><p>نعم! الكود يعطيك 5 جلسات منفصلة، يمكنك استخدامها متى شئت.</p></details>
+      <details><summary>كيف أحصل على باقة الشركات؟</summary><p>تواصل معنا عبر WhatsApp وسنرسل لك جميع الأكواد دفعة واحدة مع لوحة إدارة خاصة.</p></details>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Telepathy Challenge — جميع الحقوق محفوظة</p>
+    <p style="margin-top:8px"><a href="/admin">لوحة التحكم</a></p>
+  </footer>
+</div>
+
+<!-- Code entry modal -->
+<div class="modal" id="codeModal">
+  <div class="modal-box" style="position:relative">
+    <button class="close-x" onclick="closeCodeModal()">✕</button>
+    <h3>🔑 أدخل كود التحدي</h3>
+    <p>أدخل الكود الذي حصلت عليه لبدء التحدي</p>
+    <div class="code-strip">
+      <input id="codeInput" maxlength="20" placeholder="مثال: TP-AB12CD34" autocomplete="off" />
+      <button onclick="submitCode()">ابدأ</button>
+    </div>
+    <div class="code-msg" id="codeMsg"></div>
+  </div>
+</div>
+
+<!-- Buy modal -->
+<div class="modal" id="buyModal">
+  <div class="modal-box" style="position:relative">
+    <button class="close-x" onclick="closeBuyModal()">✕</button>
+    <h3>🛒 شراء كود</h3>
+    <p id="buyDesc">اطلب الكود مباشرة عبر WhatsApp وسنرسل لك الكود فوراً.</p>
+    <a id="waLink" href="#" target="_blank" class="btn btn-primary" style="width:100%;justify-content:center">📱 طلب عبر WhatsApp</a>
+    <p style="margin-top:18px;font-size:.85rem;color:rgba(255,255,255,.5)">سيتم إضافة الدفع الإلكتروني المباشر قريباً</p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="/js/codes.js"></script>
+<script>
+  TPCodes.init();
+
+  // Auto-detect ?code= or ?room= and forward to /play
+  const params = new URLSearchParams(location.search);
+  if (params.get('room')) location.replace('/play?room=' + encodeURIComponent(params.get('room')));
+  if (params.get('code')) {
+    document.getElementById('codeInput').value = params.get('code');
+    openCodeModal();
+  }
+
+  function openCodeModal() { document.getElementById('codeModal').classList.add('open'); document.getElementById('codeInput').focus(); }
+  function closeCodeModal() { document.getElementById('codeModal').classList.remove('open'); }
+  function openBuyModal() { document.getElementById('buyModal').classList.add('open'); }
+  function closeBuyModal() { document.getElementById('buyModal').classList.remove('open'); }
+
+  document.getElementById('enterCodeBtn').onclick = openCodeModal;
+  document.getElementById('codeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitCode(); });
+
+  document.querySelectorAll('[data-buy]').forEach(b => {
+    b.onclick = () => {
+      const t = b.getAttribute('data-buy');
+      const map = {
+        'individual':  { txt: 'أرغب بشراء كود فردي (5 جلسات - 10$)', desc: 'كود فردي = 5 جلسات تحدي. السعر 10$ دفعة واحدة.' },
+        'business-50': { txt: 'أرغب بطلب باقة شركات (50 كود - 200$)', desc: 'باقة 50 كود = 250 جلسة. السعر 200$ مع لوحة إدارة.' },
+        'business-100':{ txt: 'أرغب بطلب باقة شركات كبرى (100 كود - 350$)', desc: 'باقة 100 كود = 500 جلسة. السعر 350$ مع لوحة وتقارير وQR.' }
+      };
+      document.getElementById('buyDesc').textContent = map[t].desc;
+      document.getElementById('waLink').href = 'https://wa.me/?text=' + encodeURIComponent(map[t].txt);
+      openBuyModal();
+    };
+  });
+
+  async function submitCode() {
+    const msg = document.getElementById('codeMsg');
+    const code = TPCodes.normalize(document.getElementById('codeInput').value);
+    if (!code) { msg.className = 'code-msg err'; msg.textContent = 'أدخل الكود أولاً'; return; }
+    msg.className = 'code-msg'; msg.textContent = '⏳ جاري التحقق...';
+    try {
+      const res = await TPCodes.validate(code);
+      if (!res.ok) { msg.className = 'code-msg err'; msg.textContent = '✕ ' + (res.message || 'الكود غير صالح'); return; }
+      msg.className = 'code-msg ok'; msg.textContent = `✓ كود صالح — متبقي ${res.remaining} جلسة. جاري التحويل...`;
+      sessionStorage.setItem('tp_access_code', code);
+      setTimeout(() => location.href = '/play?code=' + encodeURIComponent(code), 700);
+    } catch (e) {
+      msg.className = 'code-msg err'; msg.textContent = '✕ خطأ في الاتصال. حاول مرة أخرى.';
+    }
+  }
+
+  // Close modals on backdrop click
+  document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); });
+  });
+</script>
+</body>
+</html>

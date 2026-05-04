@@ -1,11 +1,15 @@
 // Telepathy Challenge – Service Worker (2026)
-const CACHE_VERSION = 'telepathy-v2';
+const CACHE_VERSION = 'telepathy-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/home.html',
+  '/admin.html',
   '/manifest.json',
   '/icon.svg',
   '/app-2026.js',
+  '/js/codes.js',
+  '/js/share-card.js',
   'https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap',
   'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js',
@@ -46,7 +50,7 @@ self.addEventListener('fetch', (event) => {
           }
           return res;
         })
-        .catch(() => cached || caches.match('/index.html'));
+        .catch(() => cached || caches.match(req.mode === 'navigate' && req.url.includes('/play') ? '/index.html' : '/home.html'));
       return cached || network;
     })
   );

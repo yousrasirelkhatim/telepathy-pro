@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>لوحة التحكم — Telepathy Admin</title>
+<meta name="theme-color" content="#0a0a1a" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:'Tajawal',sans-serif;background:#05050f;color:#fff;min-height:100vh;background:radial-gradient(ellipse at top,#1a0d3e 0%,#05050f 60%,#000 100%)}
+  button,input,select{font-family:inherit}
+
+  .blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:.4;pointer-events:none;z-index:0}
+  .blob.b1{width:520px;height:520px;background:#a855f7;top:-150px;right:-120px}
+  .blob.b2{width:460px;height:460px;background:#00d4ff;bottom:-100px;left:-100px}
+
+  .wrap{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:24px}
+
+  /* Login */
+  .login-box{max-width:420px;margin:80px auto;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:40px 32px;text-align:center;backdrop-filter:blur(20px)}
+  .login-box h1{font-size:1.6rem;margin-bottom:10px;font-weight:900}
+  .login-box p{color:rgba(255,255,255,.6);margin-bottom:24px;font-size:.95rem}
+
+  input[type=text],input[type=email],input[type=password],input[type=number],input[type=date],select,textarea{
+    width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;padding:14px 16px;font-size:.95rem;outline:none;transition:.2s
+  }
+  input:focus,select:focus,textarea:focus{border-color:#a855f7;background:rgba(255,255,255,.08)}
+  label{display:block;text-align:right;font-size:.88rem;color:rgba(255,255,255,.7);margin:14px 0 6px;font-weight:600}
+
+  .btn{padding:14px 26px;border:0;border-radius:12px;font-weight:700;cursor:pointer;color:#fff;transition:.2s;font-size:.95rem;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:linear-gradient(135deg,#ff5b93,#a855f7);box-shadow:0 8px 24px rgba(168,85,247,.4)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(168,85,247,.6)}
+  .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+  .btn-ghost:hover{background:rgba(255,255,255,.1)}
+  .btn-danger{background:rgba(251,113,133,.15);color:#fb7185;border:1px solid rgba(251,113,133,.4)}
+  .btn-sm{padding:8px 14px;font-size:.82rem;border-radius:9px}
+  .btn-w{width:100%;justify-content:center}
+
+  /* Header */
+  .top{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 22px;margin-bottom:24px;backdrop-filter:blur(20px);flex-wrap:wrap;gap:10px}
+  .top h1{font-size:1.3rem;font-weight:900;display:flex;align-items:center;gap:10px}
+  .top .me{color:rgba(255,255,255,.6);font-size:.9rem}
+
+  /* Stats */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+  .stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px 20px;backdrop-filter:blur(20px)}
+  .stat-label{font-size:.78rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .stat-val{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fff,#d8b4fe);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* Cards / panels */
+  .panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;margin-bottom:20px;backdrop-filter:blur(20px)}
+  .panel-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+  .panel-h h2{font-size:1.15rem;font-weight:800}
+
+  /* Form rows */
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+
+  /* Tabs */
+  .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{padding:10px 18px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;cursor:pointer;font-weight:600;font-size:.9rem}
+  .tab.active{background:linear-gradient(135deg,#ff5b93,#a855f7);border-color:transparent}
+
+  /* Table */
+  .tbl{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:.88rem}
+  .tbl th{text-align:right;padding:8px 12px;color:rgba(255,255,255,.55);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+  .tbl td{background:rgba(255,255,255,.03);padding:12px;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+  .tbl td:first-child{border-right:1px solid rgba(255,255,255,.05);border-radius:0 10px 10px 0}
+  .tbl td:last-child{border-left:1px solid rgba(255,255,255,.05);border-radius:10px 0 0 10px}
+  .code-cell{font-family:ui-monospace,monospace;font-weight:700;color:#a855f7;letter-spacing:.5px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.5px}
+  .pill.active{background:rgba(52,211,153,.18);color:#34d399}
+  .pill.used{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55)}
+  .pill.disabled{background:rgba(251,113,133,.18);color:#fb7185}
+  .pill.expired{background:rgba(251,191,36,.18);color:#fbbf24}
+  .pill.individual{background:rgba(0,212,255,.15);color:#00d4ff}
+  .pill.business{background:rgba(255,91,147,.15);color:#ff5b93}
+
+  .empty{text-align:center;padding:40px;color:rgba(255,255,255,.4)}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#34d399,#10b981);color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;z-index:300;animation:popIn .3s;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .toast.err{background:linear-gradient(135deg,#ef4444,#dc2626)}
+  @keyframes popIn{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+
+  .hidden{display:none}
+
+  /* Generated codes box */
+  .codes-out{background:rgba(0,0,0,.4);border:1px solid rgba(168,85,247,.3);border-radius:12px;padding:14px;margin-top:16px;max-height:280px;overflow:auto;font-family:ui-monospace,monospace;font-size:.88rem;white-space:pre;direction:ltr;text-align:left}
+
+  @media (max-width:600px){
+    .top{padding:12px 16px}
+    .panel{padding:16px}
+    .tbl{font-size:.78rem}
+    .tbl th,.tbl td{padding:8px}
+  }
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div>
+
+<div class="wrap">
+
+  <!-- LOGIN VIEW -->
+  <div id="loginView">
+    <div class="login-box">
+      <h1>🔐 لوحة التحكم</h1>
+      <p>سجّل دخول للوصول إلى إدارة الأكواد</p>
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="loginEmail" autocomplete="email" />
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPass" autocomplete="current-password" />
+      <div style="height:18px"></div>
+      <button class="btn btn-primary btn-w" onclick="adminLogin()">دخول</button>
+      <p style="margin-top:18px;font-size:.82rem;color:rgba(255,255,255,.45)" id="loginMsg"></p>
+      <p style="margin-top:14px;font-size:.78rem;color:rgba(255,255,255,.35)">
+        أول مرة؟ اطلب من المسؤول إضافة UID الخاص بك إلى قائمة /admins/.
+      </p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashView" class="hidden">
+
+    <div class="top">
+      <h1>🛡️ لوحة Telepathy</h1>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span class="me" id="meEmail"></span>
+        <button class="btn btn-ghost btn-sm" onclick="adminLogout()">خروج</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">أكواد نشطة</div><div class="stat-val" id="sActive">—</div></div>
+      <div class="stat"><div class="stat-label">أكواد مستهلكة</div><div class="stat-val" id="sUsed">—</div></div>
+      <div class="stat"><div class="stat-label">إجمالي الجلسات</div><div class="stat-val" id="sSessions">—</div></div>
+      <div class="stat"><div class="stat-label">بطاقات تمت مشاركتها</div><div class="stat-val" id="sShares">—</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="generate">⚡ توليد أكواد</button>
+      <button class="tab" data-tab="list">📋 قائمة الأكواد</button>
+    </div>
+
+    <!-- GENERATE TAB -->
+    <div id="tab-generate">
+      <div class="panel">
+        <div class="panel-h"><h2>توليد أكواد جديدة</h2></div>
+        <div class="row">
+          <div>
+            <label>النوع</label>
+            <select id="gType">
+              <option value="individual">فردي (5 جلسات)</option>
+              <option value="business">باقة شركات</option>
+            </select>
+          </div>
+          <div>
+            <label>عدد الأكواد</label>
+            <input type="number" id="gCount" value="1" min="1" max="500" />
+          </div>
+          <div>
+            <label>جلسات لكل كود</label>
+            <input type="number" id="gMax" value="5" min="1" max="50" />
+          </div>
+          <div>
+            <label>أيام الصلاحية</label>
+            <input type="number" id="gDays" value="365" min="1" max="3650" />
+          </div>
+          <div>
+            <label>وسم (اختياري)</label>
+            <input type="text" id="gLabel" placeholder="مثال: مطعم البيت السوداني" />
+          </div>
+          <div>
+            <label>بادئة الكود</label>
+            <input type="text" id="gPrefix" placeholder="TP أو BIZ" maxlength="6" />
+          </div>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="adminGenerate()">⚡ توليد</button>
+          <button class="btn btn-ghost" onclick="copyGenerated()">📋 نسخ النتيجة</button>
+        </div>
+        <div id="gOut" class="codes-out hidden"></div>
+      </div>
+    </div>
+
+    <!-- LIST TAB -->
+    <div id="tab-list" class="hidden">
+      <div class="panel">
+        <div class="panel-h">
+          <h2>الأكواد <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400">(آخر 500)</span></h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="fStatus" onchange="renderList()">
+              <option value="">كل الحالات</option>
+              <option value="active">نشط</option>
+              <option value="used">مستهلك</option>
+              <option value="disabled">معطّل</option>
+              <option value="expired">منتهي</option>
+            </select>
+            <input type="text" id="fSearch" placeholder="🔎 بحث..." oninput="renderList()" style="width:auto" />
+            <button class="btn btn-ghost btn-sm" onclick="loadList()">🔄</button>
+          </div>
+        </div>
+        <div id="listOut"><div class="empty">جاري التحميل...</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="/js/codes.js"></script>
+<script>
+  TPCodes.init();
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  let allCodes = [];
+  let lastGenerated = [];
+
+  function toast(msg, isErr) {
+    const el = document.createElement('div');
+    el.className = 'toast' + (isErr ? ' err' : '');
+    el.textContent = msg;
+    document.getElementById('toast').appendChild(el);
+    setTimeout(() => el.remove(), 3200);
+  }
+
+  // ---------------- AUTH ----------------
+  auth.onAuthStateChanged(async (u) => {
+    if (!u) { showLogin(); return; }
+    // check admin
+    try {
+      const snap = await db.ref('admins/' + u.uid).once('value');
+      if (snap.val() !== true) {
+        document.getElementById('loginMsg').textContent =
+          'تم تسجيل دخولك (UID: ' + u.uid + ') لكنك لست في قائمة المسؤولين. أضف هذا المعرّف يدوياً في Firebase Console عند /admins/';
+        await auth.signOut();
+        return;
+      }
+    } catch(e) {
+      document.getElementById('loginMsg').textContent = 'تعذّر التحقق من صلاحيات المسؤول. ربما لم يتم نشر القواعد بعد.';
+      return;
+    }
+    showDash(u);
+  });
+
+  function showLogin() {
+    document.getElementById('loginView').classList.remove('hidden');
+    document.getElementById('dashView').classList.add('hidden');
+  }
+  function showDash(u) {
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('dashView').classList.remove('hidden');
+    document.getElementById('meEmail').textContent = u.email || u.uid;
+    refreshStats();
+    loadList();
+  }
+
+  async function adminLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const msg = document.getElementById('loginMsg');
+    msg.textContent = '⏳ جاري الدخول...';
+    try {
+      try { await auth.signInWithEmailAndPassword(email, pass); }
+      catch(e) {
+        if (e.code === 'auth/user-not-found') {
+          // first-time bootstrap: create the account
+          await auth.createUserWithEmailAndPassword(email, pass);
+          msg.innerHTML = '✓ تم إنشاء الحساب. الـ UID الخاص بك:<br><b style="color:#a855f7">' + auth.currentUser.uid + '</b><br>أضفه يدوياً في Firebase Console عند: <code>admins/' + auth.currentUser.uid + ' = true</code>';
+          return;
+        }
+        throw e;
+      }
+    } catch(e) {
+      msg.textContent = '✕ ' + (e.message || 'فشل تسجيل الدخول');
+    }
+  }
+  async function adminLogout() { await auth.signOut(); }
+
+  // ---------------- TABS ----------------
+  document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      ['generate','list'].forEach(k => {
+        document.getElementById('tab-'+k).classList.toggle('hidden', k !== t.dataset.tab);
+      });
+    };
+  });
+
+  // ---------------- STATS ----------------
+  async function refreshStats() {
+    try {
+      const [snap, statSnap] = await Promise.all([
+        db.ref('accessCodes').orderByChild('createdAt').limitToLast(500).once('value'),
+        db.ref('stats/totals').once('value'),
+      ]);
+      let active = 0, used = 0;
+      snap.forEach(s => {
+        const v = s.val();
+        if (v.status === 'active') active++;
+        else if (v.status === 'used') used++;
+      });
+      document.getElementById('sActive').textContent = active;
+      document.getElementById('sUsed').textContent = used;
+      const st = statSnap.val() || {};
+      document.getElementById('sSessions').textContent = st.sessionsPlayed || 0;
+      document.getElementById('sShares').textContent = st.cardsShared || 0;
+    } catch(e) { console.warn(e); }
+  }
+
+  // ---------------- GENERATE ----------------
+  async function adminGenerate() {
+    const opts = {
+      type: document.getElementById('gType').value,
+      maxSessions: +document.getElementById('gMax').value || 5,
+      daysValid: +document.getElementById('gDays').value || 365,
+      label: document.getElementById('gLabel').value.trim(),
+      prefix: document.getElementById('gPrefix').value.trim().toUpperCase() || (document.getElementById('gType').value === 'business' ? 'BIZ' : 'TP'),
+    };
+    const count = Math.max(1, Math.min(500, +document.getElementById('gCount').value || 1));
+    const out = document.getElementById('gOut');
+    out.classList.remove('hidden');
+    out.textContent = '⏳ جاري التوليد...';
+    try {
+      let codes = [];
+      if (count === 1) {
+        const c = await TPCodes.createOne(opts);
+        codes = [c];
+      } else {
+        const res = await TPCodes.createBatch({ ...opts, count });
+        codes = res.codes;
+      }
+      lastGenerated = codes;
+      out.textContent = codes.map(c => c.code).join('\n');
+      toast(`✓ تم توليد ${codes.length} كود`);
+      refreshStats();
+      if (document.getElementById('tab-list').classList.contains('hidden') === false) loadList();
+    } catch(e) {
+      out.textContent = '✕ خطأ: ' + (e.message || e);
+      toast('فشل التوليد', true);
+    }
+  }
+  function copyGenerated() {
+    if (!lastGenerated.length) { toast('لا يوجد ما يُنسخ', true); return; }
+    const txt = lastGenerated.map(c => c.code).join('\n');
+    navigator.clipboard.writeText(txt).then(() => toast('✓ تم النسخ'));
+  }
+
+  // ---------------- LIST ----------------
+  async function loadList() {
+    document.getElementById('listOut').innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+    try {
+      allCodes = await TPCodes.listCodes();
+      renderList();
+    } catch(e) {
+      document.getElementById('listOut').innerHTML = '<div class="empty">✕ تعذّر التحميل</div>';
+    }
+  }
+
+  function renderList() {
+    const status = document.getElementById('fStatus').value;
+    const q = document.getElementById('fSearch').value.toLowerCase().trim();
+    let arr = allCodes;
+    if (status) arr = arr.filter(c => c.status === status);
+    if (q) arr = arr.filter(c => (c.code + ' ' + (c.label||'')).toLowerCase().includes(q));
+
+    if (!arr.length) {
+      document.getElementById('listOut').innerHTML = '<div class="empty">لا توجد أكواد</div>';
+      return;
+    }
+    let html = `<table class="tbl">
+      <thead><tr>
+        <th>الكود</th><th>النوع</th><th>الحالة</th><th>الاستخدام</th><th>الوسم</th><th>تاريخ</th><th></th>
+      </tr></thead><tbody>`;
+    arr.forEach(c => {
+      html += `<tr>
+        <td class="code-cell">${c.code}</td>
+        <td><span class="pill ${c.type}">${c.type === 'business' ? 'شركات' : 'فردي'}</span></td>
+        <td><span class="pill ${c.status}">${labelStatus(c.status)}</span></td>
+        <td>${c.usedSessions}/${c.maxSessions}</td>
+        <td style="color:rgba(255,255,255,.6)">${escapeHtml(c.label || '-')}</td>
+        <td style="color:rgba(255,255,255,.45);font-size:.78rem">${TPCodes.fmtDate(c.createdAt)}</td>
+        <td>
+          ${c.status === 'active'
+            ? `<button class="btn btn-danger btn-sm" onclick="toggleCode('${c.code}','disabled')">إيقاف</button>`
+            : c.status === 'disabled'
+              ? `<button class="btn btn-ghost btn-sm" onclick="toggleCode('${c.code}','active')">تفعيل</button>`
+              : '-'
+          }
+          <button class="btn btn-ghost btn-sm" onclick="copyOne('${c.code}')">📋</button>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    document.getElementById('listOut').innerHTML = html;
+  }
+  function labelStatus(s){return {active:'نشط',used:'مستهلك',disabled:'معطّل',expired:'منتهي'}[s]||s;}
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+
+  async function toggleCode(code, status) {
+    try {
+      await TPCodes.setStatus(code, status);
+      toast('✓ تم التحديث');
+      const item = allCodes.find(x => x.code === code); if (item) item.status = status;
+      renderList();
+      refreshStats();
+    } catch(e) { toast('فشل التحديث', true); }
+  }
+  function copyOne(code) {
+    navigator.clipboard.writeText(code).then(() => toast('✓ تم نسخ ' + code));
+  }
+</script>
+</body>
+</html>
