@@ -1,9 +1,9 @@
 // Telepathy Challenge – Service Worker (2026)
-const CACHE_VERSION = 'telepathy-v3';
+const CACHE_VERSION = 'telepathy-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/home.html',
+  '/play.html',
   '/admin.html',
   '/manifest.json',
   '/icon.svg',
@@ -50,7 +50,7 @@ self.addEventListener('fetch', (event) => {
           }
           return res;
         })
-        .catch(() => cached || caches.match(req.mode === 'navigate' && req.url.includes('/play') ? '/index.html' : '/home.html'));
+        .catch(() => cached || caches.match(req.mode === 'navigate' && req.url.includes('/play') ? '/play.html' : '/index.html'));
       return cached || network;
     })
   );
