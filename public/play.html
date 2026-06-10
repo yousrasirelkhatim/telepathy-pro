@@ -1475,17 +1475,30 @@ body { background: var(--ink) !important; }
       <a href="/" class="tp-link" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">← الرئيسية</a>
     </div>
     <div class="logo-area" style="margin-bottom:22px">
-      <svg class="tp-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg class="tp-logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
-          <linearGradient id="tpLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#d4af37"/>
-            <stop offset="50%" stop-color="#b45ee3"/>
-            <stop offset="100%" stop-color="#9333ea"/>
+          <linearGradient id="tpLogoNeon" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7df9ef"/>
+            <stop offset="50%" stop-color="#2fd6e6"/>
+            <stop offset="100%" stop-color="#19b6d8"/>
           </linearGradient>
+          <linearGradient id="tpLogoSilver" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="42%" stop-color="#cfd4da"/>
+            <stop offset="62%" stop-color="#f4f5f7"/>
+            <stop offset="100%" stop-color="#a7adb6"/>
+          </linearGradient>
+          <filter id="tpLogoGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="6" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
         </defs>
-        <circle cx="36" cy="50" r="24" fill="none" stroke="url(#tpLogoGrad)" stroke-width="2.6" opacity="0.95"/>
-        <circle cx="64" cy="50" r="24" fill="none" stroke="url(#tpLogoGrad)" stroke-width="2.6" opacity="0.95"/>
-        <circle cx="50" cy="50" r="4" fill="#d4af37"/>
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M224 458 C200 428 165 412 160 378 C156 356 168 344 156 326 C146 312 158 300 146 286 C132 274 110 270 112 246 C113 212 138 178 152 166 C168 150 168 122 196 110 C218 101 242 116 256 152 C270 116 294 101 316 110 C344 122 344 150 360 166 C374 178 399 212 400 246 C402 270 380 274 366 286 C354 300 366 312 356 326 C344 344 356 356 352 378 C347 412 312 428 288 458" stroke="url(#tpLogoNeon)" stroke-width="16" filter="url(#tpLogoGlow)" opacity="0.85"/>
+          <path d="M224 458 C200 428 165 412 160 378 C156 356 168 344 156 326 C146 312 158 300 146 286 C132 274 110 270 112 246 C113 212 138 178 152 166 C168 150 168 122 196 110 C218 101 242 116 256 152 C270 116 294 101 316 110 C344 122 344 150 360 166 C374 178 399 212 400 246 C402 270 380 274 366 286 C354 300 366 312 356 326 C344 344 356 356 352 378 C347 412 312 428 288 458" stroke="url(#tpLogoNeon)" stroke-width="9"/>
+          <path d="M224 458 C200 428 165 412 160 378 C156 356 168 344 156 326 C146 312 158 300 146 286 C132 274 110 270 112 246 C113 212 138 178 152 166 C168 150 168 122 196 110 C218 101 242 116 256 152 C270 116 294 101 316 110 C344 122 344 150 360 166 C374 178 399 212 400 246 C402 270 380 274 366 286 C354 300 366 312 356 326 C344 344 356 356 352 378 C347 412 312 428 288 458" stroke="#eafffb" stroke-width="3.2" opacity="0.95"/>
+        </g>
+        <path d="M200 188 L312 188 L312 220 L272 220 L272 316 L256 340 L240 316 L240 220 L200 220 Z" fill="url(#tpLogoSilver)" stroke="#6b7682" stroke-width="3" stroke-linejoin="round"/>
       </svg>
       <h1 class="game-title">Telepathy Challenge</h1>
       <p class="game-subtitle">قِس مدى توافق عقولكما — في 4 مراحل ذكية</p>
@@ -1907,10 +1920,9 @@ function setAvatar(el, name, photo) {
 }
 
 function inviteLinkFor(code) {
-  // Prefer the player-facing TP access code so invitee sees the same code
-  // they'd type manually. Falls back to internal room code otherwise.
-  const tp = (window.__activeAccessCode || '').toString().toUpperCase();
-  if (tp) return `${location.origin}/play?code=${encodeURIComponent(tp)}`;
+  // Always invite to the EXACT room (?room=CODE) so the second player joins
+  // player 1's existing room directly via joinRoom — never the access-code
+  // flow that could spawn a new room/session and cause room overlap.
   return `${location.origin}/play?room=${encodeURIComponent(code)}`;
 }
 
