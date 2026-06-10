@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Telepathy Challenge — تحدي التخاطر | اكتشفوا توافق عقولكم</title>
-<meta name="description" content="لعبة تخاطر زوجية ممتعة. اشترِ كود واحصل على 5 جلسات تحدي مشترك. مثالية للأزواج، الأصدقاء، والشركات." />
-<meta name="theme-color" content="#0a0a1a" />
+<meta name="description" content="لعبة تخاطر تفاعلية للشباب والأزواج والأصدقاء. اشترِ كود واحصل على 5 جلسات. مثالية للمقاهي والفعاليات." />
+<meta name="theme-color" content="#07070f" />
 <link rel="manifest" href="/manifest.json" />
-<link rel="icon" type="image/png" href="/brand/favicon-96x96.png?v=40" sizes="96x96" />
-<link rel="shortcut icon" href="/brand/favicon.ico?v=40" />
-<link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png?v=40" />
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" href="/brand/favicon-96x96.png?v=44" sizes="96x96" />
+<link rel="shortcut icon" href="/brand/favicon.ico?v=44" />
+<link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png?v=44" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <meta property="og:title" content="Telepathy Challenge - تحدي التخاطر" />
 <meta property="og:description" content="هل تفكران بنفس الطريقة؟ اكتشفا الإجابة الآن." />
 <meta property="og:image" content="/brand/og-image.png?v=41" />
@@ -20,313 +20,698 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="/brand/og-image.png?v=41" />
 <style>
-  /* === Design tokens (shared) === */
-  :root{
-    --bg:#05050f;
-    --surface:rgba(255,255,255,.04); --surface-2:rgba(255,255,255,.06);
-    --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
-    --text:#fff; --text-muted:rgba(255,255,255,.78); --text-dim:rgba(255,255,255,.55);
-    --brand-1:#ff5b93; --brand-2:#a855f7; --brand-3:#00d4ff;
-    --grad-brand:linear-gradient(135deg,#ff5b93,#a855f7);
-    --grad-cool:linear-gradient(135deg,#00d4ff,#a855f7);
-    --radius-sm:10px; --radius-md:14px; --radius-lg:18px; --radius-xl:24px;
-    --shadow-1:0 8px 24px rgba(0,0,0,.28);
-    --shadow-2:0 14px 34px rgba(168,85,247,.5);
-    --bp-mobile:768px;
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  html,body{font-family:'Tajawal',system-ui,sans-serif;background:#05050f;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-  body{min-height:100dvh;background:radial-gradient(ellipse at top,#1a0d3e 0%,#05050f 60%,#000 100%);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
-  *{-webkit-tap-highlight-color:transparent}
-  a{color:inherit;text-decoration:none;touch-action:manipulation}
-  button,.btn,.nav-link,summary,details{touch-action:manipulation}
-  button,.btn{-webkit-user-select:none;user-select:none}
-  button{font-family:inherit;cursor:pointer;border:0}
-  input,select,textarea{font-size:16px;max-width:100%}
-  img{max-width:100%;display:block}
+:root {
+  --bg: #05050c;
+  --bg-elevated: rgba(14, 12, 32, 0.72);
+  --surface: rgba(255,255,255,.045);
+  --surface-2: rgba(255,255,255,.07);
+  --border: rgba(255,255,255,.09);
+  --border-glow: rgba(168,85,247,.35);
+  --text: #fff;
+  --text-muted: rgba(255,255,255,.72);
+  --text-dim: rgba(255,255,255,.48);
+  --pink: #ff4d8d;
+  --purple: #a855f7;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --gold: #fbbf24;
+  --grad-hero: linear-gradient(135deg, #fff 0%, #e9d5ff 42%, #fda4af 100%);
+  --grad-btn: linear-gradient(135deg, #ff4d8d, #a855f7);
+  --grad-btn-alt: linear-gradient(135deg, #22d3ee, #6366f1);
+  --grad-ring: conic-gradient(from 210deg, #22d3ee, #a855f7, #ff4d8d, #22d3ee);
+  --shadow-glow: 0 24px 80px rgba(168,85,247,.28);
+  --radius: 20px;
+  --nav-h: 72px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+html,body {
+  font-family:'Tajawal',system-ui,sans-serif;
+  background:var(--bg); color:var(--text);
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%; text-size-adjust:100%;
+}
+body {
+  min-height:100dvh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,.35), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 20%, rgba(255,77,141,.12), transparent),
+    radial-gradient(ellipse 50% 30% at 0% 80%, rgba(34,211,238,.1), transparent),
+    var(--bg);
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+* { -webkit-tap-highlight-color:transparent; }
+a { color:inherit; text-decoration:none; touch-action:manipulation; }
+button,.btn,.nav-link,summary { touch-action:manipulation; font-family:inherit; cursor:pointer; border:0; }
+input,select,textarea { font-size:16px; max-width:100%; font-family:inherit; }
+img { max-width:100%; display:block; }
 
-  /* Floating glow blobs */
-  .blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:.55;pointer-events:none;z-index:0;animation:float 18s ease-in-out infinite}
-  .blob.b1{width:520px;height:520px;background:#a855f7;top:-150px;right:-120px}
-  .blob.b2{width:460px;height:460px;background:#ff5b93;bottom:-100px;left:-100px;animation-delay:-8s}
-  .blob.b3{width:380px;height:380px;background:#00d4ff;top:50%;left:30%;animation-delay:-4s}
-  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.1)}}
+/* Ambient */
+.ambient { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.ambient .orb {
+  position:absolute; border-radius:50%; filter:blur(90px); opacity:.45;
+  animation: orbFloat 22s ease-in-out infinite;
+}
+.ambient .o1 { width:520px; height:520px; background:#7c3aed; top:-180px; right:-120px; }
+.ambient .o2 { width:420px; height:420px; background:#ec4899; bottom:-80px; left:-100px; animation-delay:-7s; }
+.ambient .o3 { width:320px; height:320px; background:#06b6d4; top:45%; left:35%; animation-delay:-12s; opacity:.25; }
+.grid-overlay {
+  position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.04;
+  background-image: linear-gradient(rgba(255,255,255,.8) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.8) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 75%);
+}
+@keyframes orbFloat {
+  0%,100% { transform:translate(0,0) scale(1); }
+  50% { transform:translate(30px,-24px) scale(1.06); }
+}
 
-  /* Stars */
-  .stars{position:fixed;inset:0;pointer-events:none;z-index:1;background-image:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(2px 2px at 60% 70%,#fff,transparent),radial-gradient(1px 1px at 80% 10%,#fff,transparent),radial-gradient(1px 1px at 40% 90%,#fff,transparent),radial-gradient(2px 2px at 90% 50%,#fff,transparent);background-size:200% 200%;opacity:.3;animation:twinkle 6s linear infinite}
-  @keyframes twinkle{50%{opacity:.5}}
+.wrap { position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:0 20px; }
 
-  .container{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:24px}
+/* Nav */
+.site-nav {
+  position:sticky; top:0; z-index:100;
+  padding:12px 0 16px;
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+}
+.nav-inner {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 18px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 8px 32px rgba(0,0,0,.35);
+}
+.logo { display:flex; align-items:center; gap:11px; font-weight:900; font-size:1.15rem; }
+.logo-mark {
+  width:42px; height:42px; border-radius:13px; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.12), 0 10px 28px rgba(168,85,247,.45);
+}
+.logo-mark img { width:100%; height:100%; object-fit:cover; }
+.nav-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.nav-link {
+  padding:10px 16px; border-radius:12px; font-weight:700; font-size:.88rem;
+  color:var(--text-muted); background:transparent; transition:.2s;
+  min-height:42px; display:inline-flex; align-items:center;
+}
+.nav-link:hover { color:#fff; background:var(--surface); }
+.nav-cta {
+  padding:10px 18px; border-radius:12px; font-weight:800; font-size:.88rem;
+  background:var(--grad-btn); color:#fff;
+  box-shadow:0 8px 24px rgba(168,85,247,.4);
+  min-height:42px; display:inline-flex; align-items:center;
+}
+.nav-cta:hover { transform:translateY(-1px); }
 
-  /* Nav */
-  nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:rgba(10,10,30,.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.06);border-radius:18px;margin-bottom:48px}
-  .logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.25rem}
-  .logo-icon{width:38px;height:38px;border-radius:11px;overflow:hidden;display:grid;place-items:center;box-shadow:0 8px 24px rgba(168,85,247,.5)}
-  .logo-icon img{width:100%;height:100%;object-fit:cover;border-radius:11px;display:block}
-  .nav-link{padding:10px 18px;border-radius:12px;font-weight:600;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.95rem;transition:.2s;color:#fff;min-height:44px;display:inline-flex;align-items:center}
-  @media (hover:hover) and (pointer:fine){
-    .nav-link:hover{background:rgba(255,255,255,.1)}
-  }
+/* Hero */
+.hero { padding:28px 0 64px; }
+.hero-grid {
+  display:grid; grid-template-columns:1fr; gap:40px; align-items:center;
+}
+.hero-copy { text-align:center; }
+.eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 16px; border-radius:999px; margin-bottom:20px;
+  font-size:.82rem; font-weight:700; letter-spacing:.02em;
+  background:rgba(168,85,247,.14); border:1px solid rgba(168,85,247,.35);
+  color:#e9d5ff;
+}
+.eyebrow-dot {
+  width:8px; height:8px; border-radius:50%; background:var(--green);
+  box-shadow:0 0 10px var(--green); animation:pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
 
-  /* Hero */
-  .hero{text-align:center;padding:40px 0 70px}
-  .hero-content{max-width:100%;margin:auto}
-  .hero-badge{display:inline-block;padding:8px 18px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);border-radius:999px;font-size:.85rem;font-weight:600;color:#d8b4fe;margin-bottom:22px;letter-spacing:.5px}
-  .hero h1{font-size:clamp(2.2rem,7vw,4.5rem);font-weight:900;line-height:1.15;margin-bottom:24px;background:linear-gradient(135deg,#fff 0%,#d8b4fe 50%,#fda4af 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p{font-size:clamp(1rem,2.5vw,1.3rem);color:rgba(255,255,255,.75);max-width:680px;margin:0 auto 36px;line-height:1.7}
+.hero h1 {
+  font-size:clamp(2.1rem,6.5vw,3.75rem); font-weight:900; line-height:1.12;
+  margin-bottom:18px; letter-spacing:-.02em;
+  background:var(--grad-hero); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero-lead {
+  font-size:clamp(1rem,2.4vw,1.15rem); line-height:1.75;
+  color:var(--text-muted); max-width:540px; margin:0 auto 28px;
+}
+.hero-cta { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:24px; }
+.btn {
+  padding:16px 28px; border-radius:16px; font-size:1rem; font-weight:800;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-height:54px; transition:.22s; color:#fff;
+}
+.btn-primary { background:var(--grad-btn); box-shadow:var(--shadow-glow); }
+.btn-secondary {
+  background:var(--surface); border:1px solid var(--border);
+  color:var(--text-muted);
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 28px 60px rgba(168,85,247,.38); }
+.btn-secondary:hover { background:var(--surface-2); color:#fff; border-color:var(--border-glow); }
+.btn:active { transform:scale(.98); }
 
-  .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
-  .btn{padding:18px 38px;border-radius:16px;font-size:1.05rem;font-weight:700;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:10px;color:#fff;min-height:54px}
-  .btn-primary{background:linear-gradient(135deg,#ff5b93,#a855f7);box-shadow:0 12px 32px rgba(168,85,247,.5)}
-  .btn-secondary{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);backdrop-filter:blur(10px)}
-  .btn:active{transform:scale(.97)}
-  @media (hover:hover) and (pointer:fine){
-    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(168,85,247,.7)}
-    .btn-secondary:hover{background:rgba(255,255,255,.13)}
-  }
-  .btn-start{font-size:1.05rem;animation:none}
+.hero-pills {
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:28px;
+}
+.hero-pill {
+  font-size:.78rem; font-weight:700; padding:8px 14px; border-radius:999px;
+  background:var(--surface); border:1px solid var(--border); color:var(--text-muted);
+}
 
-  .hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:22px;color:rgba(255,255,255,.55);font-size:.9rem}
-  .hero-stats span{display:flex;align-items:center;gap:6px}
+/* Inline code strip in hero */
+.code-box {
+  max-width:480px; margin:0 auto;
+  padding:6px; border-radius:18px;
+  background:linear-gradient(135deg, rgba(168,85,247,.2), rgba(34,211,238,.12));
+  border:1px solid rgba(168,85,247,.25);
+}
+.code-box-inner {
+  display:flex; gap:6px; padding:6px;
+  background:rgba(8,8,20,.85); border-radius:14px;
+}
+.code-box input {
+  flex:1; background:transparent; border:0; color:#fff;
+  padding:14px 16px; outline:none; text-align:center;
+  letter-spacing:2px; font-weight:800; text-transform:uppercase;
+}
+.code-box input::placeholder { letter-spacing:0; font-weight:600; color:var(--text-dim); }
+.code-box button {
+  padding:14px 22px; border-radius:12px; font-weight:800; font-size:.92rem;
+  background:var(--grad-btn-alt); color:#fff; white-space:nowrap;
+}
+.code-hint { margin-top:10px; font-size:.8rem; color:var(--text-dim); text-align:center; }
+.code-msg { margin-top:10px; font-size:.88rem; min-height:20px; text-align:center; }
+.code-msg.ok { color:var(--green); }
+.code-msg.err { color:#fb7185; }
 
-  /* Code entry inline */
-  .code-strip{margin:36px auto 0;max-width:520px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:8px;display:flex;gap:8px}
-  .code-strip input{flex:1;background:transparent;border:0;color:#fff;font-family:inherit;font-size:1.05rem;padding:14px 18px;outline:none;letter-spacing:2px;text-align:center;font-weight:700}
-  .code-strip input::placeholder{color:rgba(255,255,255,.3);letter-spacing:normal;font-weight:500}
-  .code-strip button{background:linear-gradient(135deg,#00d4ff,#a855f7);color:#fff;padding:14px 26px;border-radius:12px;font-weight:700;font-size:.95rem}
-  .code-msg{margin-top:14px;font-size:.9rem;min-height:22px}
-  .code-msg.ok{color:#34d399}
-  .code-msg.err{color:#fb7185}
+/* Phone mockup */
+.hero-visual { display:flex; justify-content:center; perspective:900px; }
+.phone {
+  width:min(300px, 88vw); position:relative;
+  transform:rotateY(-8deg) rotateX(4deg);
+  animation: phoneFloat 6s ease-in-out infinite;
+}
+@keyframes phoneFloat {
+  0%,100% { transform:rotateY(-8deg) rotateX(4deg) translateY(0); }
+  50% { transform:rotateY(-6deg) rotateX(2deg) translateY(-10px); }
+}
+.phone-frame {
+  border-radius:36px; padding:10px;
+  background:linear-gradient(160deg, #2a2545, #12101f);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 40px 100px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06) inset;
+}
+.phone-notch {
+  width:90px; height:24px; margin:0 auto 10px; border-radius:0 0 14px 14px;
+  background:#0a0818;
+}
+.phone-screen {
+  border-radius:26px; overflow:hidden;
+  background:linear-gradient(180deg, #120f28, #0a0818);
+  padding:22px 18px 26px; min-height:360px;
+  border:1px solid rgba(255,255,255,.06);
+}
+.phone-logo { width:56px; height:56px; margin:0 auto 12px; border-radius:16px; overflow:hidden; }
+.phone-logo img { width:100%; height:100%; object-fit:cover; }
+.phone-title { text-align:center; font-size:.95rem; font-weight:800; margin-bottom:4px; }
+.phone-sub { text-align:center; font-size:.72rem; color:var(--text-dim); margin-bottom:18px; }
+.mock-ring-wrap { display:flex; justify-content:center; margin-bottom:14px; }
+.mock-ring {
+  width:120px; height:120px; border-radius:50%; display:flex;
+  align-items:baseline; justify-content:center; gap:2px;
+  background:var(--grad-ring); position:relative;
+  box-shadow:0 0 40px rgba(168,85,247,.35);
+}
+.mock-ring::before {
+  content:''; position:absolute; inset:7px; border-radius:50%;
+  background:#0c0a1e;
+}
+.mock-ring span { position:relative; font-size:38px; font-weight:900; line-height:1; }
+.mock-ring small { position:relative; font-size:16px; font-weight:800; opacity:.85; }
+.mock-rating {
+  text-align:center; font-size:.85rem; font-weight:800; margin-bottom:16px;
+  background:linear-gradient(90deg, var(--cyan), var(--pink));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+.mock-bars { display:flex; flex-direction:column; gap:8px; }
+.mock-bar { display:flex; align-items:center; gap:8px; font-size:.68rem; color:var(--text-muted); }
+.mock-bar span { flex:0 0 52px; }
+.mock-bar i {
+  flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,.08);
+  position:relative; overflow:hidden;
+}
+.mock-bar i::after {
+  content:''; position:absolute; inset:0; width:var(--w);
+  background:linear-gradient(90deg, var(--purple), var(--cyan)); border-radius:4px;
+}
+.phone-float-badge {
+  position:absolute; top:12%; left:-8%;
+  padding:10px 14px; border-radius:14px; font-size:.75rem; font-weight:800;
+  background:rgba(52,211,153,.15); border:1px solid rgba(52,211,153,.35);
+  color:#6ee7b7; backdrop-filter:blur(8px);
+  animation: badgeBob 4s ease-in-out infinite;
+}
+.phone-float-badge.b2 {
+  top:auto; bottom:18%; right:-6%; left:auto;
+  background:rgba(168,85,247,.18); border-color:rgba(168,85,247,.4); color:#d8b4fe;
+  animation-delay:-2s;
+}
+@keyframes badgeBob {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-6px); }
+}
 
-  /* Sections */
-  .section{padding:80px 0}
-  .section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;margin-bottom:14px}
-  .section-sub{text-align:center;color:rgba(255,255,255,.6);font-size:1.05rem;max-width:600px;margin:0 auto 48px}
+/* Stats strip */
+.stats-strip {
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;
+  margin-top:48px; padding:20px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+}
+.stat-item { text-align:center; }
+.stat-item b {
+  display:block; font-size:1.5rem; font-weight:900;
+  background:var(--grad-hero); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.stat-item span { font-size:.78rem; color:var(--text-dim); font-weight:600; }
 
-  /* Pricing */
-  .pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
-  .price-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:34px 28px;position:relative;transition:.3s;backdrop-filter:blur(20px)}
-  @media (hover:hover) and (pointer:fine){
-    .price-card:hover{transform:translateY(-6px);border-color:rgba(168,85,247,.4);box-shadow:0 20px 60px rgba(168,85,247,.25)}
-  }
-  .price-card.popular{border-color:rgba(255,91,147,.5);background:linear-gradient(160deg,rgba(255,91,147,.1),rgba(168,85,247,.05))}
-  .badge-pop{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff5b93,#a855f7);padding:6px 18px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.5px;color:#fff}
-  .price-head{display:block;margin-bottom:0}
-  .price-icon{font-size:2.4rem;margin-bottom:14px}
-  .price-name{font-size:1.4rem;font-weight:800;margin-bottom:6px;padding-left:0}
-  .price-desc{color:rgba(255,255,255,.55);font-size:.92rem;margin-bottom:22px;min-height:42px;line-height:1.55}
-  .price-amount{font-size:2.6rem;font-weight:900;background:linear-gradient(135deg,#fff,#d8b4fe);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .price-currency{font-size:1rem;color:rgba(255,255,255,.5);font-weight:600}
-  .price-unit{color:rgba(255,255,255,.5);font-size:.9rem;margin-bottom:24px}
-  .pkg-metrics{display:none}
-  .price-features{list-style:none;margin-bottom:28px}
-  .price-features li{padding:8px 0;color:rgba(255,255,255,.8);font-size:.95rem;display:flex;gap:10px;align-items:start}
-  .price-features li::before{content:"✓";color:#34d399;font-weight:900;flex-shrink:0}
-  .price-card .btn{width:100%;justify-content:center}
+/* Sections */
+.section { padding:72px 0; }
+.section-head { text-align:center; max-width:640px; margin:0 auto 44px; }
+.section-label {
+  display:inline-block; font-size:.75rem; font-weight:800; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--purple); margin-bottom:10px;
+}
+.section-title { font-size:clamp(1.75rem,4vw,2.5rem); font-weight:900; margin-bottom:12px; line-height:1.2; }
+.section-sub { color:var(--text-muted); font-size:1.02rem; line-height:1.65; }
 
-  /* Features */
-  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px}
-  .feat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;text-align:center;transition:.3s}
-  @media (hover:hover) and (pointer:fine){
-    .feat:hover{transform:translateY(-4px);background:rgba(255,255,255,.05)}
-  }
-  .feat-icon{font-size:2.5rem;margin-bottom:14px;display:inline-block;background:linear-gradient(135deg,#ff5b93,#a855f7);width:70px;height:70px;line-height:70px;border-radius:18px;box-shadow:0 8px 24px rgba(168,85,247,.4)}
-  .feat h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
-  .feat p{color:rgba(255,255,255,.6);font-size:.92rem;line-height:1.6}
+/* Audience cards */
+.audience { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; }
+.aud-card {
+  padding:22px 20px; border-radius:18px; text-align:center;
+  background:var(--surface); border:1px solid var(--border);
+  transition:.25s;
+}
+.aud-card:hover { border-color:var(--border-glow); transform:translateY(-3px); }
+.aud-card .icon { font-size:2rem; margin-bottom:10px; }
+.aud-card h3 { font-size:1rem; font-weight:800; margin-bottom:6px; }
+.aud-card p { font-size:.85rem; color:var(--text-dim); line-height:1.55; }
 
-  /* How It Works */
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
-  .step{padding:28px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);position:relative}
-  .step-num{position:absolute;top:-20px;right:24px;width:48px;height:48px;background:linear-gradient(135deg,#00d4ff,#a855f7);border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:1.3rem;box-shadow:0 8px 20px rgba(168,85,247,.5)}
-  .step h3{font-size:1.2rem;font-weight:800;margin:14px 0 8px}
-  .step p{color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.7}
+/* Features */
+.features { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; }
+.feat {
+  padding:26px 22px; border-radius:20px;
+  background:linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid var(--border); position:relative; overflow:hidden;
+  transition:.25s;
+}
+.feat::before {
+  content:''; position:absolute; top:0; inset-inline:0; height:3px;
+  background:var(--grad-btn); opacity:0; transition:.25s;
+}
+.feat:hover { border-color:var(--border-glow); transform:translateY(-4px); }
+.feat:hover::before { opacity:1; }
+.feat-icon {
+  width:52px; height:52px; border-radius:14px; display:grid; place-items:center;
+  font-size:1.5rem; margin-bottom:14px;
+  background:rgba(168,85,247,.15); border:1px solid rgba(168,85,247,.25);
+}
+.feat h3 { font-size:1.05rem; font-weight:800; margin-bottom:8px; }
+.feat p { font-size:.88rem; color:var(--text-dim); line-height:1.6; }
 
-  /* Business CTA */
-  .biz{margin-top:30px;padding:48px;background:linear-gradient(135deg,rgba(255,91,147,.15),rgba(168,85,247,.1),rgba(0,212,255,.1));border:1.5px solid rgba(255,255,255,.1);border-radius:28px;text-align:center;backdrop-filter:blur(20px)}
-  .biz h2{font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:900;margin-bottom:14px}
-  .biz p{color:rgba(255,255,255,.75);max-width:580px;margin:0 auto 26px;font-size:1.05rem}
+/* Preview + trust */
+.preview-layout {
+  display:grid; grid-template-columns:1fr; gap:32px; align-items:center;
+}
+.preview-card {
+  max-width:400px; margin:0 auto; width:100%;
+  padding:28px 24px; border-radius:24px; text-align:center; position:relative;
+  background:linear-gradient(160deg, rgba(28,22,58,.9), rgba(12,10,28,.95));
+  border:1px solid var(--border-glow);
+  box-shadow:var(--shadow-glow);
+}
+.preview-badge {
+  position:absolute; top:14px; inset-inline-end:14px;
+  font-size:10px; font-weight:800; padding:5px 11px; border-radius:20px;
+  background:rgba(255,255,255,.08); border:1px solid var(--border);
+}
+.preview-ring {
+  width:130px; height:130px; margin:8px auto; border-radius:50%;
+  display:flex; align-items:baseline; justify-content:center; gap:2px;
+  background:var(--grad-ring); position:relative;
+}
+.preview-ring::before { content:''; position:absolute; inset:8px; border-radius:50%; background:#0b0b22; }
+.preview-ring span { position:relative; font-size:44px; font-weight:900; }
+.preview-ring small { position:relative; font-size:17px; font-weight:800; }
+.preview-rating {
+  font-size:17px; font-weight:800; margin:4px 0 18px;
+  background:linear-gradient(90deg, var(--cyan), var(--pink));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+.preview-bars { display:flex; flex-direction:column; gap:10px; text-align:start; }
+.pbar { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-muted); }
+.pbar span { flex:0 0 58px; }
+.pbar i { flex:1; height:7px; border-radius:5px; background:rgba(255,255,255,.08); position:relative; overflow:hidden; }
+.pbar i::after {
+  content:''; position:absolute; inset:0; width:var(--w);
+  background:linear-gradient(90deg, var(--purple), var(--cyan)); border-radius:5px;
+}
+.trust-grid {
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+}
+.trust-chip {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:.82rem; font-weight:700; padding:10px 16px; border-radius:999px;
+  background:var(--surface); border:1px solid var(--border); color:var(--text-muted);
+}
 
-  /* FAQ */
-  .faq{max-width:760px;margin:0 auto}
-  details{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:12px;transition:.2s;overflow:hidden}
-  details[open]{background:rgba(255,255,255,.05)}
-  summary{font-weight:700;font-size:1.05rem;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:18px 22px;cursor:pointer;min-height:56px;-webkit-user-select:none;user-select:none}
-  summary::-webkit-details-marker{display:none}
-  summary::after{content:"+";font-size:1.5rem;color:#a855f7;transition:.2s}
-  details[open] summary::after{transform:rotate(45deg)}
-  details > p{margin:0 22px 18px;color:rgba(255,255,255,.7);line-height:1.7}
+/* Pricing */
+.pricing { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; align-items:stretch; }
+.price-card {
+  padding:32px 26px; border-radius:24px; position:relative;
+  background:var(--surface); border:1px solid var(--border);
+  display:flex; flex-direction:column; transition:.3s;
+}
+.price-card:hover { border-color:var(--border-glow); transform:translateY(-5px); }
+.price-card.popular {
+  border-color:rgba(255,77,141,.45);
+  background:linear-gradient(165deg, rgba(255,77,141,.08), rgba(168,85,247,.06));
+  box-shadow:0 20px 60px rgba(168,85,247,.2);
+}
+.badge-pop {
+  position:absolute; top:-13px; inset-inline-start:50%; transform:translateX(-50%);
+  background:var(--grad-btn); padding:6px 16px; border-radius:999px;
+  font-size:.72rem; font-weight:800; white-space:nowrap;
+}
+.price-icon { font-size:2.2rem; margin-bottom:12px; }
+.price-name { font-size:1.35rem; font-weight:900; margin-bottom:6px; }
+.price-desc { font-size:.88rem; color:var(--text-dim); line-height:1.55; margin-bottom:18px; min-height:44px; }
+.price-amount {
+  font-size:2.4rem; font-weight:900;
+  background:var(--grad-hero); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.price-currency { font-size:.95rem; color:var(--text-dim); font-weight:700; }
+.price-unit { font-size:.85rem; color:var(--text-dim); margin:6px 0 20px; }
+.pkg-metrics { display:none; }
+.price-features { list-style:none; margin-bottom:24px; flex:1; }
+.price-features li {
+  padding:7px 0; font-size:.9rem; color:var(--text-muted);
+  display:flex; gap:10px; align-items:flex-start;
+}
+.price-features li::before { content:'✓'; color:var(--green); font-weight:900; flex-shrink:0; }
+.price-card .btn { width:100%; margin-top:auto; }
 
-  /* Footer */
-  footer{padding:40px 0;text-align:center;color:rgba(255,255,255,.4);font-size:.9rem;border-top:1px solid rgba(255,255,255,.06);margin-top:60px}
-  footer a{color:#a855f7}
+/* Steps timeline */
+.steps { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; }
+.step {
+  padding:26px 22px 22px; border-radius:20px;
+  background:var(--surface); border:1px solid var(--border);
+  position:relative; padding-top:36px;
+}
+.step-num {
+  position:absolute; top:-16px; inset-inline-start:22px;
+  width:44px; height:44px; border-radius:14px;
+  display:grid; place-items:center; font-weight:900; font-size:1.15rem;
+  background:var(--grad-btn-alt); box-shadow:0 8px 20px rgba(34,211,238,.35);
+}
+.step h3 { font-size:1.1rem; font-weight:800; margin-bottom:8px; }
+.step p { font-size:.88rem; color:var(--text-dim); line-height:1.65; }
 
-  /* Modal */
-  .modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
-  .modal.open{display:flex}
-  .modal-box{background:linear-gradient(160deg,#1a1535,#0d0a25);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:36px 32px;max-width:480px;width:100%;text-align:center;animation:slideUp .3s}
-  .modal h3{font-size:1.5rem;font-weight:900;margin-bottom:12px}
-  .modal p{color:rgba(255,255,255,.7);margin-bottom:22px;line-height:1.6}
-  .modal .close-x{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.08);border:0;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;display:grid;place-items:center;line-height:1;z-index:2}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+/* Business */
+.biz {
+  padding:48px 36px; border-radius:28px; text-align:center;
+  background:linear-gradient(135deg, rgba(255,77,141,.12), rgba(168,85,247,.1), rgba(34,211,238,.08));
+  border:1px solid var(--border-glow);
+}
+.biz h2 { font-size:clamp(1.4rem,3.5vw,2rem); font-weight:900; margin-bottom:12px; }
+.biz p { color:var(--text-muted); max-width:560px; margin:0 auto 24px; line-height:1.7; }
 
-  /* Mobile / narrow tablet */
-  @media (max-width:768px){
-    .container{padding:18px}
-    nav{padding:14px 18px;flex-wrap:wrap;gap:10px;margin-bottom:26px}
-    .hero{padding:20px 0 42px}
-    .hero-badge{margin-bottom:18px}
-    .hero h1{margin-bottom:20px}
-    .hero p{margin-bottom:28px}
-    .hero-cta{align-items:stretch}
-    .btn{width:100%;max-width:340px;margin:0 auto;padding:15px 20px;font-size:1rem;min-height:50px}
-    .hero-stats{gap:18px;margin-top:18px}
-    .section{padding:54px 0}
-    .code-strip{flex-direction:column;padding:8px;gap:6px}
-    .code-strip input,.code-strip button{width:100%;padding:14px}
-    .pricing{grid-template-columns:1fr;gap:16px}
-    .price-card{padding:24px 20px;min-height:auto}
-    .biz{padding:32px 22px}
-    .modal-box{padding:26px 18px;max-width:calc(100% - 24px)}
-  }
-  @media (max-width:900px) and (max-height:520px){
-    .container{padding:14px 18px}
-    nav{margin-bottom:18px;padding:12px 16px}
-    .hero{padding:12px 0 28px}
-    .hero-badge{margin-bottom:12px;font-size:.8rem}
-    .hero h1{margin-bottom:14px;font-size:clamp(2rem,6vw,3.2rem)}
-    .hero p{margin-bottom:18px;line-height:1.6}
-    .hero-cta{margin-bottom:16px;align-items:center}
-    .btn{width:auto;min-width:260px;max-width:none;padding:14px 28px}
-    .hero-stats{margin-top:12px;gap:16px}
-    .section{padding:44px 0}
-    .section-sub{margin-bottom:34px}
-  }
-  @media (max-width:380px){
-    .features{grid-template-columns:1fr}
-    .hero-stats{flex-direction:column;gap:8px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}
-  }
+/* FAQ */
+.faq { max-width:720px; margin:0 auto; }
+details {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; margin-bottom:10px; overflow:hidden; transition:.2s;
+}
+details[open] { border-color:var(--border-glow); background:var(--surface-2); }
+summary {
+  font-weight:800; font-size:.98rem; list-style:none;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:18px 20px; cursor:pointer; min-height:56px; user-select:none;
+}
+summary::-webkit-details-marker { display:none; }
+summary::after {
+  content:'+'; font-size:1.4rem; color:var(--purple); transition:.2s; font-weight:400;
+}
+details[open] summary::after { transform:rotate(45deg); }
+details > p { margin:0 20px 18px; color:var(--text-muted); line-height:1.7; font-size:.92rem; }
 
-  /* Latin font for English mode */
-  html[lang="en"] body,
-  html[lang="en"] .btn,
-  html[lang="en"] button,
-  html[lang="en"] input,
-  html[lang="en"] textarea{font-family:'Inter','Tajawal',sans-serif}
+/* Footer */
+.site-footer {
+  padding:48px 0 32px; margin-top:20px;
+  border-top:1px solid var(--border);
+}
+.footer-grid {
+  display:grid; grid-template-columns:1fr; gap:28px; margin-bottom:32px;
+}
+.footer-brand p { color:var(--text-dim); font-size:.88rem; line-height:1.65; margin-top:10px; max-width:320px; }
+.footer-links { display:flex; flex-wrap:wrap; gap:16px 24px; }
+.footer-links a { font-size:.88rem; color:var(--text-muted); font-weight:600; }
+.footer-links a:hover { color:var(--purple); }
+.footer-bottom { text-align:center; color:var(--text-dim); font-size:.82rem; }
+.footer-note { margin-top:8px; font-size:.78rem; color:var(--text-dim); max-width:520px; margin-inline:auto; line-height:1.65; }
 
-  /* Result preview (sample) */
-  .preview-card{max-width:420px;margin:0 auto;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(168,85,247,.3);border-radius:26px;padding:30px 26px;text-align:center;position:relative;backdrop-filter:blur(18px);box-shadow:0 18px 60px rgba(0,0,0,.4)}
-  .preview-badge{position:absolute;top:14px;inset-inline-end:16px;font-size:11px;font-weight:800;padding:5px 12px;border-radius:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85)}
-  .preview-ring{width:140px;height:140px;margin:8px auto 6px;border-radius:50%;display:flex;align-items:baseline;justify-content:center;gap:2px;background:conic-gradient(#00d4ff,#a855f7,#ff2daa,#00d4ff);box-shadow:0 0 40px rgba(168,85,247,.45);position:relative}
-  .preview-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:#0b0b22}
-  .preview-ring span{position:relative;font-size:46px;font-weight:900;line-height:1}
-  .preview-ring small{position:relative;font-size:18px;font-weight:800;opacity:.85}
-  .preview-rating{font-size:18px;font-weight:800;margin:6px 0 18px;background:linear-gradient(90deg,#00d4ff,#ff2daa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .preview-bars{display:flex;flex-direction:column;gap:10px;text-align:start}
-  .pbar{display:flex;align-items:center;gap:10px;font-size:12.5px;color:rgba(255,255,255,.78)}
-  .pbar span{flex:0 0 64px}
-  .pbar i{flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
-  .pbar i::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#a855f7,#00d4ff);border-radius:6px}
+/* Modals */
+.modal {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(4,4,12,.82); backdrop-filter:blur(10px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal.open { display:flex; }
+.modal-box {
+  position:relative; width:100%; max-width:460px;
+  padding:32px 28px; border-radius:24px; text-align:center;
+  background:linear-gradient(165deg, #1a1535, #0d0a22);
+  border:1px solid var(--border-glow);
+  box-shadow:var(--shadow-glow);
+  animation: modalIn .28s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:translateY(16px) scale(.98)} to{opacity:1;transform:none} }
+.modal h3 { font-size:1.35rem; font-weight:900; margin-bottom:10px; }
+.modal p { color:var(--text-muted); margin-bottom:20px; line-height:1.6; font-size:.92rem; }
+.modal .close-x {
+  position:absolute; top:12px; inset-inline-start:12px;
+  width:40px; height:40px; border-radius:50%;
+  background:var(--surface); color:#fff; font-size:1.1rem;
+  display:grid; place-items:center;
+}
+.form-grid { display:grid; gap:10px; text-align:start; margin:16px 0; }
+.form-grid input, .form-grid textarea {
+  width:100%; padding:14px 16px; border-radius:12px;
+  background:rgba(255,255,255,.06); border:1px solid var(--border); color:#fff;
+}
+.form-grid input:focus, .form-grid textarea:focus {
+  outline:none; border-color:var(--border-glow);
+}
 
-  /* Trust band */
-  .trust-band{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:760px;margin:30px auto 0}
-  .trust-chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);padding:9px 15px;border-radius:30px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12)}
-
-  /* Footer privacy note */
-  .footer-note{margin-top:10px;font-size:12px;color:rgba(255,255,255,.5);max-width:560px;margin-inline:auto;line-height:1.7}
+/* Responsive */
+@media (min-width:900px) {
+  .hero-grid { grid-template-columns:1.05fr .95fr; gap:48px; }
+  .hero-copy { text-align:start; }
+  .hero-lead { margin-inline:0; }
+  .hero-cta, .hero-pills { justify-content:flex-start; }
+  .code-box { margin-inline:0; }
+  .code-hint, .code-msg { text-align:start; }
+  .preview-layout { grid-template-columns:1fr 1fr; gap:40px; }
+  .trust-grid { justify-content:flex-start; }
+  .footer-grid { grid-template-columns:1.4fr 1fr; align-items:start; }
+}
+@media (max-width:768px) {
+  .nav-inner { padding:10px 14px; }
+  .nav-link.hide-mobile { display:none; }
+  .hero { padding-top:8px; }
+  .phone { transform:none; animation:none; }
+  .phone-float-badge { display:none; }
+  .stats-strip { grid-template-columns:1fr; gap:16px; }
+  .code-box-inner { flex-direction:column; }
+  .code-box button { width:100%; }
+  .btn { width:100%; max-width:340px; }
+  .section { padding:52px 0; }
+  .biz { padding:32px 22px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition:none!important; }
+}
+html[lang="en"] body, html[lang="en"] .btn, html[lang="en"] button,
+html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',sans-serif; }
 </style>
 </head>
 <body>
-<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-<div class="stars"></div>
 
-<div class="container">
+<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="grid-overlay"></div>
 
-  <nav>
-    <div class="logo"><div class="logo-icon"><img src="/brand/web-app-manifest-192x192.png?v=40" alt="Telepathy" width="38" height="38"></div><span>Telepathy</span></div>
-    <div style="display:flex;gap:10px;align-items:center">
-      <a href="#pricing" class="nav-link" data-i18n="nav_pricing">الأسعار</a>
-      <button type="button" class="nav-link" id="langToggleBtn" onclick="toggleLang()">English</button>
+<div class="wrap">
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a href="/" class="logo">
+        <div class="logo-mark"><img src="/brand/web-app-manifest-192x192.png?v=44" alt="Telepathy" width="42" height="42"></div>
+        <span>Telepathy</span>
+      </a>
+      <div class="nav-actions">
+        <a href="#features" class="nav-link hide-mobile" data-i18n="nav_features">المميزات</a>
+        <a href="#pricing" class="nav-link" data-i18n="nav_pricing">الأسعار</a>
+        <a href="#how" class="nav-link hide-mobile" data-i18n="nav_how">كيف يعمل</a>
+        <button type="button" class="nav-link" id="langToggleBtn" onclick="toggleLang()">English</button>
+        <a href="#pricing" class="nav-cta" data-i18n="nav_cta">احصل على كود</a>
+      </div>
     </div>
-  </nav>
+  </header>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-content">
-      <div class="hero-badge" id="heroBadge" data-i18n="hero_badge">✨ الإصدار الجديد 2026</div>
-      <h1 id="heroTitle" data-i18n="hero_title">هل تفكران بنفس الطريقة؟</h1>
-      <p id="heroTagline" data-i18n="hero_tagline">تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.</p>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow" id="heroBadge" data-i18n="hero_badge">
+          <span class="eyebrow-dot"></span>
+          <span>✨ الإصدار الجديد 2026</span>
+        </div>
+        <h1 id="heroTitle" data-i18n="hero_title">هل تفكران بنفس الطريقة؟</h1>
+        <p class="hero-lead" id="heroTagline" data-i18n="hero_tagline">تحدي التخاطر — لعبة شبابية تفاعلية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، ونسبة دقيقة لمدى توافق عقولكما — مع بطاقة نتيجة جاهزة للمشاركة.</p>
 
-      <div class="hero-cta">
-        <a href="#pricing" class="btn btn-primary" data-i18n="hero_cta_buy">🛒 احصل على كودك</a>
-        <a href="/play" class="btn btn-secondary btn-start" id="enterCodeBtn" data-i18n="hero_cta_start">لديّ كود — ابدأ التحدي</a>
+        <div class="hero-cta">
+          <a href="#pricing" class="btn btn-primary" data-i18n="hero_cta_buy">🛒 احصل على كودك</a>
+          <a href="/play" class="btn btn-secondary" id="enterCodeBtn" data-i18n="hero_cta_start">لديّ كود — ابدأ</a>
+        </div>
+
+        <div class="hero-pills" id="heroStats">
+          <span class="hero-pill" data-i18n="stat1">⚡ بدء فوري</span>
+          <span class="hero-pill" data-i18n="stat2">📱 جوال + PWA</span>
+          <span class="hero-pill" data-i18n="stat3">🎁 ٥ جلسات / كود</span>
+        </div>
+
+        <div class="code-box">
+          <div class="code-box-inner">
+            <input id="heroCodeInput" maxlength="20" placeholder="TP-XXXXXXXX" data-i18n-ph="code_ph" autocomplete="off" />
+            <button type="button" onclick="submitHeroCode()" data-i18n="modal_code_btn">ابدأ</button>
+          </div>
+        </div>
+        <p class="code-hint" data-i18n="hero_code_hint">لديك كود؟ أدخله هنا — رابط واحد، بدون تعقيد</p>
+        <div class="code-msg" id="heroCodeMsg"></div>
       </div>
 
-      <div class="hero-stats" id="heroStats">
-        <span data-i18n="stat1">⚡ بدء فوري</span>
-        <span data-i18n="stat2">📱 يعمل على الجوال</span>
-        <span data-i18n="stat3">🎁 5 تحديات لكل كود</span>
+      <div class="hero-visual">
+        <div class="phone">
+          <div class="phone-float-badge" data-i18n="float_live">🔴 لعب مباشر</div>
+          <div class="phone-float-badge b2" data-i18n="float_share">📸 شارك النتيجة</div>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-logo"><img src="/brand/web-app-manifest-512x512.png?v=44" alt="" width="56" height="56"></div>
+              <div class="phone-title">Telepathy Challenge</div>
+              <div class="phone-sub" data-i18n="phone_sub">نسبة التخاطر</div>
+              <div class="mock-ring-wrap">
+                <div class="mock-ring"><span>87</span><small>%</small></div>
+              </div>
+              <div class="mock-rating" data-i18n="preview_rating">تخاطر استثنائي 🧠⚡</div>
+              <div class="mock-bars">
+                <div class="mock-bar"><span data-i18n="preview_p1">الصور</span><i style="--w:90%"></i></div>
+                <div class="mock-bar"><span data-i18n="preview_p2">الأفكار</span><i style="--w:84%"></i></div>
+                <div class="mock-bar"><span data-i18n="preview_p3">الذهني</span><i style="--w:88%"></i></div>
+                <div class="mock-bar"><span data-i18n="preview_p4">الروحي</span><i style="--w:86%"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-item"><b>4</b><span data-i18n="stat_phases">مراحل تحدي</span></div>
+      <div class="stat-item"><b>20</b><span data-i18n="stat_rounds">جولة لكل جلسة</span></div>
+      <div class="stat-item"><b>5</b><span data-i18n="stat_sessions">جلسات لكل كود</span></div>
+    </div>
+  </section>
+
+  <!-- AUDIENCE -->
+  <section class="section" id="audience">
+    <div class="section-head">
+      <span class="section-label" data-i18n="aud_label">لمن هذه اللعبة؟</span>
+      <h2 class="section-title" data-i18n="aud_title">لحظات تربطكم — مو بس لعبة</h2>
+      <p class="section-sub" data-i18n="aud_sub">تجربة اجتماعية: اسمك وصورتك تظهران — العبوا وشوفوا وجه بعض</p>
+    </div>
+    <div class="audience">
+      <div class="aud-card"><div class="icon">💑</div><h3 data-i18n="aud1_h">أزواج</h3><p data-i18n="aud1_p">اكتشفوا مدى توافق تفكيركم في أمسية ممتعة</p></div>
+      <div class="aud-card"><div class="icon">👫</div><h3 data-i18n="aud2_h">أصدقاء</h3><p data-i18n="aud2_p">تحدي سريع يكسر الجمود ويولّد ضحك وذكريات</p></div>
+      <div class="aud-card"><div class="icon">☕</div><h3 data-i18n="aud3_h">مقاهي وفعاليات</h3><p data-i18n="aud3_p">كود على الفاتورة = تجربة يشاركونها مع علامتك</p></div>
     </div>
   </section>
 
   <!-- FEATURES -->
-  <section class="section">
-    <h2 class="section-title" data-i18n="feat_title">لماذا تحدي التخاطر؟</h2>
-    <p class="section-sub" data-i18n="feat_sub">تجربة مختلفة كلياً عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم</p>
+  <section class="section" id="features">
+    <div class="section-head">
+      <span class="section-label" data-i18n="feat_label">المميزات</span>
+      <h2 class="section-title" data-i18n="feat_title">لماذا تحدي التخاطر؟</h2>
+      <p class="section-sub" data-i18n="feat_sub">تجربة مختلفة عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم</p>
+    </div>
     <div class="features">
       <div class="feat"><div class="feat-icon">🧠</div><h3 data-i18n="feat1_h">٤ مراحل ذكية</h3><p data-i18n="feat1_p">من الأشياء البسيطة إلى الذكريات والمشاعر العميقة</p></div>
-      <div class="feat"><div class="feat-icon">⚡</div><h3 data-i18n="feat2_h">نتيجة فورية</h3><p data-i18n="feat2_p">اعرفا نسبة توافقكم بمعادلة تحليل لغوي ذكية</p></div>
-      <div class="feat"><div class="feat-icon">🎨</div><h3 data-i18n="feat3_h">بطاقة قابلة للمشاركة</h3><p data-i18n="feat3_p">صورة جميلة احترافية جاهزة لـ Instagram وWhatsApp</p></div>
-      <div class="feat"><div class="feat-icon">🌐</div><h3 data-i18n="feat4_h">يعمل أونلاين</h3><p data-i18n="feat4_p">كل واحد على جواله — تتزامن الإجابات تلقائياً</p></div>
+      <div class="feat"><div class="feat-icon">⚡</div><h3 data-i18n="feat2_h">نتيجة فورية</h3><p data-i18n="feat2_p">اعرفا نسبة توافقكم بمعادلة تحليل ذكية</p></div>
+      <div class="feat"><div class="feat-icon">🎨</div><h3 data-i18n="feat3_h">بطاقة للمشاركة</h3><p data-i18n="feat3_p">صورة احترافية جاهزة لـ Instagram وWhatsApp</p></div>
+      <div class="feat"><div class="feat-icon">🌐</div><h3 data-i18n="feat4_h">أونلاين — كل واحد على جواله</h3><p data-i18n="feat4_p">تتزامن الإجابات تلقائياً بدون تحميل تطبيق</p></div>
     </div>
   </section>
 
-  <!-- RESULT PREVIEW (sample) -->
+  <!-- PREVIEW -->
   <section class="section">
-    <h2 class="section-title" data-i18n="preview_title">ماذا ستحصل عليه؟</h2>
-    <p class="section-sub" data-i18n="preview_sub">في نهاية التحدي تحصلان على نسبة تخاطر دقيقة وبطاقة جاهزة للمشاركة — هذا مثال توضيحي.</p>
-    <div class="preview-card">
-      <div class="preview-badge" data-i18n="preview_badge">مثال توضيحي</div>
-      <div class="preview-ring"><span>87</span><small>%</small></div>
-      <div class="preview-rating" data-i18n="preview_rating">تخاطر استثنائي 🧠⚡</div>
-      <div class="preview-bars">
-        <div class="pbar"><span data-i18n="preview_p1">الصور</span><i style="--w:90%"></i></div>
-        <div class="pbar"><span data-i18n="preview_p2">الأفكار</span><i style="--w:84%"></i></div>
-        <div class="pbar"><span data-i18n="preview_p3">الذهني</span><i style="--w:88%"></i></div>
-        <div class="pbar"><span data-i18n="preview_p4">الروحي</span><i style="--w:86%"></i></div>
+    <div class="preview-layout">
+      <div>
+        <div class="section-head" style="text-align:start;margin-inline:0;margin-bottom:24px">
+          <span class="section-label" data-i18n="preview_label">النتيجة</span>
+          <h2 class="section-title" data-i18n="preview_title">ماذا ستحصل عليه؟</h2>
+          <p class="section-sub" style="margin-inline:0" data-i18n="preview_sub">في نهاية التحدي: نسبة تخاطر دقيقة + بطاقة جاهزة للمشاركة</p>
+        </div>
+        <div class="trust-grid">
+          <span class="trust-chip">🔒 <span data-i18n="trust1">بدون حساب</span></span>
+          <span class="trust-chip">⚡ <span data-i18n="trust2">تسليم واتساب</span></span>
+          <span class="trust-chip">💳 <span data-i18n="trust3">دفعة واحدة</span></span>
+          <span class="trust-chip">👥 <span data-i18n="trust4">لاعبان</span></span>
+          <span class="trust-chip">🎁 <span data-i18n="trust5">٥ جلسات</span></span>
+        </div>
       </div>
-    </div>
-
-    <div class="trust-band">
-      <span class="trust-chip">🔒 <span data-i18n="trust1">بدون تسجيل حساب</span></span>
-      <span class="trust-chip">⚡ <span data-i18n="trust2">تسليم على واتساب</span></span>
-      <span class="trust-chip">💳 <span data-i18n="trust3">دفعة واحدة بدون اشتراك</span></span>
-      <span class="trust-chip">👥 <span data-i18n="trust4">لاعبان لكل غرفة</span></span>
-      <span class="trust-chip">🎁 <span data-i18n="trust5">٥ جلسات لكل كود</span></span>
+      <div class="preview-card">
+        <div class="preview-badge" data-i18n="preview_badge">مثال توضيحي</div>
+        <div class="preview-ring"><span>87</span><small>%</small></div>
+        <div class="preview-rating" data-i18n="preview_rating">تخاطر استثنائي 🧠⚡</div>
+        <div class="preview-bars">
+          <div class="pbar"><span data-i18n="preview_p1">الصور</span><i style="--w:90%"></i></div>
+          <div class="pbar"><span data-i18n="preview_p2">الأفكار</span><i style="--w:84%"></i></div>
+          <div class="pbar"><span data-i18n="preview_p3">الذهني</span><i style="--w:88%"></i></div>
+          <div class="pbar"><span data-i18n="preview_p4">الروحي</span><i style="--w:86%"></i></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- PRICING -->
   <section class="section" id="pricing">
-    <h2 class="section-title" data-i18n="pricing_title">اختر الباقة المناسبة</h2>
-    <p class="section-sub" data-i18n="pricing_sub">دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.</p>
-
+    <div class="section-head">
+      <span class="section-label" data-i18n="pricing_label">الباقات</span>
+      <h2 class="section-title" data-i18n="pricing_title">اختر الباقة المناسبة</h2>
+      <p class="section-sub" data-i18n="pricing_sub">دفعة واحدة · بدون اشتراك · الكود يصلك على واتساب</p>
+    </div>
     <div class="pricing" id="pricingGrid">
-      <div class="empty-pricing" style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.4)" data-i18n="pkg_loading">⏳ جاري تحميل الباقات...</div>
+      <div class="empty-pricing" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim)" data-i18n="pkg_loading">⏳ جاري تحميل الباقات...</div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="section">
-    <h2 class="section-title" data-i18n="how_title">كيف يعمل؟</h2>
+  <!-- HOW -->
+  <section class="section" id="how">
+    <div class="section-head">
+      <span class="section-label" data-i18n="how_label">خطوات بسيطة</span>
+      <h2 class="section-title" data-i18n="how_title">كيف يعمل؟</h2>
+    </div>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><h3 data-i18n="step1_h">اشترِ كودك</h3><p data-i18n="step1_p">اختر الباقة المناسبة وادفع آمناً. يصلك الكود فوراً على واتساب.</p></div>
-      <div class="step"><div class="step-num">2</div><h3 data-i18n="step2_h">أدخلوا الكود</h3><p data-i18n="step2_p">اضغط "ابدأ التحدي"، أدخل الكود، شارك رمز الغرفة مع شريكك.</p></div>
-      <div class="step"><div class="step-num">3</div><h3 data-i18n="step3_h">العبوا واستمتعوا</h3><p data-i18n="step3_p">٢٠ جولة من التخاطر، نتيجة فورية، وبطاقة جميلة لمشاركتها.</p></div>
+      <div class="step"><div class="step-num">1</div><h3 data-i18n="step1_h">اطلب كودك</h3><p data-i18n="step1_p">اختر الباقة، سجّل طلبك، وادفع عبر واتساب. نرسل لك رابطاً واحداً للعب.</p></div>
+      <div class="step"><div class="step-num">2</div><h3 data-i18n="step2_h">اضغط وابدأ</h3><p data-i18n="step2_p">افتح الرابط، اكتب اسمك وأضف صورتك، وادعُ صديقك من داخل اللعبة.</p></div>
+      <div class="step"><div class="step-num">3</div><h3 data-i18n="step3_h">العب وشارك</h3><p data-i18n="step3_p">٢٠ جولة، نتيجة فورية، وبطاقة جميلة — ونفس الكود يعمل ٥ مرات.</p></div>
     </div>
   </section>
 
@@ -334,39 +719,56 @@
   <section class="section">
     <div class="biz">
       <h2 data-i18n="biz_h">🏢 للأعمال — حوّل عملاءك إلى ذكريات</h2>
-      <p data-i18n="biz_p">هل تملك مطعماً، كافيه، أو فندقاً؟ قدّم لعملائك تجربة فريدة. كود على فاتورتهم = ذكرى لن ينسوها وصورة يشاركونها مع علامتك التجارية.</p>
-      <a id="bizContactBtn" href="https://wa.me/?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D9%85%D8%B9%D8%B1%D9%81%D8%A9%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D8%B9%D9%86%20%D8%A8%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="biz_btn">تواصل معنا الآن</a>
+      <p data-i18n="biz_p">مطعم، كافيه، أو فندق؟ كود على الفاتورة = تجربة فريدة وصورة يشاركونها مع علامتك.</p>
+      <a id="bizContactBtn" href="https://wa.me/?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D9%85%D8%B9%D8%B1%D9%81%D8%A9%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D8%B9%D9%86%20%D8%A8%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="biz_btn">تواصل معنا</a>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="section">
-    <h2 class="section-title" data-i18n="faq_title">أسئلة شائعة</h2>
+  <section class="section" id="faq">
+    <div class="section-head">
+      <span class="section-label">FAQ</span>
+      <h2 class="section-title" data-i18n="faq_title">أسئلة شائعة</h2>
+    </div>
     <div class="faq">
-      <details><summary data-i18n="faq1_q">هل يلزم تنزيل تطبيق؟</summary><p data-i18n="faq1_a">لا. تعمل اللعبة من المتصفح مباشرة على الجوال والكمبيوتر، ويمكنك "تثبيتها" كتطبيق إذا أحببت.</p></details>
-      <details><summary data-i18n="faq2_q">كم مدة كل جلسة؟</summary><p data-i18n="faq2_a">حوالي 10-15 دقيقة. ٤ مراحل × ٥ جولات بمؤقت 15 ثانية للجولة.</p></details>
-      <details><summary data-i18n="faq3_q">كم شخصاً يمكنه اللعب؟</summary><p data-i18n="faq3_a">لاعبان فقط في كل غرفة — هذا يجعل التجربة عميقة وشخصية.</p></details>
-      <details><summary data-i18n="faq4_q">هل يمكنني استخدام كودي على عدة أجهزة؟</summary><p data-i18n="faq4_a">نعم! الكود يعطيك 5 جلسات منفصلة، يمكنك استخدامها متى شئت.</p></details>
-      <details><summary data-i18n="faq5_q">كيف أحصل على باقة الشركات؟</summary><p data-i18n="faq5_a">تواصل معنا عبر WhatsApp وسنرسل لك جميع الأكواد دفعة واحدة مع لوحة إدارة خاصة.</p></details>
+      <details><summary data-i18n="faq1_q">هل يلزم تنزيل تطبيق؟</summary><p data-i18n="faq1_a">لا. تعمل من المتصفح على الجوال، ويمكن تثبيتها كـ PWA.</p></details>
+      <details><summary data-i18n="faq2_q">كم مدة كل جلسة؟</summary><p data-i18n="faq2_a">حوالي 10–15 دقيقة. ٤ مراحل × ٥ جولات.</p></details>
+      <details><summary data-i18n="faq3_q">كم شخصاً يلعب؟</summary><p data-i18n="faq3_a">لاعبان في كل غرفة — تجربة عميقة وشخصية.</p></details>
+      <details><summary data-i18n="faq4_q">هل الكود يعمل أكثر من مرة؟</summary><p data-i18n="faq4_a">نعم — ٥ جلسات منفصلة. اضغط «تحدي جديد» بعد كل جولة.</p></details>
+      <details><summary data-i18n="faq5_q">باقات الشركات؟</summary><p data-i18n="faq5_a">تواصل عبر WhatsApp — نرسل الأكواد دفعة واحدة مع لوحة إدارة.</p></details>
     </div>
   </section>
 
-  <footer>
-    <p data-i18n="footer_rights">© 2026 Telepathy Challenge — جميع الحقوق محفوظة</p>
-    <p class="footer-note" data-i18n="footer_privacy">خصوصيتك تهمّنا: لا نطلب تسجيل حساب، وتحتاج فقط إلى الكود للّعب. لا نشارك بياناتك مع أي طرف.</p>
-    <p style="margin-top:8px"><a href="/admin" data-i18n="footer_admin">لوحة التحكم</a></p>
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo"><div class="logo-mark"><img src="/brand/web-app-manifest-192x192.png?v=44" alt="" width="42" height="42"></div><span>Telepathy</span></div>
+        <p data-i18n="footer_tagline">لعبة تخاطر تفاعلية — للأزواج، الأصدقاء، والأعمال.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#pricing" data-i18n="nav_pricing">الأسعار</a>
+        <a href="/play" data-i18n="hero_cta_start">ابدأ اللعب</a>
+        <a href="/admin" data-i18n="footer_admin">لوحة التحكم</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p data-i18n="footer_rights">© 2026 Telepathy Challenge</p>
+      <p class="footer-note" data-i18n="footer_privacy">لا نطلب حساباً — فقط الكود للعب. لا نشارك بياناتك.</p>
+    </div>
   </footer>
 </div>
 
-<!-- Code entry modal -->
+<!-- Code modal (legacy fallback) -->
 <div class="modal" id="codeModal">
-  <div class="modal-box" style="position:relative">
+  <div class="modal-box">
     <button class="close-x" onclick="closeCodeModal()">✕</button>
     <h3 data-i18n="modal_code_h">🔑 أدخل كود التحدي</h3>
-    <p data-i18n="modal_code_p">أدخل الكود الذي حصلت عليه لبدء التحدي</p>
-    <div class="code-strip">
-      <input id="codeInput" maxlength="20" placeholder="مثال: TP-AB12CD34" data-i18n-ph="code_ph" autocomplete="off" />
-      <button onclick="submitCode()" data-i18n="modal_code_btn">ابدأ</button>
+    <p data-i18n="modal_code_p">أدخل الكود الذي حصلت عليه</p>
+    <div class="code-box" style="margin:0">
+      <div class="code-box-inner">
+        <input id="codeInput" maxlength="20" placeholder="TP-AB12CD34" data-i18n-ph="code_ph" autocomplete="off" />
+        <button type="button" onclick="submitCode()" data-i18n="modal_code_btn">ابدأ</button>
+      </div>
     </div>
     <div class="code-msg" id="codeMsg"></div>
   </div>
@@ -374,161 +776,169 @@
 
 <!-- Buy modal -->
 <div class="modal" id="buyModal">
-  <div class="modal-box" style="position:relative">
+  <div class="modal-box">
     <button class="close-x" onclick="closeBuyModal()">✕</button>
     <h3 data-i18n="buy_h">🛒 شراء كود</h3>
-    <p id="buyDesc" data-i18n="buy_desc">املأ بياناتك وسيظهر طلبك فوراً في لوحة الإدارة. سنرسل لك الكود بعد تأكيد الدفع.</p>
-    <div style="display:grid;gap:10px;text-align:right;margin:16px 0">
-      <input id="buyerName" type="text" placeholder="الاسم" data-i18n-ph="buyer_name" autocomplete="name" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
-      <input id="buyerPhone" type="tel" placeholder="رقم واتساب — مثال 2010xxxxxxx" data-i18n-ph="buyer_phone" autocomplete="tel" inputmode="tel" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
-      <input id="buyerEmail" type="email" placeholder="البريد الإلكتروني (اختياري)" data-i18n-ph="buyer_email" autocomplete="email" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
-      <textarea id="buyerNotes" rows="3" placeholder="ملاحظات للطلب (اختياري)" data-i18n-ph="buyer_notes" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit;resize:vertical"></textarea>
+    <p id="buyDesc" data-i18n="buy_desc">املأ بياناتك — يظهر طلبك في لوحة الإدارة فوراً.</p>
+    <div class="form-grid">
+      <input id="buyerName" type="text" placeholder="الاسم" data-i18n-ph="buyer_name" autocomplete="name" />
+      <input id="buyerPhone" type="tel" placeholder="واتساب" data-i18n-ph="buyer_phone" autocomplete="tel" inputmode="tel" />
+      <input id="buyerEmail" type="email" placeholder="البريد (اختياري)" data-i18n-ph="buyer_email" autocomplete="email" />
+      <textarea id="buyerNotes" rows="3" placeholder="ملاحظات" data-i18n-ph="buyer_notes"></textarea>
     </div>
-    <button id="placeOrderBtn" onclick="placeOrder()" class="btn btn-primary" style="width:100%;justify-content:center" data-i18n="order_btn">تسجيل الطلب الآن</button>
-    <a id="waLink" href="#" target="_blank" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:10px;display:none" data-i18n="wa_follow">📱 متابعة عبر WhatsApp</a>
+    <button id="placeOrderBtn" onclick="placeOrder()" class="btn btn-primary" style="width:100%" data-i18n="order_btn">تسجيل الطلب</button>
+    <a id="waLink" href="#" target="_blank" class="btn btn-secondary" style="width:100%;margin-top:10px;display:none" data-i18n="wa_follow">📱 متابعة واتساب</a>
     <div class="code-msg" id="orderMsg" style="margin-top:12px"></div>
-    <p style="margin-top:18px;font-size:.85rem;color:rgba(255,255,255,.5)" data-i18n="buy_foot">الطلبات تظهر مباشرة في لوحة التحكم لتسليم كود غير مباع مسبقاً.</p>
+    <p style="margin-top:16px;font-size:.8rem;color:var(--text-dim)" data-i18n="buy_foot">نرسل الكود بعد تأكيد الدفع.</p>
   </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="/js/codes.js?v=37"></script>
+<script src="/js/codes.js?v=44"></script>
 <script>
   TPCodes.init();
 
-  /* ===== i18n: صفحة الهبوط (عربي/إنجليزي) ===== */
   const I18N = {
     ar: {
-      nav_pricing: 'الأسعار',
+      nav_features: 'المميزات', nav_pricing: 'الأسعار', nav_how: 'كيف يعمل', nav_cta: 'احصل على كود',
       hero_badge: '✨ الإصدار الجديد 2026',
       hero_title: 'هل تفكران بنفس الطريقة؟',
-      hero_tagline: 'تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.',
-      hero_cta_buy: '🛒 احصل على كودك',
-      hero_cta_start: 'لديّ كود — ابدأ التحدي',
-      stat1: '⚡ بدء فوري', stat2: '📱 يعمل على الجوال', stat3: '🎁 5 تحديات لكل كود',
-      feat_title: 'لماذا تحدي التخاطر؟',
-      feat_sub: 'تجربة مختلفة كلياً عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم',
+      hero_tagline: 'تحدي التخاطر — لعبة شبابية تفاعلية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، ونسبة دقيقة لمدى توافق عقولكما — مع بطاقة نتيجة جاهزة للمشاركة.',
+      hero_cta_buy: '🛒 احصل على كودك', hero_cta_start: 'لديّ كود — ابدأ',
+      stat1: '⚡ بدء فوري', stat2: '📱 جوال + PWA', stat3: '🎁 ٥ جلسات / كود',
+      stat_phases: 'مراحل تحدي', stat_rounds: 'جولة لكل جلسة', stat_sessions: 'جلسات لكل كود',
+      hero_code_hint: 'لديك كود؟ أدخله هنا — رابط واحد، بدون تعقيد',
+      float_live: '🔴 لعب مباشر', float_share: '📸 شارك النتيجة', phone_sub: 'نسبة التخاطر',
+      aud_label: 'لمن هذه اللعبة؟', aud_title: 'لحظات تربطكم — مو بس لعبة',
+      aud_sub: 'تجربة اجتماعية: اسمك وصورتك تظهران — العبوا وشوفوا وجه بعض',
+      aud1_h: 'أزواج', aud1_p: 'اكتشفوا مدى توافق تفكيركم في أمسية ممتعة',
+      aud2_h: 'أصدقاء', aud2_p: 'تحدي سريع يكسر الجمود ويولّد ضحك وذكريات',
+      aud3_h: 'مقاهي وفعاليات', aud3_p: 'كود على الفاتورة = تجربة يشاركونها مع علامتك',
+      feat_label: 'المميزات', feat_title: 'لماذا تحدي التخاطر؟',
+      feat_sub: 'تجربة مختلفة عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم',
       feat1_h: '٤ مراحل ذكية', feat1_p: 'من الأشياء البسيطة إلى الذكريات والمشاعر العميقة',
-      feat2_h: 'نتيجة فورية', feat2_p: 'اعرفا نسبة توافقكم بمعادلة تحليل لغوي ذكية',
-      feat3_h: 'بطاقة قابلة للمشاركة', feat3_p: 'صورة جميلة احترافية جاهزة لـ Instagram وWhatsApp',
-      feat4_h: 'يعمل أونلاين', feat4_p: 'كل واحد على جواله — تتزامن الإجابات تلقائياً',
-      preview_title: 'ماذا ستحصل عليه؟',
-      preview_sub: 'في نهاية التحدي تحصلان على نسبة تخاطر دقيقة وبطاقة جاهزة للمشاركة — هذا مثال توضيحي.',
-      preview_badge: 'مثال توضيحي',
-      preview_rating: 'تخاطر استثنائي 🧠⚡',
+      feat2_h: 'نتيجة فورية', feat2_p: 'اعرفا نسبة توافقكم بمعادلة تحليل ذكية',
+      feat3_h: 'بطاقة للمشاركة', feat3_p: 'صورة احترافية جاهزة لـ Instagram وWhatsApp',
+      feat4_h: 'أونلاين — كل واحد على جواله', feat4_p: 'تتزامن الإجابات تلقائياً بدون تحميل تطبيق',
+      preview_label: 'النتيجة', preview_title: 'ماذا ستحصل عليه؟',
+      preview_sub: 'في نهاية التحدي: نسبة تخاطر دقيقة + بطاقة جاهزة للمشاركة',
+      preview_badge: 'مثال توضيحي', preview_rating: 'تخاطر استثنائي 🧠⚡',
       preview_p1: 'الصور', preview_p2: 'الأفكار', preview_p3: 'الذهني', preview_p4: 'الروحي',
-      trust1: 'بدون تسجيل حساب', trust2: 'تسليم على واتساب', trust3: 'دفعة واحدة بدون اشتراك', trust4: 'لاعبان لكل غرفة', trust5: '٥ جلسات لكل كود',
-      footer_privacy: 'خصوصيتك تهمّنا: لا نطلب تسجيل حساب، وتحتاج فقط إلى الكود للّعب. لا نشارك بياناتك مع أي طرف.',
-      pricing_title: 'اختر الباقة المناسبة',
-      pricing_sub: 'دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.',
-      pkg_loading: '⏳ جاري تحميل الباقات...',
-      pkg_empty: 'لا توجد باقات معروضة حالياً.',
-      order_default: 'اطلب الآن',
-      how_title: 'كيف يعمل؟',
-      step1_h: 'اشترِ كودك', step1_p: 'اختر الباقة المناسبة وادفع آمناً. يصلك الكود فوراً على واتساب.',
-      step2_h: 'أدخلوا الكود', step2_p: 'اضغط "ابدأ التحدي"، أدخل الكود، شارك رمز الغرفة مع شريكك.',
-      step3_h: 'العبوا واستمتعوا', step3_p: '٢٠ جولة من التخاطر، نتيجة فورية، وبطاقة جميلة لمشاركتها.',
+      trust1: 'بدون حساب', trust2: 'تسليم واتساب', trust3: 'دفعة واحدة', trust4: 'لاعبان', trust5: '٥ جلسات',
+      pricing_label: 'الباقات', pricing_title: 'اختر الباقة المناسبة',
+      pricing_sub: 'دفعة واحدة · بدون اشتراك · الكود يصلك على واتساب',
+      pkg_loading: '⏳ جاري تحميل الباقات...', pkg_empty: 'لا توجد باقات حالياً.', order_default: 'اطلب الآن',
+      how_label: 'خطوات بسيطة', how_title: 'كيف يعمل؟',
+      step1_h: 'اطلب كودك', step1_p: 'اختر الباقة، سجّل طلبك، وادفع عبر واتساب. نرسل لك رابطاً واحداً للعب.',
+      step2_h: 'اضغط وابدأ', step2_p: 'افتح الرابط، اكتب اسمك وأضف صورتك، وادعُ صديقك من داخل اللعبة.',
+      step3_h: 'العب وشارك', step3_p: '٢٠ جولة، نتيجة فورية، وبطاقة جميلة — ونفس الكود يعمل ٥ مرات.',
       biz_h: '🏢 للأعمال — حوّل عملاءك إلى ذكريات',
-      biz_p: 'هل تملك مطعماً، كافيه، أو فندقاً؟ قدّم لعملائك تجربة فريدة. كود على فاتورتهم = ذكرى لن ينسوها وصورة يشاركونها مع علامتك التجارية.',
-      biz_btn: 'تواصل معنا الآن',
+      biz_p: 'مطعم، كافيه، أو فندق؟ كود على الفاتورة = تجربة فريدة وصورة يشاركونها مع علامتك.',
+      biz_btn: 'تواصل معنا',
       faq_title: 'أسئلة شائعة',
-      faq1_q: 'هل يلزم تنزيل تطبيق؟', faq1_a: 'لا. تعمل اللعبة من المتصفح مباشرة على الجوال والكمبيوتر، ويمكنك "تثبيتها" كتطبيق إذا أحببت.',
-      faq2_q: 'كم مدة كل جلسة؟', faq2_a: 'حوالي 10-15 دقيقة. ٤ مراحل × ٥ جولات بمؤقت 15 ثانية للجولة.',
-      faq3_q: 'كم شخصاً يمكنه اللعب؟', faq3_a: 'لاعبان فقط في كل غرفة — هذا يجعل التجربة عميقة وشخصية.',
-      faq4_q: 'هل يمكنني استخدام كودي على عدة أجهزة؟', faq4_a: 'نعم! الكود يعطيك 5 جلسات منفصلة، يمكنك استخدامها متى شئت.',
-      faq5_q: 'كيف أحصل على باقة الشركات؟', faq5_a: 'تواصل معنا عبر WhatsApp وسنرسل لك جميع الأكواد دفعة واحدة مع لوحة إدارة خاصة.',
-      footer_rights: '© 2026 Telepathy Challenge — جميع الحقوق محفوظة',
-      footer_admin: 'لوحة التحكم',
-      modal_code_h: '🔑 أدخل كود التحدي', modal_code_p: 'أدخل الكود الذي حصلت عليه لبدء التحدي', modal_code_btn: 'ابدأ',
+      faq1_q: 'هل يلزم تنزيل تطبيق؟', faq1_a: 'لا. تعمل من المتصفح على الجوال، ويمكن تثبيتها كـ PWA.',
+      faq2_q: 'كم مدة كل جلسة؟', faq2_a: 'حوالي 10–15 دقيقة. ٤ مراحل × ٥ جولات.',
+      faq3_q: 'كم شخصاً يلعب؟', faq3_a: 'لاعبان في كل غرفة — تجربة عميقة وشخصية.',
+      faq4_q: 'هل الكود يعمل أكثر من مرة؟', faq4_a: 'نعم — ٥ جلسات منفصلة. اضغط «تحدي جديد» بعد كل جولة.',
+      faq5_q: 'باقات الشركات؟', faq5_a: 'تواصل عبر WhatsApp — نرسل الأكواد دفعة واحدة مع لوحة إدارة.',
+      footer_tagline: 'لعبة تخاطر تفاعلية — للأزواج، الأصدقاء، والأعمال.',
+      footer_rights: '© 2026 Telepathy Challenge', footer_admin: 'لوحة التحكم',
+      footer_privacy: 'لا نطلب حساباً — فقط الكود للعب. لا نشارك بياناتك.',
+      modal_code_h: '🔑 أدخل كود التحدي', modal_code_p: 'أدخل الكود الذي حصلت عليه', modal_code_btn: 'ابدأ',
       code_ph: 'مثال: TP-AB12CD34',
-      buy_h: '🛒 شراء كود',
-      buy_desc: 'املأ بياناتك وسيظهر طلبك فوراً في لوحة الإدارة. سنرسل لك الكود بعد تأكيد الدفع.',
-      buyer_name: 'الاسم', buyer_phone: 'رقم واتساب — مثال 2010xxxxxxx', buyer_email: 'البريد الإلكتروني (اختياري)', buyer_notes: 'ملاحظات للطلب (اختياري)',
-      order_btn: 'تسجيل الطلب الآن', wa_follow: '📱 متابعة عبر WhatsApp',
-      buy_foot: 'الطلبات تظهر مباشرة في لوحة التحكم لتسليم كود غير مباع مسبقاً.',
-      m_choose_pkg: 'اختر باقة أولاً', m_need_info: 'أدخل الاسم ورقم واتساب حتى نرسل لك الكود',
-      m_saving: 'جاري تسجيل الطلب...', m_wait: '⏳ لحظة واحدة...',
-      m_order_fail: '✕ تعذّر تسجيل الطلب. جرّب مرة أخرى أو تواصل عبر واتساب.',
-      m_enter_code: 'أدخل الكود أولاً', m_checking: '⏳ جاري التحقق...',
-      m_invalid: 'الكود غير صالح', m_conn_err: '✕ خطأ في الاتصال. حاول مرة أخرى.',
+      buy_h: '🛒 شراء كود', buy_desc: 'املأ بياناتك — يظهر طلبك في لوحة الإدارة فوراً.',
+      buyer_name: 'الاسم', buyer_phone: 'رقم واتساب', buyer_email: 'البريد (اختياري)', buyer_notes: 'ملاحظات',
+      order_btn: 'تسجيل الطلب', wa_follow: '📱 متابعة واتساب',
+      buy_foot: 'نرسل الكود بعد تأكيد الدفع.',
+      m_choose_pkg: 'اختر باقة أولاً', m_need_info: 'أدخل الاسم ورقم واتساب',
+      m_saving: 'جاري التسجيل...', m_wait: '⏳ لحظة...',
+      m_order_fail: '✕ تعذّر تسجيل الطلب. حاول مرة أخرى.',
+      m_enter_code: 'أدخل الكود', m_checking: '⏳ جاري التحقق...',
+      m_invalid: 'كود غير صالح', m_conn_err: '✕ خطأ اتصال',
     },
     en: {
-      nav_pricing: 'Pricing',
+      nav_features: 'Features', nav_pricing: 'Pricing', nav_how: 'How it works', nav_cta: 'Get a code',
       hero_badge: '✨ New 2026 edition',
       hero_title: 'Do you think alike?',
-      hero_tagline: 'The Telepathy Challenge — a smart game for couples and friends. 4 phases, 20 rounds, an accurate score of how in-sync your minds are. Play online and get a beautiful, shareable result card.',
-      hero_cta_buy: '🛒 Get your code',
-      hero_cta_start: 'I have a code — start',
-      stat1: '⚡ Instant start', stat2: '📱 Works on mobile', stat3: '🎁 5 challenges per code',
-      feat_title: 'Why the Telepathy Challenge?',
-      feat_sub: 'A totally different experience from traditional games — it reveals a new side of your relationship',
+      hero_tagline: 'The Telepathy Challenge — an interactive youth game for couples and friends. 4 phases, 20 rounds, an accurate mind-sync score, and a shareable result card.',
+      hero_cta_buy: '🛒 Get your code', hero_cta_start: 'I have a code — start',
+      stat1: '⚡ Instant start', stat2: '📱 Mobile + PWA', stat3: '🎁 5 sessions / code',
+      stat_phases: 'Challenge phases', stat_rounds: 'Rounds per session', stat_sessions: 'Sessions per code',
+      hero_code_hint: 'Have a code? Enter it here — one link, no confusion',
+      float_live: '🔴 Live play', float_share: '📸 Share result', phone_sub: 'Telepathy score',
+      aud_label: 'Who is it for?', aud_title: 'Moments that connect you — not just a game',
+      aud_sub: 'Social play: your name and photo show — play and see each other',
+      aud1_h: 'Couples', aud1_p: 'Discover how in sync your thinking is on a fun evening',
+      aud2_h: 'Friends', aud2_p: 'A quick challenge that breaks the ice and creates memories',
+      aud3_h: 'Cafés & events', aud3_p: 'A code on the bill = an experience they share with your brand',
+      feat_label: 'Features', feat_title: 'Why Telepathy Challenge?',
+      feat_sub: 'A totally different experience — reveals a new side of your relationship',
       feat1_h: '4 smart phases', feat1_p: 'From simple things to memories and deep emotions',
-      feat2_h: 'Instant result', feat2_p: 'See your match rate with a smart linguistic-analysis formula',
-      feat3_h: 'Shareable card', feat3_p: 'A beautiful, professional image ready for Instagram and WhatsApp',
-      feat4_h: 'Works online', feat4_p: 'Each on their own phone — answers sync automatically',
-      preview_title: "What you'll get",
-      preview_sub: 'At the end you both get an accurate telepathy score and a shareable card — this is a sample.',
-      preview_badge: 'Sample',
-      preview_rating: 'Exceptional telepathy 🧠⚡',
+      feat2_h: 'Instant result', feat2_p: 'See your match rate with smart analysis',
+      feat3_h: 'Shareable card', feat3_p: 'Professional image ready for Instagram and WhatsApp',
+      feat4_h: 'Online — each on their phone', feat4_p: 'Answers sync automatically, no app download',
+      preview_label: 'Result', preview_title: "What you'll get",
+      preview_sub: 'At the end: an accurate telepathy score + a shareable card',
+      preview_badge: 'Sample', preview_rating: 'Exceptional telepathy 🧠⚡',
       preview_p1: 'Images', preview_p2: 'Thoughts', preview_p3: 'Mind', preview_p4: 'Spiritual',
-      trust1: 'No account needed', trust2: 'Delivered on WhatsApp', trust3: 'One payment, no subscription', trust4: 'Two players per room', trust5: '5 sessions per code',
-      footer_privacy: 'Your privacy matters: no account required — you only need the code to play. We never share your data.',
-      pricing_title: 'Choose the right package',
-      pricing_sub: 'One payment. No subscriptions. Your code arrives instantly.',
-      pkg_loading: '⏳ Loading packages...',
-      pkg_empty: 'No packages available right now.',
-      order_default: 'Order now',
-      how_title: 'How it works?',
-      step1_h: 'Buy your code', step1_p: 'Pick the right package and pay securely. Your code arrives instantly on WhatsApp.',
-      step2_h: 'Enter the code', step2_p: 'Tap "Start", enter the code, and share the room code with your partner.',
-      step3_h: 'Play & enjoy', step3_p: '20 rounds of telepathy, an instant result, and a beautiful card to share.',
+      trust1: 'No account', trust2: 'WhatsApp delivery', trust3: 'One payment', trust4: '2 players', trust5: '5 sessions',
+      pricing_label: 'Packages', pricing_title: 'Choose your package',
+      pricing_sub: 'One payment · No subscription · Code via WhatsApp',
+      pkg_loading: '⏳ Loading packages...', pkg_empty: 'No packages available.', order_default: 'Order now',
+      how_label: 'Simple steps', how_title: 'How it works?',
+      step1_h: 'Order your code', step1_p: 'Pick a package, place your order, pay via WhatsApp. We send one play link.',
+      step2_h: 'Tap & start', step2_p: 'Open the link, enter your name and photo, invite your friend from inside the game.',
+      step3_h: 'Play & share', step3_p: '20 rounds, instant result, beautiful card — same code works 5 times.',
       biz_h: '🏢 For business — turn customers into memories',
-      biz_p: 'Own a restaurant, café, or hotel? Give your customers a unique experience. A code on their bill = an unforgettable memory and an image they share with your brand.',
-      biz_btn: 'Contact us now',
+      biz_p: 'Restaurant, café, or hotel? A code on the bill = a unique experience shared with your brand.',
+      biz_btn: 'Contact us',
       faq_title: 'FAQ',
-      faq1_q: 'Do I need to install an app?', faq1_a: 'No. The game runs right in the browser on mobile and desktop, and you can "install" it as an app if you like.',
-      faq2_q: 'How long is each session?', faq2_a: 'About 10–15 minutes. 4 phases × 5 rounds with a 15-second timer per round.',
-      faq3_q: 'How many people can play?', faq3_a: 'Two players per room only — this keeps the experience deep and personal.',
-      faq4_q: 'Can I use my code on multiple devices?', faq4_a: 'Yes! The code gives you 5 separate sessions you can use whenever you like.',
-      faq5_q: 'How do I get a business package?', faq5_a: 'Contact us on WhatsApp and we will send you all the codes at once with a dedicated admin dashboard.',
-      footer_rights: '© 2026 Telepathy Challenge — All rights reserved',
-      footer_admin: 'Dashboard',
-      modal_code_h: '🔑 Enter your code', modal_code_p: 'Enter the code you received to start the challenge', modal_code_btn: 'Start',
+      faq1_q: 'Need to install an app?', faq1_a: 'No. Runs in the browser; you can install as PWA.',
+      faq2_q: 'Session length?', faq2_a: 'About 10–15 minutes. 4 phases × 5 rounds.',
+      faq3_q: 'How many players?', faq3_a: 'Two per room — deep and personal.',
+      faq4_q: 'Can I reuse my code?', faq4_a: 'Yes — 5 separate sessions. Tap "New challenge" after each round.',
+      faq5_q: 'Business packages?', faq5_a: 'Contact us on WhatsApp — all codes at once with admin dashboard.',
+      footer_tagline: 'Interactive telepathy game — for couples, friends, and business.',
+      footer_rights: '© 2026 Telepathy Challenge', footer_admin: 'Dashboard',
+      footer_privacy: 'No account needed — just your code. We never share your data.',
+      modal_code_h: '🔑 Enter your code', modal_code_p: 'Enter the code you received', modal_code_btn: 'Start',
       code_ph: 'e.g. TP-AB12CD34',
-      buy_h: '🛒 Buy a code',
-      buy_desc: "Fill in your details and your order appears instantly in the dashboard. We'll send your code after payment is confirmed.",
-      buyer_name: 'Name', buyer_phone: 'WhatsApp number — e.g. 2010xxxxxxx', buyer_email: 'Email (optional)', buyer_notes: 'Order notes (optional)',
-      order_btn: 'Place order now', wa_follow: '📱 Continue on WhatsApp',
-      buy_foot: 'Orders appear directly in the dashboard for delivery of an unsold code.',
-      m_choose_pkg: 'Choose a package first', m_need_info: 'Enter your name and WhatsApp number so we can send your code',
-      m_saving: 'Placing your order...', m_wait: '⏳ One moment...',
-      m_order_fail: '✕ Could not place the order. Try again or reach us on WhatsApp.',
-      m_enter_code: 'Enter your code first', m_checking: '⏳ Verifying...',
-      m_invalid: 'The code is invalid', m_conn_err: '✕ Connection error. Please try again.',
+      buy_h: '🛒 Buy a code', buy_desc: 'Fill in your details — your order appears in the dashboard instantly.',
+      buyer_name: 'Name', buyer_phone: 'WhatsApp number', buyer_email: 'Email (optional)', buyer_notes: 'Notes',
+      order_btn: 'Place order', wa_follow: '📱 Continue on WhatsApp',
+      buy_foot: 'We send your code after payment confirmation.',
+      m_choose_pkg: 'Choose a package first', m_need_info: 'Enter name and WhatsApp number',
+      m_saving: 'Placing order...', m_wait: '⏳ One moment...',
+      m_order_fail: '✕ Could not place order. Try again.',
+      m_enter_code: 'Enter your code', m_checking: '⏳ Verifying...',
+      m_invalid: 'Invalid code', m_conn_err: '✕ Connection error',
     }
   };
+
   let lang = 'ar';
   let LANDING_SETTINGS = null;
   function t(k){ return (I18N[lang] && I18N[lang][k] != null) ? I18N[lang][k] : (I18N.ar[k] != null ? I18N.ar[k] : k); }
+
   function applyI18n(){
     document.documentElement.lang = lang;
     document.documentElement.dir = (lang === 'en') ? 'ltr' : 'rtl';
-    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
-    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (key === 'hero_badge') {
+        el.innerHTML = '<span class="eyebrow-dot"></span><span>' + t(key) + '</span>';
+      } else {
+        el.textContent = t(key);
+      }
+    });
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
     const tg = document.getElementById('langToggleBtn');
     if (tg) tg.textContent = (lang === 'en') ? 'العربية' : 'English';
     const enterBtn = document.getElementById('enterCodeBtn');
     if (enterBtn) enterBtn.href = '/play?lang=' + lang;
-    // في العربية فقط: طبّق نصوص الـ hero القادمة من الإعدادات (لوحة التحكم)
     if (lang === 'ar' && LANDING_SETTINGS) applyLandingSettings(LANDING_SETTINGS);
   }
-  function setLang(l){
-    lang = (l === 'en') ? 'en' : 'ar';
-    try { localStorage.setItem('tp_lang', lang); } catch(_) {}
-    applyI18n();
-  }
+  function setLang(l){ lang = (l === 'en') ? 'en' : 'ar'; try { localStorage.setItem('tp_lang', lang); } catch(_) {} applyI18n(); }
   function toggleLang(){ setLang(lang === 'en' ? 'ar' : 'en'); }
   window.setLang = setLang; window.toggleLang = toggleLang;
   (function initLang(){
@@ -543,7 +953,6 @@
     setLang(initial);
   })();
 
-  // Auto-detect ?code= or ?room= and forward to /play (preserve language)
   const params = new URLSearchParams(location.search);
   const langQS = '&lang=' + lang;
   if (params.get('room')) location.replace('/play?room=' + encodeURIComponent(params.get('room')) + langQS);
@@ -554,10 +963,10 @@
   function openBuyModal() { document.getElementById('buyModal').classList.add('open'); }
   function closeBuyModal() { document.getElementById('buyModal').classList.remove('open'); }
 
-  // enterCodeBtn now navigates directly to /play (anchor) — no modal needed.
   document.getElementById('codeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitCode(); });
+  const heroCodeIn = document.getElementById('heroCodeInput');
+  if (heroCodeIn) heroCodeIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitHeroCode(); });
 
-  // ============== Dynamic Pricing (from Firebase) ==============
   let SETTINGS = { whatsappNumber: '', currency: 'USD' };
   let PACKAGES = [];
   let CURRENT_PACKAGE = null;
@@ -584,32 +993,26 @@
       const btnClass = p.featured ? 'btn-primary' : 'btn-secondary';
       return `<div class="price-card${p.featured ? ' popular':''}">
         ${badge}
-        <div class="price-head"><div class="price-icon">${escapeHtml(p.icon || '📦')}</div></div>
+        <div class="price-icon">${escapeHtml(p.icon || '📦')}</div>
         <div class="price-name">${escapeHtml(p.name)}</div>
         <div class="price-desc">${escapeHtml(p.desc || '')}</div>
         <div><span class="price-amount">${Number(p.price)||0}</span><span class="price-currency"> ${sym}</span></div>
         <div class="price-unit">${escapeHtml(p.unitNote || '')}</div>
-        <div class="pkg-metrics">
-          <div class="pkg-metric"><span>الأكواد</span><b>${Number(p.codesCount)||1}</b></div>
-          <div class="pkg-metric"><span>جلسات/كود</span><b>${Number(p.sessionsPerCode)||5}</b></div>
-        </div>
         <ul class="price-features">${features}</ul>
         <button class="btn ${btnClass}" data-buy="${escapeHtml(p.id)}">${escapeHtml(p.buttonText || t('order_default'))}</button>
       </div>`;
     }).join('');
 
-    // bind buy buttons
     grid.querySelectorAll('[data-buy]').forEach(b => {
       b.onclick = () => {
         const id = b.getAttribute('data-buy');
         const pkg = PACKAGES.find(x => x.id === id);
         if (!pkg) return;
         const sym = currencySymbol(pkg.currency || SETTINGS.currency);
-        const summary = `<b>${escapeHtml(pkg.name)}</b> — ${Number(pkg.price)||0} ${sym}`;
         CURRENT_PACKAGE = pkg;
-        document.getElementById('buyDesc').innerHTML = summary + (pkg.unitNote ? `<br><span style="color:rgba(255,255,255,.5);font-size:.9em">${escapeHtml(pkg.unitNote)}</span>` : '');
-        const msg = pkg.whatsappMsg || `أرغب بطلب: ${pkg.name} (${pkg.price} ${sym})`;
-        document.getElementById('waLink').href = TPCodes.whatsappLink(SETTINGS.whatsappNumber, msg);
+        document.getElementById('buyDesc').innerHTML = `<b>${escapeHtml(pkg.name)}</b> — ${Number(pkg.price)||0} ${sym}` +
+          (pkg.unitNote ? `<br><span style="color:var(--text-dim);font-size:.88em">${escapeHtml(pkg.unitNote)}</span>` : '');
+        document.getElementById('waLink').href = TPCodes.whatsappLink(SETTINGS.whatsappNumber, pkg.whatsappMsg || '');
         document.getElementById('waLink').style.display = 'none';
         document.getElementById('orderMsg').textContent = '';
         openBuyModal();
@@ -625,60 +1028,41 @@
     const buyerPhone = document.getElementById('buyerPhone').value.trim();
     const buyerEmail = document.getElementById('buyerEmail').value.trim();
     const notes = document.getElementById('buyerNotes').value.trim();
-    if (!buyerName || !buyerPhone) {
-      msg.className = 'code-msg err';
-      msg.textContent = t('m_need_info');
-      return;
-    }
-    btn.disabled = true;
-    btn.textContent = t('m_saving');
-    msg.className = 'code-msg';
-    msg.textContent = t('m_wait');
+    if (!buyerName || !buyerPhone) { msg.className = 'code-msg err'; msg.textContent = t('m_need_info'); return; }
+    btn.disabled = true; btn.textContent = t('m_saving');
+    msg.className = 'code-msg'; msg.textContent = t('m_wait');
     try {
       const pkg = CURRENT_PACKAGE;
       const order = await TPCodes.createOrder({
-        packageId: pkg.id,
-        packageName: pkg.name,
+        packageId: pkg.id, packageName: pkg.name,
         packageType: (Number(pkg.codesCount)||1) > 1 ? 'business' : 'individual',
-        codesCount: Number(pkg.codesCount) || 1,
-        sessionsPerCode: Number(pkg.sessionsPerCode) || 5,
-        price: Number(pkg.price) || 0,
-        currency: pkg.currency || SETTINGS.currency || 'USD',
-        buyerName,
-        buyerPhone,
-        buyerEmail,
-        notes,
+        codesCount: Number(pkg.codesCount) || 1, sessionsPerCode: Number(pkg.sessionsPerCode) || 5,
+        price: Number(pkg.price) || 0, currency: pkg.currency || SETTINGS.currency || 'USD',
+        buyerName, buyerPhone, buyerEmail, notes,
       });
-      const waText = 'طلب شراء جديد في Telepathy\nرقم الطلب: ' + order.id + '\nالباقة: ' + order.packageName + '\nالاسم: ' + order.buyerName + '\nواتساب: ' + order.buyerPhone + '\nالسعر: ' + order.price + ' ' + order.currency;
-      const wa = TPCodes.whatsappLink(SETTINGS.whatsappNumber, waText);
-      const waLink = document.getElementById('waLink');
-      waLink.href = wa;
-      waLink.style.display = 'inline-flex';
+      const waText = 'طلب شراء جديد في Telepathy\nرقم: ' + order.id + '\nالباقة: ' + order.packageName + '\nالاسم: ' + order.buyerName + '\nواتساب: ' + order.buyerPhone + '\nالسعر: ' + order.price + ' ' + order.currency;
+      document.getElementById('waLink').href = TPCodes.whatsappLink(SETTINGS.whatsappNumber, waText);
+      document.getElementById('waLink').style.display = 'inline-flex';
       msg.className = 'code-msg ok';
-      msg.innerHTML = '✓ تم تسجيل طلبك برقم <b style="direction:ltr;display:inline-block">' + escapeHtml(order.id) + '</b>. اضغط واتساب لإرسال تأكيد الطلب للإدارة.';
-      window.open(wa, '_blank');
+      msg.innerHTML = '✓ ' + (lang === 'en' ? 'Order' : 'طلب') + ' <b style="direction:ltr;display:inline-block">' + escapeHtml(order.id) + '</b>';
+      window.open(TPCodes.whatsappLink(SETTINGS.whatsappNumber, waText), '_blank');
     } catch (e) {
-      msg.className = 'code-msg err';
-      msg.textContent = t('m_order_fail');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = t('order_btn');
-    }
+      msg.className = 'code-msg err'; msg.textContent = t('m_order_fail');
+    } finally { btn.disabled = false; btn.textContent = t('order_btn'); }
   }
 
   function applyLandingSettings(s) {
-    if (!s) return;
+    if (!s || lang !== 'ar') return;
     const badge = document.getElementById('heroBadge');
     const title = document.getElementById('heroTitle');
     const tagline = document.getElementById('heroTagline');
     const stats = document.getElementById('heroStats');
-
-    if (badge && s.heroBadge) badge.textContent = s.heroBadge;
+    if (badge && s.heroBadge) badge.innerHTML = '<span class="eyebrow-dot"></span><span>' + escapeHtml(s.heroBadge) + '</span>';
     if (title && s.heroTitle) title.textContent = s.heroTitle;
     if (tagline && s.tagline) tagline.textContent = s.tagline;
     if (stats && s.heroStats) {
       const parts = String(s.heroStats).split('|').map(x => x.trim()).filter(Boolean);
-      if (parts.length) stats.innerHTML = parts.map(x => `<span>${escapeHtml(x)}</span>`).join('');
+      if (parts.length) stats.innerHTML = parts.map(x => `<span class="hero-pill">${escapeHtml(x)}</span>`).join('');
     }
   }
 
@@ -686,50 +1070,44 @@
     PACKAGES = TPCodes.DEFAULT_PACKAGES.slice();
     renderPackages();
     try {
-      const [settings, packages] = await Promise.all([
-        TPCodes.getSettings(),
-        TPCodes.listPackages()
-      ]);
+      const [settings, packages] = await Promise.all([TPCodes.getSettings(), TPCodes.listPackages()]);
       SETTINGS = settings || { ...TPCodes.DEFAULT_SETTINGS };
       PACKAGES = (packages && packages.length) ? packages : TPCodes.DEFAULT_PACKAGES.slice();
       LANDING_SETTINGS = SETTINGS;
-      // نصوص الـ hero من لوحة التحكم بالعربية؛ نطبّقها في الوضع العربي فقط حتى لا تُلغي الترجمة الإنجليزية
       if (lang === 'ar') applyLandingSettings(SETTINGS);
       renderPackages();
-    } catch (e) {
-      console.warn('Falling back to defaults:', e);
-      SETTINGS = { ...TPCodes.DEFAULT_SETTINGS };
-    }
+    } catch (e) { SETTINGS = { ...TPCodes.DEFAULT_SETTINGS }; }
     const biz = document.getElementById('bizContactBtn');
     if (biz) biz.href = TPCodes.whatsappLink(SETTINGS.whatsappNumber, SETTINGS.bizMessage || 'أرغب بمعرفة المزيد عن باقات الأعمال');
   }
   loadLanding();
 
-  async function submitCode() {
-    const msg = document.getElementById('codeMsg');
-    const code = TPCodes.normalize(document.getElementById('codeInput').value);
-    if (!code) { msg.className = 'code-msg err'; msg.textContent = t('m_enter_code'); return; }
-    msg.className = 'code-msg'; msg.textContent = t('m_checking');
+  async function validateAndGo(code, msgEl) {
+    if (!code) { msgEl.className = 'code-msg err'; msgEl.textContent = t('m_enter_code'); return; }
+    msgEl.className = 'code-msg'; msgEl.textContent = t('m_checking');
     try {
       const res = await TPCodes.validate(code);
-      if (!res.ok) { msg.className = 'code-msg err'; msg.textContent = '✕ ' + (res.message || t('m_invalid')); return; }
-      msg.className = 'code-msg ok';
-      msg.textContent = (lang === 'en')
-        ? `✓ Valid code — ${res.remaining} session(s) left. Redirecting...`
-        : `✓ كود صالح — متبقي ${res.remaining} جلسة. جاري التحويل...`;
+      if (!res.ok) { msgEl.className = 'code-msg err'; msgEl.textContent = '✕ ' + (res.message || t('m_invalid')); return; }
+      msgEl.className = 'code-msg ok';
+      msgEl.textContent = (lang === 'en')
+        ? `✓ Valid — ${res.remaining} session(s) left`
+        : `✓ صالح — متبقي ${res.remaining} جلسة`;
       sessionStorage.setItem('tp_access_code', code);
-      setTimeout(() => location.href = '/play?code=' + encodeURIComponent(code) + '&lang=' + lang, 700);
-    } catch (e) {
-      msg.className = 'code-msg err'; msg.textContent = t('m_conn_err');
-    }
+      setTimeout(() => location.href = '/play?code=' + encodeURIComponent(code) + '&lang=' + lang, 600);
+    } catch (e) { msgEl.className = 'code-msg err'; msgEl.textContent = t('m_conn_err'); }
   }
 
-  // Close modals on backdrop click
+  async function submitCode() {
+    await validateAndGo(TPCodes.normalize(document.getElementById('codeInput').value), document.getElementById('codeMsg'));
+  }
+  async function submitHeroCode() {
+    await validateAndGo(TPCodes.normalize(document.getElementById('heroCodeInput').value), document.getElementById('heroCodeMsg'));
+  }
+
   document.querySelectorAll('.modal').forEach(m => {
     m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); });
   });
 
-  // ---- Service Worker auto-reload on update (prevents stale cache lockout) ----
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js').then((reg) => {

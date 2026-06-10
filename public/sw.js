@@ -1,5 +1,5 @@
 ﻿// Telepathy Challenge – Service Worker (2026)
-const CACHE_VERSION = 'telepathy-v43';
+const CACHE_VERSION = 'telepathy-v44';
 // NOTE: Do NOT precache HTML files — they must always be network-fresh.
 // Otherwise users get stuck on a broken old version after a deploy.
 const STATIC_ASSETS = [
