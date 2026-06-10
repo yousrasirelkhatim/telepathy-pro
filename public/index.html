@@ -494,19 +494,160 @@ details > p { margin:0 20px 18px; color:var(--text-muted); line-height:1.7; font
   .hero-visual { order:2; }
   .hero-copy { order:1; }
 }
+
+/* Tablet + mobile — mobile-first fixes */
 @media (max-width:768px) {
-  .nav-inner { padding:10px 12px; }
+  .wrap { padding:0 16px; }
+
+  /* Smaller ambient glow — prevents horizontal bleed */
+  .ambient .o1 { width:260px; height:260px; top:-100px; right:-80px; opacity:.35; }
+  .ambient .o2 { width:220px; height:220px; left:-70px; opacity:.3; }
+  .ambient .o3 { display:none; }
+  .grid-overlay { opacity:.025; }
+
+  /* Nav — compact, single row */
+  .site-nav { padding:8px 0 10px; }
+  .nav-inner {
+    padding:8px 10px; gap:8px; border-radius:14px;
+    flex-wrap:nowrap;
+  }
+  .logo { font-size:1rem; gap:8px; min-width:0; flex-shrink:1; }
+  .logo-mark { width:36px; height:36px; border-radius:10px; flex-shrink:0; }
+  .nav-actions {
+    flex:1; justify-content:flex-end; gap:4px; min-width:0; flex-wrap:nowrap;
+  }
   .nav-link.hide-mobile { display:none; }
-  .hero { padding:16px 0 48px; }
-  .hero-visual { order:-1; }
+  .nav-link.nav-pricing-mobile { display:none; }
+  .nav-link {
+    padding:8px 10px; font-size:.78rem; min-height:38px;
+    flex-shrink:0;
+  }
+  .nav-cta {
+    padding:8px 12px; font-size:.76rem; min-height:38px;
+    white-space:nowrap; flex-shrink:0;
+    box-shadow:0 4px 16px rgba(168,85,247,.35);
+  }
+
+  /* Hero — content first, no phone-in-phone mockup */
+  .hero { padding:8px 0 40px; }
+  .hero-visual { display:none; }
+  .hero-grid { gap:0; }
+  .hero-copy { text-align:center; width:100%; }
+
+  .eyebrow { font-size:.76rem; padding:6px 12px; margin-bottom:14px; }
+  .hero h1 {
+    font-size:clamp(1.65rem, 7.5vw, 2.15rem);
+    line-height:1.18; margin-bottom:12px;
+    padding:0 4px;
+  }
+  .hero-lead {
+    font-size:.92rem; line-height:1.6; margin-bottom:18px;
+    max-width:100%; padding:0 2px;
+  }
+
+  /* Full-width stacked CTAs */
+  .hero-cta {
+    flex-direction:column; align-items:stretch;
+    gap:10px; margin-bottom:16px; width:100%;
+  }
+  .hero-cta .btn {
+    width:100%; max-width:none; margin:0;
+    padding:15px 18px; font-size:.95rem; min-height:50px;
+  }
+
+  .hero-pills {
+    gap:6px; margin-bottom:16px;
+    justify-content:center;
+  }
+  .hero-pill { font-size:.7rem; padding:6px 10px; }
+
+  .code-box {
+    width:100%; max-width:none; margin:0;
+    border-radius:16px; padding:5px;
+  }
+  .code-box-inner {
+    flex-direction:row; padding:5px; gap:5px;
+  }
+  .code-box input {
+    padding:13px 10px; font-size:.9rem;
+    letter-spacing:1px; min-width:0;
+  }
+  .code-box button {
+    padding:13px 16px; font-size:.85rem;
+    flex-shrink:0; width:auto;
+  }
+  .code-hint { font-size:.75rem; padding:0 4px; }
+
+  /* Sections */
+  .section, .section-preview { padding:40px 0; }
+  .section-head { margin-bottom:28px; padding:0 4px; }
+  .section-title { font-size:clamp(1.45rem, 5.5vw, 1.75rem); }
+  .section-sub { font-size:.9rem; }
+
+  .features { grid-template-columns:1fr; gap:12px; }
+  .feat { padding:20px 18px; }
+
+  /* Preview — single column, title then card */
+  .preview-layout { gap:20px; }
+  .preview-layout > div:first-child .section-head { margin-bottom:16px; }
+  .preview-card { padding:22px 18px; border-radius:20px; }
+  .preview-ring { width:110px; height:110px; }
+  .preview-ring span { font-size:38px; }
+  .trust-grid {
+    flex-wrap:wrap; justify-content:center;
+    overflow:visible; gap:8px; margin-top:16px;
+    max-width:100%;
+  }
+  .trust-chip { font-size:.72rem; padding:7px 12px; }
+
+  /* Pricing — full width cards */
+  .pricing { flex-direction:column; align-items:stretch; gap:14px; }
+  .price-card {
+    flex:1 1 auto; max-width:none; width:100%;
+    padding:24px 20px; border-radius:20px;
+  }
+  .price-card.popular {
+    transform:none; order:-1;
+    box-shadow:0 12px 36px rgba(168,85,247,.15);
+  }
+  .price-card.popular:hover { transform:none; }
+  .price-amount { font-size:2.1rem; }
+
+  /* Steps */
+  .steps::before { display:none; }
+  .step { padding:18px 16px; text-align:start; }
+  .step-num { margin:0 0 12px; }
+
+  .biz { padding:24px 18px; border-radius:20px; }
+  .biz h2 { font-size:1.25rem; }
+  .biz p { font-size:.9rem; }
+  .biz .btn { width:100%; max-width:none; }
+
+  .faq summary { padding:16px; font-size:.92rem; min-height:52px; }
+  details > p { margin:0 16px 14px; font-size:.88rem; }
+
+  .site-footer { padding:36px 0 28px; }
+  .footer-grid { gap:20px; }
+  .footer-links { gap:12px 18px; }
+
+  .modal { padding:14px; align-items:flex-end; }
+  .modal-box {
+    border-radius:20px 20px 0 0; max-height:90vh; overflow-y:auto;
+    padding:24px 18px calc(24px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Small phones */
+@media (max-width:380px) {
+  .wrap { padding:0 12px; }
+  .nav-cta { font-size:.72rem; padding:7px 10px; }
+  .nav-link { padding:7px 8px; font-size:.74rem; }
+  .hero h1 { font-size:1.55rem; }
+  .hero-pills { flex-direction:column; align-items:center; }
+  .hero-pill { width:100%; max-width:260px; text-align:center; }
   .code-box-inner { flex-direction:column; }
   .code-box button { width:100%; }
-  .btn { width:100%; max-width:340px; }
-  .section, .section-preview { padding:48px 0; }
-  .price-card.popular { transform:none; }
-  .price-card.popular:hover { transform:translateY(-3px); }
-  .biz { padding:28px 20px; }
-  .trust-grid { flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+  .pbar span { flex:0 0 48px; font-size:11px; }
 }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition:none!important; }
@@ -530,7 +671,7 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       </a>
       <div class="nav-actions">
         <a href="#features" class="nav-link hide-mobile" data-i18n="nav_features">المميزات</a>
-        <a href="#pricing" class="nav-link" data-i18n="nav_pricing">الأسعار</a>
+        <a href="#pricing" class="nav-link nav-pricing-mobile" data-i18n="nav_pricing">الأسعار</a>
         <a href="#how" class="nav-link hide-mobile" data-i18n="nav_how">كيف يعمل</a>
         <button type="button" class="nav-link" id="langToggleBtn" onclick="toggleLang()">English</button>
         <a href="#pricing" class="nav-cta" data-i18n="nav_cta">احصل على كود</a>
