@@ -14,11 +14,13 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Telepathy Challenge – تحدي التخاطر">
 <meta property="og:description" content="هل تفكران بنفس الطريقة؟ جرّب تحدي التخاطر الذهني الآن.">
-<meta property="og:image" content="/brand/web-app-manifest-512x512.png?v=40">
+<meta property="og:image" content="/brand/og-image.png?v=41">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Telepathy Challenge">
 <meta name="twitter:description" content="تحدي التخاطر الذهني بين شخصين">
-<meta name="twitter:image" content="/brand/web-app-manifest-512x512.png?v=40">
+<meta name="twitter:image" content="/brand/og-image.png?v=41">
 
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/png" href="/brand/favicon-96x96.png?v=40" sizes="96x96">
@@ -28,6 +30,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
@@ -1432,8 +1435,145 @@ body { background: var(--ink) !important; }
 
 /* Quieter sub-text */
 .muted-sub {
-  font-size: 12.5px; color: rgba(255,255,255,0.4);
+  font-size: 12.5px; color: rgba(255,255,255,0.62);
   text-align: center; margin-top: 10px;
+}
+
+/* ============================================================
+   UX/UI polish layer (visual only — no logic changes)
+   ============================================================ */
+
+/* P1.2 — Contrast: raise low-contrast secondary text toward WCAG AA */
+.phase-desc { color: rgba(255,255,255,0.78) !important; }
+.breakdown-label { color: rgba(255,255,255,0.82); }
+.room-code-label { color: rgba(255,255,255,0.7) !important; }
+#questionCategory { color: rgba(255,255,255,0.72) !important; }
+
+/* P2.8 — Latin font for English mode */
+html[lang="en"] body,
+html[lang="en"] .btn,
+html[lang="en"] .input-field,
+html[lang="en"] .copy-btn,
+html[lang="en"] .invite-btn-xl,
+html[lang="en"] button,
+html[lang="en"] input,
+html[lang="en"] .game-title,
+html[lang="en"] .game-subtitle {
+  font-family: 'Inter', 'Tajawal', sans-serif;
+}
+html[lang="en"] body { letter-spacing: 0.1px; }
+
+/* P3.9 — Real glassmorphism (graceful fallback when unsupported) */
+@supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .glass {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px) saturate(125%);
+    -webkit-backdrop-filter: blur(16px) saturate(125%);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+}
+
+/* P3.11 — Clear keyboard focus + micro-interactions */
+:focus-visible { outline: 3px solid var(--neon-blue); outline-offset: 2px; }
+.btn:focus-visible,
+.copy-btn:focus-visible,
+.action-card:focus-visible,
+.option-card:focus-visible,
+.invite-btn-xl:focus-visible,
+.tp-link:focus-visible,
+.btn-modal-submit:focus-visible,
+.btn-modal-cancel:focus-visible {
+  outline: 3px solid #fff; outline-offset: 3px; border-radius: 14px;
+}
+.input-field:focus-visible { outline: none; }
+.btn:active { transform: translateY(1px) scale(0.99); }
+.option-card { will-change: transform; }
+.option-card:active { transform: scale(0.97); }
+
+/* P1.2 — Timer numeric readout + non-color sync status */
+.timer-readout {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  font-size:13px; font-weight:800; color:rgba(255,255,255,0.92);
+  margin: 6px 0 2px; letter-spacing:0.5px;
+}
+.timer-readout .timer-ico { font-size:14px; }
+.timer-readout.is-low { color:#ff7a7a; }
+.sync-dot { width:14px; height:14px; position:relative; }
+.sync-dot.answered::after {
+  content:'✓'; position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:900; color:#062b17;
+}
+
+/* P1.4 — Code duality helper */
+.code-help {
+  margin-top:10px; font-size:12px; line-height:1.7;
+  color:rgba(255,255,255,0.62); text-align:center;
+}
+.code-help b { color:rgba(255,255,255,0.9); }
+
+/* P1.1 — How-to-play link button on home */
+.howto-link {
+  display:inline-flex; align-items:center; gap:6px;
+  margin-top:14px; padding:8px 16px; border-radius:30px;
+  background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.28);
+  color:#bdecff; font-size:13px; font-weight:700; cursor:pointer;
+  font-family:inherit; transition:all .25s;
+}
+.howto-link:hover { background:rgba(0,212,255,0.16); transform:translateY(-1px); }
+
+/* P1.1 — Onboarding / How-to-play modal */
+.howto-overlay {
+  position:fixed; inset:0; z-index:1200; display:none;
+  align-items:center; justify-content:center; padding:18px;
+  background:rgba(5,5,18,0.72); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  animation: fadeSlideIn .3s ease;
+}
+.howto-overlay.open { display:flex; }
+.howto-card {
+  width:100%; max-width:420px; max-height:88vh; overflow-y:auto;
+  background:linear-gradient(160deg, rgba(28,22,58,0.96), rgba(14,12,32,0.98));
+  border:1px solid rgba(168,85,247,0.35); border-radius:24px; padding:26px 22px;
+  box-shadow:0 24px 70px rgba(0,0,0,0.6);
+}
+.howto-card h3 { font-size:20px; text-align:center; margin-bottom:6px; }
+.howto-sub { text-align:center; color:rgba(255,255,255,0.7); font-size:13px; margin-bottom:18px; }
+.howto-step { display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; text-align:start; }
+.howto-step .num {
+  flex:0 0 auto; width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px;
+  background:linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); color:#fff;
+}
+.howto-step .txt strong { display:block; font-size:14.5px; margin-bottom:2px; }
+.howto-step .txt span { font-size:12.5px; color:rgba(255,255,255,0.66); line-height:1.6; }
+.howto-card .btn { margin-top:8px; }
+
+/* P2.6 — Results hierarchy: details collapsible (percentage stays the in-ring hero) */
+.result-details {
+  margin:16px 0; border:1px solid rgba(255,255,255,0.08); border-radius:16px;
+  background:rgba(255,255,255,0.03); overflow:hidden;
+}
+.result-details > summary {
+  list-style:none; cursor:pointer; padding:14px 16px;
+  font-weight:800; font-size:14px; color:rgba(255,255,255,0.92);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.result-details > summary::-webkit-details-marker { display:none; }
+.result-details > summary::after { content:'▾'; transition:transform .25s; opacity:.7; }
+.result-details[open] > summary::after { transform:rotate(180deg); }
+.result-details .result-details-body { padding:4px 16px 16px; }
+
+/* P3.10 — Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bg-animation::before { animation: none !important; }
+  .orb { animation: none !important; }
+  .brain-icon { animation: none !important; }
 }
 </style>
 </head>
@@ -1470,6 +1610,45 @@ body { background: var(--ink) !important; }
   <div class="countdown-number" id="countdownNumber"></div>
 </div>
 
+<!-- How to play (onboarding) -->
+<div class="howto-overlay" id="howtoOverlay" role="dialog" aria-modal="true" aria-labelledby="howtoTitle">
+  <div class="howto-card">
+    <h3 id="howtoTitle"><span aria-hidden="true">🧠</span> <span data-i18n="howto_title">كيف تلعب؟</span></h3>
+    <p class="howto-sub" data-i18n="howto_sub">الهدف بسيط: فكّرا بنفس الطريقة!</p>
+
+    <div class="howto-step">
+      <span class="num">1</span>
+      <span class="txt">
+        <strong data-i18n="howto_s1_t">الهدف: التطابق في التفكير</strong>
+        <span data-i18n="howto_s1_d">اختر الخيار الذي تتوقّع أن يختاره صديقك — كلما تطابقتما زادت نسبة التخاطر.</span>
+      </span>
+    </div>
+    <div class="howto-step">
+      <span class="num">2</span>
+      <span class="txt">
+        <strong data-i18n="howto_s2_t">٤ مراحل × ٥ جولات</strong>
+        <span data-i18n="howto_s2_d">صور سريعة، أفكار، تحدٍّ ذهني، ثم تحدٍّ روحي. كل مرحلة تساوي 25% من النتيجة.</span>
+      </span>
+    </div>
+    <div class="howto-step">
+      <span class="num">3</span>
+      <span class="txt">
+        <strong data-i18n="howto_s3_t">١٥ ثانية لكل جولة</strong>
+        <span data-i18n="howto_s3_d">اختر بسرعة وبعفوية. إذا انتهى الوقت سيُختار خيار تلقائياً.</span>
+      </span>
+    </div>
+    <div class="howto-step">
+      <span class="num">4</span>
+      <span class="txt">
+        <strong data-i18n="howto_s4_t">النتيجة والمشاركة</strong>
+        <span data-i18n="howto_s4_d">في النهاية ترون نسبة التخاطر وتفاصيل كل مرحلة، ويمكنكم مشاركة بطاقة النتيجة.</span>
+      </span>
+    </div>
+
+    <button class="btn btn-primary" onclick="closeHowTo()" data-i18n="howto_got_it">فهمت، لنبدأ!</button>
+  </div>
+</div>
+
 <div class="container">
 
   <!-- HOME (v36 redesigned: single-step focused flow) -->
@@ -1490,6 +1669,9 @@ body { background: var(--ink) !important; }
         <label for="quickCode" data-i18n="home_enter_code" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">أدخل الكود</label>
         <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX  أو  ABC123" data-i18n-ph="code_ph" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
         <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span data-i18n="chip_empty">اكتب كودك للبدء</span></div>
+        <div class="code-help" data-i18n-html="code_help">
+          <b>كود التحدي</b> (مثل TP-…) لإنشاء غرفة جديدة • <b>كود الغرفة</b> (٦ خانات) للانضمام لصديقك
+        </div>
       </div>
 
       <!-- STEP 2: name (compact) -->
@@ -1521,6 +1703,12 @@ body { background: var(--ink) !important; }
       <p class="muted-sub" style="margin-top:14px" data-i18n-html="home_no_code">
         لا تملك كوداً؟ <a href="/" class="tp-link"><strong>احصل على واحد</strong></a>
       </p>
+
+      <div style="text-align:center">
+        <button type="button" class="howto-link" onclick="openHowTo()">
+          <span aria-hidden="true">💡</span><span data-i18n="howto_open">كيف تلعب؟</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1655,6 +1843,10 @@ body { background: var(--ink) !important; }
       <div class="round-dots" id="roundDots"></div>
     </div>
 
+    <div class="timer-readout" id="timerReadout" role="timer" aria-live="off">
+      <span class="timer-ico" aria-hidden="true">⏱️</span>
+      <span id="timerNum">15</span><span data-i18n="timer_unit">ث</span>
+    </div>
     <div class="timer-bar-container">
       <div class="timer-bar" id="timerBar"></div>
     </div>
@@ -1719,34 +1911,37 @@ body { background: var(--ink) !important; }
 
         <div class="brain-waves" id="brainWaves"></div>
 
-        <div class="neon-divider"></div>
+        <details class="result-details" open>
+          <summary><span data-i18n="res_details">تفاصيل المراحل والمقارنة</span></summary>
+          <div class="result-details-body">
+            <div class="phase-breakdown">
+              <div class="breakdown-item">
+                <div class="breakdown-label" data-i18n="bd1">المرحلة 1 – الصور (25%)</div>
+                <div class="breakdown-bar"><div class="breakdown-fill" id="bd1"></div></div>
+                <div class="breakdown-value" id="bv1">0%</div>
+              </div>
+              <div class="breakdown-item">
+                <div class="breakdown-label" data-i18n="bd2">المرحلة 2 – الأفكار (25%)</div>
+                <div class="breakdown-bar"><div class="breakdown-fill" id="bd2"></div></div>
+                <div class="breakdown-value" id="bv2">0%</div>
+              </div>
+              <div class="breakdown-item">
+                <div class="breakdown-label" data-i18n="bd3">المرحلة 3 – الذهني (25%)</div>
+                <div class="breakdown-bar"><div class="breakdown-fill" id="bd3"></div></div>
+                <div class="breakdown-value" id="bv3">0%</div>
+              </div>
+              <div class="breakdown-item">
+                <div class="breakdown-label" data-i18n="bd4">المرحلة 4 – الروحي (25%)</div>
+                <div class="breakdown-bar"><div class="breakdown-fill" id="bd4"></div></div>
+                <div class="breakdown-value" id="bv4">0%</div>
+              </div>
+            </div>
 
-        <div class="phase-breakdown">
-          <div class="breakdown-item">
-            <div class="breakdown-label" data-i18n="bd1">المرحلة 1 – الصور (25%)</div>
-            <div class="breakdown-bar"><div class="breakdown-fill" id="bd1"></div></div>
-            <div class="breakdown-value" id="bv1">0%</div>
-          </div>
-          <div class="breakdown-item">
-            <div class="breakdown-label" data-i18n="bd2">المرحلة 2 – الأفكار (25%)</div>
-            <div class="breakdown-bar"><div class="breakdown-fill" id="bd2"></div></div>
-            <div class="breakdown-value" id="bv2">0%</div>
-          </div>
-          <div class="breakdown-item">
-            <div class="breakdown-label" data-i18n="bd3">المرحلة 3 – الذهني (25%)</div>
-            <div class="breakdown-bar"><div class="breakdown-fill" id="bd3"></div></div>
-            <div class="breakdown-value" id="bv3">0%</div>
-          </div>
-          <div class="breakdown-item">
-            <div class="breakdown-label" data-i18n="bd4">المرحلة 4 – الروحي (25%)</div>
-            <div class="breakdown-bar"><div class="breakdown-fill" id="bd4"></div></div>
-            <div class="breakdown-value" id="bv4">0%</div>
-          </div>
-        </div>
+            <div class="neon-divider"></div>
 
-        <div class="neon-divider"></div>
-
-        <div class="comparison-grid" id="comparisonGrid"></div>
+            <div class="comparison-grid" id="comparisonGrid"></div>
+          </div>
+        </details>
 
         <div class="share-area">
           <button class="btn btn-primary" onclick="openShareCard()">
@@ -1959,6 +2154,21 @@ const I18N = {
     cmp_phase3: 'المرحلة 3 – التحدي الذهني',
     cmp_phase4: 'المرحلة 4 – التحدي الروحي',
     card_p_images: 'الصور', card_p_thoughts: 'الأفكار', card_p_mind: 'الذهني', card_p_emotional: 'العاطفي',
+    timer_unit: 'ث',
+    code_help: '<b>كود التحدي</b> (مثل TP-…) لإنشاء غرفة جديدة • <b>كود الغرفة</b> (٦ خانات) للانضمام لصديقك',
+    res_details: 'تفاصيل المراحل والمقارنة',
+    howto_open: 'كيف تلعب؟',
+    howto_title: 'كيف تلعب؟',
+    howto_sub: 'الهدف بسيط: فكّرا بنفس الطريقة!',
+    howto_s1_t: 'الهدف: التطابق في التفكير',
+    howto_s1_d: 'اختر الخيار الذي تتوقّع أن يختاره صديقك — كلما تطابقتما زادت نسبة التخاطر.',
+    howto_s2_t: '٤ مراحل × ٥ جولات',
+    howto_s2_d: 'صور سريعة، أفكار، تحدٍّ ذهني، ثم تحدٍّ روحي. كل مرحلة تساوي 25% من النتيجة.',
+    howto_s3_t: '١٥ ثانية لكل جولة',
+    howto_s3_d: 'اختر بسرعة وبعفوية. إذا انتهى الوقت سيُختار خيار تلقائياً.',
+    howto_s4_t: 'النتيجة والمشاركة',
+    howto_s4_d: 'في النهاية ترون نسبة التخاطر وتفاصيل كل مرحلة، ويمكنكم مشاركة بطاقة النتيجة.',
+    howto_got_it: 'فهمت، لنبدأ!',
   },
   en: {
     home_back: '← Home',
@@ -2021,6 +2231,21 @@ const I18N = {
     cmp_phase3: 'Phase 3 – Mind challenge',
     cmp_phase4: 'Phase 4 – Spiritual challenge',
     card_p_images: 'Images', card_p_thoughts: 'Thoughts', card_p_mind: 'Mind', card_p_emotional: 'Emotional',
+    timer_unit: 's',
+    code_help: '<b>Challenge code</b> (like TP-…) creates a new room • <b>Room code</b> (6 chars) joins your friend',
+    res_details: 'Phase details & comparison',
+    howto_open: 'How to play?',
+    howto_title: 'How to play?',
+    howto_sub: "It's simple: think alike!",
+    howto_s1_t: 'Goal: think the same',
+    howto_s1_d: "Pick the option you expect your friend to pick — the more you match, the higher your telepathy score.",
+    howto_s2_t: '4 phases × 5 rounds',
+    howto_s2_d: 'Quick images, thoughts, a mind challenge, then a spiritual one. Each phase is 25% of the score.',
+    howto_s3_t: '15 seconds per round',
+    howto_s3_d: 'Choose fast and instinctively. If time runs out, an option is picked automatically.',
+    howto_s4_t: 'Result & sharing',
+    howto_s4_d: 'At the end you see your telepathy score and each phase breakdown, and can share a result card.',
+    howto_got_it: "Got it, let's start!",
   }
 };
 
@@ -2063,6 +2288,29 @@ window.setLang = setLang; window.toggleLang = toggleLang;
     else if (stored === 'en' || stored === 'ar') initial = stored;
   } catch(_) {}
   setLang(initial);
+})();
+
+// ===== How-to-play (onboarding) — UI only =====
+function openHowTo(){
+  const o = document.getElementById('howtoOverlay');
+  if (o) o.classList.add('open');
+}
+function closeHowTo(){
+  const o = document.getElementById('howtoOverlay');
+  if (o) o.classList.remove('open');
+  try { localStorage.setItem('tp_howto_seen', '1'); } catch(_) {}
+}
+window.openHowTo = openHowTo; window.closeHowTo = closeHowTo;
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') closeHowTo();
+});
+(function autoShowHowTo(){
+  try {
+    const p = new URLSearchParams(location.search);
+    if (p.get('room') || p.get('code')) return; // joining/launching directly — don't interrupt
+    if (localStorage.getItem('tp_howto_seen') === '1') return;
+    window.addEventListener('load', function(){ setTimeout(openHowTo, 600); });
+  } catch(_) {}
 })();
 
 // ===== الدوال المساعدة (نفسها بالضبط) =====
@@ -2748,14 +2996,23 @@ function resetSyncDots() {
 function startTimer() {
   clearInterval(timerInterval);
   const bar = document.getElementById('timerBar');
+  const numEl = document.getElementById('timerNum');
+  const readout = document.getElementById('timerReadout');
   let width = 100;
   const duration = 15000;
   const step = 50;
   const decrement = (step / duration) * 100;
 
   bar.style.width = '100%';
+  if (numEl) numEl.textContent = '15';
+  if (readout) readout.classList.remove('is-low');
   timerInterval = setInterval(() => {
     width -= decrement;
+    if (numEl) {
+      const secs = Math.max(0, Math.ceil((width / 100) * 15));
+      numEl.textContent = secs;
+      if (readout) readout.classList.toggle('is-low', secs <= 5);
+    }
     if (width <= 0) {
       width = 0;
       clearInterval(timerInterval);

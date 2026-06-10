@@ -11,11 +11,14 @@
 <link rel="shortcut icon" href="/brand/favicon.ico?v=40" />
 <link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png?v=40" />
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 <meta property="og:title" content="Telepathy Challenge - تحدي التخاطر" />
 <meta property="og:description" content="هل تفكران بنفس الطريقة؟ اكتشفا الإجابة الآن." />
-<meta property="og:image" content="/brand/web-app-manifest-512x512.png?v=40" />
+<meta property="og:image" content="/brand/og-image.png?v=41" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="/brand/web-app-manifest-512x512.png?v=40" />
+<meta name="twitter:image" content="/brand/og-image.png?v=41" />
 <style>
   /* === Design tokens (shared) === */
   :root{
@@ -206,6 +209,34 @@
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}
   }
+
+  /* Latin font for English mode */
+  html[lang="en"] body,
+  html[lang="en"] .btn,
+  html[lang="en"] button,
+  html[lang="en"] input,
+  html[lang="en"] textarea{font-family:'Inter','Tajawal',sans-serif}
+
+  /* Result preview (sample) */
+  .preview-card{max-width:420px;margin:0 auto;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(168,85,247,.3);border-radius:26px;padding:30px 26px;text-align:center;position:relative;backdrop-filter:blur(18px);box-shadow:0 18px 60px rgba(0,0,0,.4)}
+  .preview-badge{position:absolute;top:14px;inset-inline-end:16px;font-size:11px;font-weight:800;padding:5px 12px;border-radius:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85)}
+  .preview-ring{width:140px;height:140px;margin:8px auto 6px;border-radius:50%;display:flex;align-items:baseline;justify-content:center;gap:2px;background:conic-gradient(#00d4ff,#a855f7,#ff2daa,#00d4ff);box-shadow:0 0 40px rgba(168,85,247,.45);position:relative}
+  .preview-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:#0b0b22}
+  .preview-ring span{position:relative;font-size:46px;font-weight:900;line-height:1}
+  .preview-ring small{position:relative;font-size:18px;font-weight:800;opacity:.85}
+  .preview-rating{font-size:18px;font-weight:800;margin:6px 0 18px;background:linear-gradient(90deg,#00d4ff,#ff2daa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .preview-bars{display:flex;flex-direction:column;gap:10px;text-align:start}
+  .pbar{display:flex;align-items:center;gap:10px;font-size:12.5px;color:rgba(255,255,255,.78)}
+  .pbar span{flex:0 0 64px}
+  .pbar i{flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
+  .pbar i::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#a855f7,#00d4ff);border-radius:6px}
+
+  /* Trust band */
+  .trust-band{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:760px;margin:30px auto 0}
+  .trust-chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);padding:9px 15px;border-radius:30px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12)}
+
+  /* Footer privacy note */
+  .footer-note{margin-top:10px;font-size:12px;color:rgba(255,255,255,.5);max-width:560px;margin-inline:auto;line-height:1.7}
 </style>
 </head>
 <body>
@@ -254,6 +285,31 @@
     </div>
   </section>
 
+  <!-- RESULT PREVIEW (sample) -->
+  <section class="section">
+    <h2 class="section-title" data-i18n="preview_title">ماذا ستحصل عليه؟</h2>
+    <p class="section-sub" data-i18n="preview_sub">في نهاية التحدي تحصلان على نسبة تخاطر دقيقة وبطاقة جاهزة للمشاركة — هذا مثال توضيحي.</p>
+    <div class="preview-card">
+      <div class="preview-badge" data-i18n="preview_badge">مثال توضيحي</div>
+      <div class="preview-ring"><span>87</span><small>%</small></div>
+      <div class="preview-rating" data-i18n="preview_rating">تخاطر استثنائي 🧠⚡</div>
+      <div class="preview-bars">
+        <div class="pbar"><span data-i18n="preview_p1">الصور</span><i style="--w:90%"></i></div>
+        <div class="pbar"><span data-i18n="preview_p2">الأفكار</span><i style="--w:84%"></i></div>
+        <div class="pbar"><span data-i18n="preview_p3">الذهني</span><i style="--w:88%"></i></div>
+        <div class="pbar"><span data-i18n="preview_p4">الروحي</span><i style="--w:86%"></i></div>
+      </div>
+    </div>
+
+    <div class="trust-band">
+      <span class="trust-chip">🔒 <span data-i18n="trust1">بدون تسجيل حساب</span></span>
+      <span class="trust-chip">⚡ <span data-i18n="trust2">تسليم على واتساب</span></span>
+      <span class="trust-chip">💳 <span data-i18n="trust3">دفعة واحدة بدون اشتراك</span></span>
+      <span class="trust-chip">👥 <span data-i18n="trust4">لاعبان لكل غرفة</span></span>
+      <span class="trust-chip">🎁 <span data-i18n="trust5">٥ جلسات لكل كود</span></span>
+    </div>
+  </section>
+
   <!-- PRICING -->
   <section class="section" id="pricing">
     <h2 class="section-title" data-i18n="pricing_title">اختر الباقة المناسبة</h2>
@@ -297,6 +353,7 @@
 
   <footer>
     <p data-i18n="footer_rights">© 2026 Telepathy Challenge — جميع الحقوق محفوظة</p>
+    <p class="footer-note" data-i18n="footer_privacy">خصوصيتك تهمّنا: لا نطلب تسجيل حساب، وتحتاج فقط إلى الكود للّعب. لا نشارك بياناتك مع أي طرف.</p>
     <p style="margin-top:8px"><a href="/admin" data-i18n="footer_admin">لوحة التحكم</a></p>
   </footer>
 </div>
@@ -356,6 +413,13 @@
       feat2_h: 'نتيجة فورية', feat2_p: 'اعرفا نسبة توافقكم بمعادلة تحليل لغوي ذكية',
       feat3_h: 'بطاقة قابلة للمشاركة', feat3_p: 'صورة جميلة احترافية جاهزة لـ Instagram وWhatsApp',
       feat4_h: 'يعمل أونلاين', feat4_p: 'كل واحد على جواله — تتزامن الإجابات تلقائياً',
+      preview_title: 'ماذا ستحصل عليه؟',
+      preview_sub: 'في نهاية التحدي تحصلان على نسبة تخاطر دقيقة وبطاقة جاهزة للمشاركة — هذا مثال توضيحي.',
+      preview_badge: 'مثال توضيحي',
+      preview_rating: 'تخاطر استثنائي 🧠⚡',
+      preview_p1: 'الصور', preview_p2: 'الأفكار', preview_p3: 'الذهني', preview_p4: 'الروحي',
+      trust1: 'بدون تسجيل حساب', trust2: 'تسليم على واتساب', trust3: 'دفعة واحدة بدون اشتراك', trust4: 'لاعبان لكل غرفة', trust5: '٥ جلسات لكل كود',
+      footer_privacy: 'خصوصيتك تهمّنا: لا نطلب تسجيل حساب، وتحتاج فقط إلى الكود للّعب. لا نشارك بياناتك مع أي طرف.',
       pricing_title: 'اختر الباقة المناسبة',
       pricing_sub: 'دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.',
       pkg_loading: '⏳ جاري تحميل الباقات...',
@@ -403,6 +467,13 @@
       feat2_h: 'Instant result', feat2_p: 'See your match rate with a smart linguistic-analysis formula',
       feat3_h: 'Shareable card', feat3_p: 'A beautiful, professional image ready for Instagram and WhatsApp',
       feat4_h: 'Works online', feat4_p: 'Each on their own phone — answers sync automatically',
+      preview_title: "What you'll get",
+      preview_sub: 'At the end you both get an accurate telepathy score and a shareable card — this is a sample.',
+      preview_badge: 'Sample',
+      preview_rating: 'Exceptional telepathy 🧠⚡',
+      preview_p1: 'Images', preview_p2: 'Thoughts', preview_p3: 'Mind', preview_p4: 'Spiritual',
+      trust1: 'No account needed', trust2: 'Delivered on WhatsApp', trust3: 'One payment, no subscription', trust4: 'Two players per room', trust5: '5 sessions per code',
+      footer_privacy: 'Your privacy matters: no account required — you only need the code to play. We never share your data.',
       pricing_title: 'Choose the right package',
       pricing_sub: 'One payment. No subscriptions. Your code arrives instantly.',
       pkg_loading: '⏳ Loading packages...',
