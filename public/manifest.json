@@ -14,22 +14,28 @@
   "categories": ["games", "social", "entertainment"],
   "icons": [
     {
-      "src": "/brand/favicon.svg?v=40",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/brand/web-app-manifest-512x512.png?v=40",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/brand/web-app-manifest-192x192.png?v=40",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/brand/web-app-manifest-512x512.png?v=40",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "/brand/web-app-manifest-192x192.png?v=40",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/brand/web-app-manifest-512x512.png?v=40",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
