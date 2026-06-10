@@ -59,16 +59,18 @@
     if (c.status === 'disabled') return { ok: false, reason: 'disabled', message: 'تم إيقاف هذا الكود' };
     if (c.status === 'expired')  return { ok: false, reason: 'expired',  message: 'انتهت صلاحية الكود' };
     if (c.expiresAt && Date.now() > c.expiresAt) return { ok: false, reason: 'expired', message: 'انتهت صلاحية الكود' };
-    if (c.usedSessions >= c.maxSessions) return { ok: false, reason: 'used_up', message: 'تم استهلاك جميع جلسات هذا الكود' };
+    const used = Number(c.usedSessions || 0);
+    const max = Number(c.maxSessions || 0);
+    if (used >= max && max > 0) return { ok: false, reason: 'used_up', message: 'تم استهلاك جميع جلسات هذا الكود' };
 
     return {
       ok: true,
       code,
       type: c.type,
       label: c.label || '',
-      remaining: c.maxSessions - c.usedSessions,
-      maxSessions: c.maxSessions,
-      usedSessions: c.usedSessions,
+      remaining: max - used,
+      maxSessions: max,
+      usedSessions: used,
       expiresAt: c.expiresAt || 0,
       ownerId: c.ownerId || null,
     };

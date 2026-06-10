@@ -2477,9 +2477,22 @@ async function inspectAccessRoom(accessCode) {
   const players = room.players || {};
   const hasP1 = !!players.player1;
   const hasP2 = !!players.player2;
+  const totalUses = Number(room.totalUses || 0);
+
+  if (!hasP1 && !hasP2) return { state: 'stale', roomId: marker.roomId };
   if (!hasP1) return { state: 'stale', roomId: marker.roomId };
-  if (room.status === 'waiting' && hasP1 && !hasP2) return { state: 'join', roomId: marker.roomId };
-  return { state: 'busy', roomId: marker.roomId };
+
+  // Game in progress — block parallel session
+  if (room.status === 'playing') return { state: 'busy', roomId: marker.roomId };
+
+  if (room.status === 'waiting') {
+    // Pre-game lobby: both players present, session not consumed yet
+    if (hasP1 && hasP2 && totalUses === 0) return { state: 'busy', roomId: marker.roomId };
+    // Post-game or abandoned lobby — allow a fresh session (same TP code, new room)
+    return { state: 'stale', roomId: marker.roomId };
+  }
+
+  return { state: 'stale', roomId: marker.roomId };
 }
 
 async function enterWithAccessCode(accessCode, validation) {
@@ -2497,13 +2510,8 @@ async function enterWithAccessCode(accessCode, validation) {
 
   for (let attempt = 0; attempt < 3; attempt++) {
     const existing = await inspectAccessRoom(code);
-    if (existing.state === 'join') {
-      document.getElementById('roomCodeInput').value = existing.roomId;
-      await joinRoom();
-      return;
-    }
     if (existing.state === 'busy') {
-      showToast('الغرفة مشغولة الآن. انتظر انتهاء الجلسة أو استخدم الرابط الصحيح لاحقاً');
+      showToast('الجلسة الحالية لا تزال نشطة. انتظر انتهاءها أو اضغط «تحدي جديد»');
       return;
     }
     if (existing.state === 'stale') {
@@ -2945,6 +2953,11 @@ async function calculateAndShowResults() {
       usesRemaining: usesRemaining
     });
 
+    // Free access code for next session (same TP code → new room)
+    if (room.accessCode) {
+      await accessRoomRef(room.accessCode).remove().catch(() => {});
+    }
+
     // إعادة تعيين الغرفة
     await roomRef.update({
       status: 'waiting',
@@ -3302,13 +3315,19 @@ function shareResult() {
 }
 
 // ===== تحدي جديد: مغادرة كاملة + العودة للصفحة الرئيسية =====
-function newChallenge() {
+async function newChallenge() {
   // Detach Firebase listeners and remove this player from the room
   try {
+    const accessToFree = window.__activeAccessCode || null;
     if (roomRef) {
+      const snap = await roomRef.once('value').catch(() => null);
+      const ac = (snap && snap.val() && snap.val().accessCode) || accessToFree;
+      if (ac) await accessRoomRef(ac).remove().catch(() => {});
       const pk = (typeof myIndex !== 'undefined' && myIndex === 0) ? 'player1' : 'player2';
       roomRef.child('players/' + pk).remove().catch(() => {});
       roomRef.off();
+    } else if (accessToFree) {
+      await accessRoomRef(accessToFree).remove().catch(() => {});
     }
   } catch (_) {}
 
@@ -3328,11 +3347,33 @@ function newChallenge() {
   window.__codeRemaining = null;
   window.__codeMaxSessions = null;
   window.__codeUsedSessions = null;
-  try { sessionStorage.removeItem('tp_access_code'); } catch (_) {}
 
-  // Reset visible inputs back to a clean home
-  const codeF = document.getElementById('quickCode');  if (codeF) codeF.value = '';
-  const nameF = document.getElementById('playerName'); if (nameF) nameF.value = '';
+  const urlParams = new URLSearchParams(location.search);
+  const urlAccessCode = (urlParams.get('code') || '').toUpperCase().trim();
+  const urlRoomCode = (urlParams.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  try {
+    if (urlAccessCode && !/^[A-Z0-9]{6}$/.test(urlAccessCode)) {
+      sessionStorage.setItem('tp_access_code', urlAccessCode);
+    } else {
+      sessionStorage.removeItem('tp_access_code');
+    }
+  } catch (_) {}
+
+  // Reset visible inputs — keep smart-entry codes from URL
+  const codeF = document.getElementById('quickCode');
+  if (codeF) {
+    if (window.__buyerMode && urlAccessCode) codeF.value = urlAccessCode;
+    else if (window.__friendMode && urlRoomCode) codeF.value = urlRoomCode;
+    else if (urlAccessCode) codeF.value = urlAccessCode;
+    else codeF.value = '';
+  }
+  const nameF = document.getElementById('playerName');
+  if (nameF) {
+    try {
+      const saved = localStorage.getItem('tp_player_name');
+      nameF.value = saved || '';
+    } catch (_) { nameF.value = ''; }
+  }
   const lobbyCode = document.getElementById('lobbyRoomCode'); if (lobbyCode) lobbyCode.textContent = '';
   const lobbyPlayers = document.getElementById('lobbyPlayers'); if (lobbyPlayers) lobbyPlayers.style.display = 'none';
   const waitingArea  = document.getElementById('waitingArea');  if (waitingArea)  waitingArea.style.display  = 'block';
