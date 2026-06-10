@@ -1,16 +1,31 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="view-transition" content="same-origin" />
 <title>لوحة التحكم — Telepathy Admin</title>
 <meta name="theme-color" content="#0a0a1a" />
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet" />
 <style>
+  /* === Design tokens (shared with index/play) === */
+  :root{
+    --bg:#05050f;
+    --surface:rgba(255,255,255,.04); --surface-2:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
+    --text:#fff; --text-muted:rgba(255,255,255,.7); --text-dim:rgba(255,255,255,.5);
+    --brand-1:#ff5b93; --brand-2:#a855f7; --brand-3:#00d4ff;
+    --grad-brand:linear-gradient(135deg,#ff5b93,#a855f7);
+    --grad-cool:linear-gradient(135deg,#00d4ff,#a855f7);
+    --radius-sm:10px; --radius-md:14px; --radius-lg:18px; --radius-xl:24px;
+    --shadow-1:0 8px 24px rgba(0,0,0,.28);
+    --shadow-2:0 14px 34px rgba(168,85,247,.5);
+  }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  html,body{font-family:'Tajawal',sans-serif;background:#05050f;color:#fff;min-height:100vh;background:radial-gradient(ellipse at top,#1a0d3e 0%,#05050f 60%,#000 100%)}
-  button,input,select{font-family:inherit}
+  html,body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;background:radial-gradient(ellipse at top,#1a0d3e 0%,#05050f 60%,#000 100%);-webkit-text-size-adjust:100%}
+  *{-webkit-tap-highlight-color:transparent}
+  button,input,select,textarea{font-family:inherit;font-size:16px}
 
   .blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:.4;pointer-events:none;z-index:0}
   .blob.b1{width:520px;height:520px;background:#a855f7;top:-150px;right:-120px}
@@ -48,6 +63,21 @@
   .stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px 20px;backdrop-filter:blur(20px)}
   .stat-label{font-size:.78rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
   .stat-val{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fff,#d8b4fe);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat-hint{font-size:.78rem;color:rgba(255,255,255,.45);margin-top:6px;line-height:1.5}
+
+  .dash-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:16px;margin-bottom:20px}
+  .overview-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .metric-card{background:linear-gradient(155deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:18px;min-height:126px;position:relative;overflow:hidden}
+  .metric-card::after{content:"";position:absolute;inset:auto -40px -55px auto;width:120px;height:120px;border-radius:50%;background:rgba(168,85,247,.16);filter:blur(12px)}
+  .metric-k{font-size:.78rem;color:rgba(255,255,255,.52);font-weight:700;margin-bottom:10px}
+  .metric-v{font-size:2rem;font-weight:900;line-height:1;color:#fff}
+  .metric-note{font-size:.8rem;color:rgba(255,255,255,.46);margin-top:10px;line-height:1.5}
+  .metric-card.good .metric-v{color:#86efac}.metric-card.warn .metric-v{color:#fbbf24}.metric-card.bad .metric-v{color:#fca5a5}
+  .ops-list{display:grid;gap:10px}
+  .ops-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07)}
+  .ops-item b{font-size:.92rem}.ops-item span{font-size:.78rem;color:rgba(255,255,255,.48)}
+  .quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .quick-actions .btn{justify-content:center;padding:12px 14px}
 
   /* Cards / panels */
   .panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;margin-bottom:20px;backdrop-filter:blur(20px)}
@@ -61,6 +91,7 @@
   .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
   .tab{padding:10px 18px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;cursor:pointer;font-weight:600;font-size:.9rem}
   .tab.active{background:linear-gradient(135deg,#ff5b93,#a855f7);border-color:transparent}
+  .role-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(168,85,247,.13);border:1px solid rgba(168,85,247,.28);color:#e9d5ff;font-size:.78rem;font-weight:800}
 
   /* Table */
   .tbl{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:.88rem}
@@ -87,12 +118,68 @@
   /* Generated codes box */
   .codes-out{background:rgba(0,0,0,.4);border:1px solid rgba(168,85,247,.3);border-radius:12px;padding:14px;margin-top:16px;max-height:280px;overflow:auto;font-family:ui-monospace,monospace;font-size:.88rem;white-space:pre;direction:ltr;text-align:left}
 
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
+  .code-card{position:relative;overflow:hidden;background:linear-gradient(155deg,rgba(168,85,247,.18),rgba(0,212,255,.08) 48%,rgba(255,91,147,.12));border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;box-shadow:0 16px 38px rgba(0,0,0,.28)}
+  .code-card::before{content:"";position:absolute;inset:-60px auto auto -50px;width:150px;height:150px;background:rgba(255,255,255,.12);filter:blur(35px);border-radius:50%}
+  .code-card-top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .code-card-title{font-weight:900;font-size:1.05rem;direction:ltr;letter-spacing:.8px;color:#fff}
+  .code-card-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+  .mini-stat{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px}
+  .mini-stat span{display:block;color:rgba(255,255,255,.48);font-size:.72rem;margin-bottom:3px}
+  .mini-stat b{font-size:.92rem}
+  .qr-box{display:flex;align-items:center;justify-content:center;background:#fff;border-radius:14px;padding:8px;margin:10px auto;max-width:136px}
+  .qr-box img{width:120px;height:120px;border-radius:8px}
+  .code-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .code-actions .btn{padding:8px 10px;font-size:.78rem;border-radius:9px;flex:1;justify-content:center;min-width:88px}
+  .link-line{direction:ltr;text-align:left;word-break:break-all;color:rgba(255,255,255,.45);font-size:.72rem;background:rgba(0,0,0,.2);border-radius:9px;padding:8px;margin-top:8px}
+
+  /* ===== Codes management upgrades ===== */
+  .code-card{transition:transform .18s ease, box-shadow .25s ease, border-color .25s}
+  .code-card:hover{transform:translateY(-2px);border-color:rgba(168,85,247,.45);box-shadow:0 22px 50px rgba(0,0,0,.4),0 0 0 1px rgba(168,85,247,.18)}
+  .code-card.selected{border-color:#a855f7;box-shadow:0 0 0 2px rgba(168,85,247,.55),0 22px 50px rgba(0,0,0,.45)}
+  .code-card .card-check{position:absolute;top:10px;left:10px;width:22px;height:22px;border-radius:7px;cursor:pointer;accent-color:#a855f7;z-index:2}
+  .code-card .card-actions-row{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}
+  .code-card .card-actions-row .btn{flex:initial;min-width:0;font-size:.74rem;padding:7px 8px}
+  .qr-box{background:#fff !important;color:transparent !important;padding:8px !important;max-width:148px !important;direction:ltr !important;word-break:normal !important;font-size:0 !important;line-height:0 !important}
+  .qr-box img{display:block;width:130px;height:130px;border-radius:6px}
+
+  .list-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:6px 0 16px}
+  .list-summary .sum{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px}
+  .list-summary .sum b{display:block;font-size:1.15rem;color:#fff;margin-top:2px}
+  .list-summary .sum span{font-size:.72rem;color:rgba(255,255,255,.5)}
+  .list-summary .sum.good b{color:#86efac}
+  .list-summary .sum.warn b{color:#fbbf24}
+  .list-summary .sum.bad  b{color:#fca5a5}
+
+  .filter-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);font-size:.78rem;cursor:pointer;user-select:none}
+  .filter-chip.on{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border-color:transparent;box-shadow:0 6px 18px -6px rgba(168,85,247,.6)}
+
+  .status-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.78);font-size:.85rem;font-weight:700;cursor:pointer;user-select:none;transition:all .18s}
+  .status-chip:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+  .status-chip .cnt{display:inline-block;min-width:22px;text-align:center;padding:1px 8px;border-radius:999px;background:rgba(0,0,0,.35);font-size:.75rem;font-weight:900;color:#fff}
+  .status-chip[data-st="active"] .cnt{background:rgba(52,211,153,.22);color:#34d399}
+  .status-chip[data-st="used"]   .cnt{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+  .status-chip[data-st="disabled"] .cnt{background:rgba(251,113,133,.22);color:#fb7185}
+  .status-chip[data-st="expired"] .cnt{background:rgba(251,191,36,.22);color:#fbbf24}
+  .status-chip.on{background:linear-gradient(135deg,#6d28d9,#a855f7);color:#fff;border-color:transparent;box-shadow:0 8px 22px -8px rgba(168,85,247,.7)}
+  .status-chip.on .cnt{background:rgba(0,0,0,.3);color:#fff}
+
+  .bulk-bar{position:sticky;bottom:14px;z-index:50;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(124,58,237,.95),rgba(168,85,247,.95));box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08);backdrop-filter:blur(10px)}
+  .bulk-bar.show{display:flex}
+  .bulk-bar .bb-info{font-weight:800;font-size:.92rem;color:#fff}
+  .bulk-bar .bb-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .bulk-bar .btn{padding:8px 12px;font-size:.78rem}
+
   @media (max-width:600px){
     .top{padding:12px 16px}
     .panel{padding:16px}
     .tbl{font-size:.78rem}
     .tbl th,.tbl td{padding:8px}
+    .dash-grid{grid-template-columns:1fr}
+    .overview-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .metric-card{min-height:112px;padding:15px}
   }
+  @media (max-width:420px){.overview-cards{grid-template-columns:1fr}.quick-actions{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -102,18 +189,23 @@
 
   <!-- LOGIN VIEW -->
   <div id="loginView">
+    <div style="text-align:center;margin-bottom:20px">
+      <a href="/" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:.9rem">← الرئيسية</a>
+    </div>
     <div class="login-box">
       <h1>🔐 لوحة التحكم</h1>
-      <p>سجّل دخول للوصول إلى إدارة الأكواد</p>
+      <p id="loginSubtitle">سجّل دخول للوصول إلى إدارة الأكواد</p>
       <label>البريد الإلكتروني</label>
       <input type="email" id="loginEmail" autocomplete="email" />
-      <label>كلمة المرور</label>
+      <label id="loginPassLabel">كلمة المرور</label>
       <input type="password" id="loginPass" autocomplete="current-password" />
       <div style="height:18px"></div>
-      <button class="btn btn-primary btn-w" onclick="adminLogin()">دخول</button>
+      <button class="btn btn-primary btn-w" id="loginPrimaryBtn" onclick="adminLogin()">دخول</button>
+      <button class="btn btn-ghost btn-w" style="margin-top:10px" id="loginToggleBtn" onclick="toggleSignupMode()">حساب جديد للوكلاء؟ سجّل من هنا</button>
+      <button class="btn btn-ghost btn-w" style="margin-top:10px" onclick="adminPasswordReset()" id="loginForgotBtn">نسيت كلمة السر؟</button>
       <p style="margin-top:18px;font-size:.82rem;color:rgba(255,255,255,.45)" id="loginMsg"></p>
-      <p style="margin-top:14px;font-size:.78rem;color:rgba(255,255,255,.35)">
-        أول مرة؟ اطلب من المسؤول إضافة UID الخاص بك إلى قائمة /admins/.
+      <p style="margin-top:14px;font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.7" id="loginHint">
+        الدخول للأدمن والوكلاء المفعّلين فقط. لطلب حساب وكيل: أنشئ حساباً جديداً ثم أرسل UID للإدارة.
       </p>
     </div>
   </div>
@@ -123,9 +215,11 @@
 
     <div class="top">
       <h1>🛡️ لوحة Telepathy</h1>
-      <div style="display:flex;gap:10px;align-items:center">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <span class="me" id="meEmail"></span>
-        <button class="btn btn-ghost btn-sm" onclick="adminLogout()">خروج</button>
+        <a href="/" class="btn btn-ghost btn-sm" style="text-decoration:none">🏠 الرئيسية</a>
+        <a href="/play" class="btn btn-ghost btn-sm" style="text-decoration:none">🎮 اللعبة</a>
+        <button class="btn btn-ghost btn-sm" onclick="adminLogout()">🚪 خروج</button>
       </div>
     </div>
 
@@ -137,12 +231,263 @@
     </div>
 
     <div class="tabs">
-      <button class="tab active" data-tab="generate">⚡ توليد أكواد</button>
+      <button class="tab active" data-tab="overview">📊 نظرة عامة</button>
+      <button class="tab admin-only hidden" data-tab="orders">🛒 طلبات الشراء</button>
+      <button class="tab" data-tab="generate">⚡ توليد أكواد</button>
       <button class="tab" data-tab="list">📋 قائمة الأكواد</button>
+      <button class="tab admin-only hidden" data-tab="resellers">🤝 الوكلاء</button>
+      <button class="tab admin-only hidden" data-tab="pricing">💵 تسعير الأكواد</button>
+      <button class="tab admin-only hidden" data-tab="packages">📦 باقات الرئيسية</button>
+      <button class="tab reseller-only hidden" data-tab="wallet">💼 محفظتي</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="tab-overview">
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-h">
+            <h2>📊 مركز التشغيل</h2>
+            <button class="btn btn-ghost btn-sm" onclick="loadDashboardOverview()">🔄 تحديث</button>
+          </div>
+          <div class="overview-cards" id="overviewCards">
+            <div class="empty" style="grid-column:1/-1">جاري تحميل المؤشرات...</div>
+          </div>
+          <div class="quick-actions">
+            <button class="btn btn-primary" onclick="activateTab('generate')">⚡ توليد أكواد</button>
+            <button class="btn btn-ghost" onclick="activateTab('list')">📋 إدارة الأكواد</button>
+            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('orders')">🛒 طلبات الشراء</button>
+            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('packages')">📦 إدارة الباقات</button>
+            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('resellers')">🤝 إدارة الوكلاء</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>✅ حالة النظام</h2></div>
+          <div class="ops-list" id="opsChecklist">
+            <div class="empty">جاري الفحص...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operations log (admin only) -->
+      <div class="panel admin-only hidden">
+        <div class="panel-h">
+          <h2>📜 سجلّ عمليات الوكلاء <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400" id="opsLogCount">(0)</span></h2>
+          <button class="btn btn-ghost btn-sm" onclick="loadOpsLog()">🔄 تحديث</button>
+        </div>
+        <div id="opsLogOut"><div class="empty">جاري التحميل...</div></div>
+      </div>
+    </div>
+
+    <!-- ORDERS (ADMIN ONLY) -->
+    <div id="tab-orders" class="hidden">
+      <div class="panel admin-only hidden">
+        <div class="panel-h">
+          <h2>🛒 طلبات الشراء <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400" id="ordersCount">(0)</span></h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <select id="orderStatusFilter" onchange="loadOrders()">
+              <option value="">كل الطلبات</option>
+              <option value="pending">تنتظر التسليم</option>
+              <option value="fulfilled">تم التسليم</option>
+              <option value="cancelled">ملغاة</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="loadOrders()">🔄 تحديث</button>
+          </div>
+        </div>
+        <div id="ordersSummary" class="list-summary"></div>
+        <p style="margin:-4px 0 12px;color:rgba(255,255,255,.55);font-size:.85rem;line-height:1.7">
+          ملاحظة مهمة: حالة <b>تم التسليم</b> تحفظ الطلب وتمنع بيع الكود مرة أخرى. إرسال الرسالة للعميل يتم عبر زر واتساب أو تلقائياً بعد الضغط على <b>تسليم وفتح واتساب</b>.
+        </p>
+        <div id="ordersOut"><div class="empty">جاري التحميل...</div></div>
+      </div>
+    </div>
+
+    <!-- WALLET (RESELLER ONLY) -->
+    <div id="tab-wallet" class="hidden">
+      <div class="panel">
+        <div class="panel-h">
+          <h2>💼 محفظتي</h2>
+          <button class="btn btn-ghost btn-sm" onclick="loadWallet()">🔄 تحديث</button>
+        </div>
+        <div class="row" id="walletInfo">
+          <div class="stat"><div class="stat-label">رصيد قابل للتوليد</div><div class="stat-val" id="wBalance">—</div></div>
+          <div class="stat"><div class="stat-label">إجمالي ما ولّدته</div><div class="stat-val" id="wGen">—</div></div>
+          <div class="stat"><div class="stat-label">الفئة</div><div class="stat-val" id="wTier" style="font-size:1.1rem">—</div></div>
+          <div class="stat"><div class="stat-label">خصم شخصي</div><div class="stat-val" id="wDisc">—</div></div>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="requestMoreCodes()">➕ أحتاج أكواد إضافية</button>
+          <button class="btn btn-ghost" onclick="activateTab('list')">📋 كل أكوادي</button>
+        </div>
+        <p style="margin-top:14px;color:rgba(255,255,255,.55);font-size:.85rem;line-height:1.7">
+          الرصيد يمثل عدد الأكواد التي يمكنك توليدها بنفسك. لطلب شحن إضافي اضغط الزر أعلاه أو تواصل مع الإدارة.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">
+          <h2>✅ أكوادي النشطة <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400" id="walletActiveCount">(—)</span></h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="walletCopyAllLinks()">🔗 نسخ كل الروابط</button>
+            <button class="btn btn-ghost btn-sm" onclick="loadWalletCodes()">🔄</button>
+          </div>
+        </div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.85rem">
+          هذه هي الأكواد المتاحة لعملائك. اضغط <b>🪪 بطاقة العميل</b> لتفتح بطاقة جاهزة للطباعة أو الإرسال.
+        </p>
+        <div id="walletCodesOut"><div class="empty">⏳ جاري التحميل...</div></div>
+      </div>
+    </div>
+
+    <!-- RESELLERS (ADMIN ONLY) -->
+    <div id="tab-resellers" class="hidden">
+      <div class="panel">
+        <div class="panel-h"><h2>إضافة / تعديل وكيل</h2></div>
+        <div class="row">
+          <div><label>UID</label><input type="text" id="rUid" placeholder="UID من Firebase Auth" /></div>
+          <div><label>البريد</label><input type="email" id="rEmail" /></div>
+          <div><label>الاسم</label><input type="text" id="rName" /></div>
+          <div><label>هاتف</label><input type="text" id="rPhone" /></div>
+          <div><label>الفئة</label>
+            <select id="rTier">
+              <option value="bronze">Bronze</option>
+              <option value="silver">Silver</option>
+              <option value="gold">Gold</option>
+              <option value="platinum">Platinum</option>
+            </select>
+          </div>
+          <div><label>خصم شخصي (%)</label><input type="number" id="rDisc" value="0" min="0" max="90" /></div>
+          <div><label>رصيد أولي (أكواد)</label><input type="number" id="rBal" value="0" min="0" /></div>
+          <div><label>ملاحظات</label><input type="text" id="rNotes" /></div>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveResellerForm()">💾 حفظ + تفعيل</button>
+          <button class="btn btn-ghost" onclick="clearResellerForm()">🗑️ مسح</button>
+        </div>
+        <p style="margin-top:12px;color:rgba(255,255,255,.55);font-size:.82rem;line-height:1.7">
+          <b style="color:#a855f7">🚀 الطريقة السريعة:</b> الوكيل ينشئ حساباً من صفحة الدخول → يضغط زر «إرسال طلب التفعيل عبر واتساب» → تصلك رسالة فيها <b>رابط تفعيل مباشر</b>، اضغطه فيُفتح هذا النموذج معبّأً تلقائياً → اضغط «حفظ + تفعيل» وانتهى.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><h2>الوكلاء <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400" id="resellersCount">(0)</span></h2>
+          <button class="btn btn-ghost btn-sm" onclick="loadResellers()">🔄</button>
+        </div>
+        <div id="resellersOut"><div class="empty">جاري التحميل...</div></div>
+      </div>
+    </div>
+
+    <!-- PRICING (ADMIN ONLY) -->
+    <div id="tab-pricing" class="hidden">
+      <div class="panel">
+        <div class="panel-h"><h2>تسعير توليد الأكواد</h2></div>
+        <p style="margin:-4px 0 18px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          هذه الأرقام تستخدم لحساب تكلفة توليد الأكواد والوكلاء حسب الكمية. أسعار الباقات التي تظهر للعميل في الصفحة الرئيسية تُدار من تبويب <b>باقات الرئيسية</b>، ويمكن حسابها تلقائياً من هنا بزر واحد.
+        </p>
+        <div class="row">
+          <div><label>تكلفة الكود الواحد قبل الخصم</label><input type="number" id="pBase" step="0.01" /></div>
+          <div><label>العملة</label><input type="text" id="pCurr" maxlength="6" /></div>
+        </div>
+        <h3 style="margin:22px 0 10px;font-size:1rem">شرائح الخصم حسب الكمية</h3>
+        <div id="tiersBox"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addTier()" style="margin-top:8px">➕ إضافة شريحة</button>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="savePricing()">💾 حفظ التسعير</button>
+          <button class="btn btn-ghost" onclick="loadPricing()">تحديث</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PACKAGES (ADMIN ONLY) -->
+    <div id="tab-packages" class="hidden">
+      <!-- Brand & WhatsApp Settings -->
+      <div class="panel">
+        <div class="panel-h"><h2>⚙️ إعدادات الصفحة الرئيسية</h2></div>
+        <div class="row">
+          <div><label>اسم العلامة</label><input type="text" id="setBrand" placeholder="Telepathy Challenge" /></div>
+          <div><label>شعار / وصف قصير</label><input type="text" id="setTagline" placeholder="تحدي التخاطر..." /></div>
+          <div><label>رقم واتساب الاستلام (دولي بدون +)</label><input type="text" id="setWa" placeholder="2010xxxxxxxx" inputmode="tel" /></div>
+          <div><label>العملة الافتراضية</label>
+            <select id="setCurr">
+              <option value="USD">USD — $</option>
+              <option value="EUR">EUR — €</option>
+              <option value="SAR">SAR — ر.س</option>
+              <option value="AED">AED — د.إ</option>
+              <option value="EGP">EGP — ج.م</option>
+              <option value="QAR">QAR — ر.ق</option>
+              <option value="KWD">KWD — د.ك</option>
+            </select>
+          </div>
+        </div>
+        <h3 style="margin:22px 0 10px;font-size:1rem">نصوص الصفحة الرئيسية</h3>
+        <div class="row">
+          <div><label>عنوان Hero (H1)</label><input type="text" id="setHeroTitle" placeholder="هل تفكران بنفس الطريقة؟" /></div>
+          <div><label>وسم Hero</label><input type="text" id="setHeroBadge" placeholder="✨ الإصدار الجديد 2026" /></div>
+          <div style="grid-column:1/-1"><label>شرائح Hero (افصل بـ |)</label><input type="text" id="setHeroStats" placeholder="⚡ يبدأ فوري | 📱 يعمل على الجوال | 🎁 5 تحديات" /></div>
+          <div style="grid-column:1/-1"><label>رسالة واتساب للأعمال</label><input type="text" id="setBizMsg" placeholder="أرغب بمعرفة المزيد عن باقات الأعمال" /></div>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveSettingsForm()">💾 حفظ الإعدادات</button>
+          <button class="btn btn-ghost" onclick="loadSettingsForm()">↻ تحديث</button>
+        </div>
+        <p style="margin-top:10px;color:rgba(255,255,255,.45);font-size:.8rem">
+          رقم الواتساب يُستخدم في زر "اطلب الآن" بالصفحة الرئيسية. اتركه فارغاً ليُفتح اختيار رقم.
+        </p>
+      </div>
+
+      <!-- Add / Edit Package -->
+      <div class="panel">
+        <div class="panel-h"><h2 id="pkgFormTitle">➕ إضافة باقة للصفحة الرئيسية</h2></div>
+        <p style="margin:-4px 0 18px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          هنا تحدد سعر البيع الذي سيراه العميل في الرئيسية. لو تريد ربطه بتسعير الأكواد، اكتب عدد الأكواد ثم استخدم زر <b>استخدم السعر المحسوب</b>.
+        </p>
+        <div class="row">
+          <div><label>المعرف (id) — حروف إنجليزية صغيرة</label><input type="text" id="pkgId" placeholder="individual" /></div>
+          <div><label>الاسم</label><input type="text" id="pkgName" placeholder="فردي" /></div>
+          <div><label>أيقونة (إيموجي)</label><input type="text" id="pkgIcon" placeholder="💝" maxlength="4" /></div>
+          <div><label>سعر البيع في الرئيسية</label><input type="number" id="pkgPrice" step="0.01" min="0" /></div>
+          <div><label>العملة</label><input type="text" id="pkgCurr" placeholder="USD" maxlength="6" /></div>
+          <div><label>الترتيب</label><input type="number" id="pkgOrder" value="1" /></div>
+          <div><label>عدد الأكواد</label><input type="number" id="pkgCodes" value="1" min="1" /></div>
+          <div><label>جلسات لكل كود</label><input type="number" id="pkgSessions" value="5" min="1" /></div>
+          <div><label>وسم (badge — اتركه فارغاً للإخفاء)</label><input type="text" id="pkgBadge" placeholder="⭐ الأكثر طلباً" /></div>
+          <div><label>نص الزر</label><input type="text" id="pkgBtn" placeholder="اشترِ الآن" /></div>
+          <div><label>ملاحظة الوحدة</label><input type="text" id="pkgUnit" placeholder="دفعة واحدة" /></div>
+          <div><label>رسالة الواتساب</label><input type="text" id="pkgWa" placeholder="أرغب بشراء..." /></div>
+        </div>
+        <div id="pkgPriceHint" style="margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.18);color:rgba(255,255,255,.72);font-size:.86rem;line-height:1.7"></div>
+        <div style="margin-top:12px"><label>الوصف القصير</label>
+          <input type="text" id="pkgDesc" placeholder="مثالي لأمسية ممتعة..." />
+        </div>
+        <div style="margin-top:12px"><label>الميزات (سطر لكل ميزة)</label>
+          <textarea id="pkgFeatures" rows="5" style="width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-family:inherit;resize:vertical" placeholder="5 جلسات تحدي&#10;بطاقة نتيجة&#10;صلاحية سنة"></textarea>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="pkgVisible" checked /> <span>ظاهرة في الصفحة الرئيسية</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="pkgFeatured" /> <span>مميّزة (الأكثر طلباً) — واحدة فقط</span>
+          </label>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="savePackageForm()">💾 حفظ الباقة</button>
+          <button class="btn btn-ghost" onclick="clearPackageForm()">🗑️ مسح / جديد</button>
+          <button class="btn btn-ghost" onclick="seedDefaultsBtn()">🌱 إضافة الباقات الافتراضية</button>
+        </div>
+      </div>
+
+      <!-- Packages list -->
+      <div class="panel">
+        <div class="panel-h"><h2>الباقات الحالية <span id="pkgCount" style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400">(0)</span></h2>
+          <button class="btn btn-ghost btn-sm" onclick="loadPackagesList()">🔄 تحديث</button>
+        </div>
+        <div id="pkgListOut"><div class="empty">جاري التحميل...</div></div>
+      </div>
     </div>
 
     <!-- GENERATE TAB -->
-    <div id="tab-generate">
+    <div id="tab-generate" class="hidden">
       <div class="panel">
         <div class="panel-h"><h2>توليد أكواد جديدة</h2></div>
         <div class="row">
@@ -177,8 +522,10 @@
         <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn btn-primary" onclick="adminGenerate()">⚡ توليد</button>
           <button class="btn btn-ghost" onclick="copyGenerated()">📋 نسخ النتيجة</button>
+          <button class="btn btn-ghost" onclick="copyGeneratedLinks()">🔗 نسخ روابط اللعب</button>
         </div>
-        <div id="gOut" class="codes-out hidden"></div>
+        <div id="costPreview" style="margin-top:14px;padding:12px;border-radius:12px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);font-size:.92rem;display:none"></div>
+        <div id="gOut" class="hidden"></div>
       </div>
     </div>
 
@@ -187,19 +534,49 @@
       <div class="panel">
         <div class="panel-h">
           <h2>الأكواد <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400">(آخر 500)</span></h2>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <select id="fStatus" onchange="renderList()">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <select id="fStatus" onchange="syncStatusChips();renderList()" style="display:none">
               <option value="">كل الحالات</option>
               <option value="active">نشط</option>
               <option value="used">مستهلك</option>
               <option value="disabled">معطّل</option>
               <option value="expired">منتهي</option>
             </select>
-            <input type="text" id="fSearch" placeholder="🔎 بحث..." oninput="renderList()" style="width:auto" />
+            <select id="fType" onchange="renderList()">
+              <option value="">كل الأنواع</option>
+              <option value="individual">فردي</option>
+              <option value="business">شركات</option>
+            </select>
+            <select id="fSort" onchange="renderList()" title="ترتيب">
+              <option value="newest">الأحدث</option>
+              <option value="oldest">الأقدم</option>
+              <option value="remaining">الأكثر متبقي</option>
+              <option value="lowremaining">الأقل متبقي</option>
+              <option value="expiry">قرب الانتهاء</option>
+            </select>
+            <input type="text" id="fSearch" placeholder="🔎 كود أو وسم..." oninput="renderList()" style="width:auto" />
+            <span class="filter-chip" id="chipRemaining" onclick="toggleChip('chipRemaining')">⚡ مع رصيد متبقي</span>
+            <span class="filter-chip" id="chipUnsold" onclick="toggleSoldChip('unsold')">متاح للبيع</span>
+            <span class="filter-chip" id="chipSold" onclick="toggleSoldChip('sold')">تم بيعه</span>
+            <span class="filter-chip" id="chipView" onclick="toggleViewMode()" title="عرض">🃏 بطاقات</span>
+            <button class="btn btn-ghost btn-sm" onclick="exportCodesCsv()">📄 CSV</button>
             <button class="btn btn-ghost btn-sm" onclick="loadList()">🔄</button>
           </div>
         </div>
+        <div id="statusChipsBar" style="display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px"></div>
+        <div id="listSummary" class="list-summary"></div>
         <div id="listOut"><div class="empty">جاري التحميل...</div></div>
+        <div id="bulkBar" class="bulk-bar">
+          <div class="bb-info"><span id="bbCount">0</span> محدّد</div>
+          <div class="bb-actions">
+            <button class="btn btn-ghost btn-sm" onclick="bulkSelectAll()">تحديد الكل</button>
+            <button class="btn btn-ghost btn-sm" onclick="bulkClear()">إلغاء التحديد</button>
+            <button class="btn btn-ghost btn-sm" onclick="bulkCopyLinks()">🔗 نسخ الروابط</button>
+            <button class="btn btn-ghost btn-sm" onclick="bulkSetStatus('active')">✅ تفعيل</button>
+            <button class="btn btn-ghost btn-sm" onclick="bulkSetStatus('disabled')">⏸ إيقاف</button>
+            <button class="btn btn-danger btn-sm" onclick="bulkDelete()">🗑 حذف</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -211,14 +588,20 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="/js/codes.js"></script>
+<script src="/js/codes.js?v=37"></script>
 <script>
   TPCodes.init();
   const auth = firebase.auth();
   const db = firebase.database();
 
   let allCodes = [];
+  let allOrders = [];
   let lastGenerated = [];
+  let role = null;          // 'admin' | 'reseller'
+  let myUid = null;
+  let myReseller = null;    // when role === 'reseller'
+  let pricingCache = null;
+  let soldFilter = '';
 
   function toast(msg, isErr) {
     const el = document.createElement('div');
@@ -231,20 +614,48 @@
   // ---------------- AUTH ----------------
   auth.onAuthStateChanged(async (u) => {
     if (!u) { showLogin(); return; }
-    // check admin
+    myUid = u.uid;
+    // 1) admin?
     try {
-      const snap = await db.ref('admins/' + u.uid).once('value');
-      if (snap.val() !== true) {
-        document.getElementById('loginMsg').textContent =
-          'تم تسجيل دخولك (UID: ' + u.uid + ') لكنك لست في قائمة المسؤولين. أضف هذا المعرّف يدوياً في Firebase Console عند /admins/';
-        await auth.signOut();
+      const adminSnap = await db.ref('admins/' + u.uid).once('value');
+      if (adminSnap.val() === true) {
+        role = 'admin';
+        showDash(u);
         return;
       }
-    } catch(e) {
-      document.getElementById('loginMsg').textContent = 'تعذّر التحقق من صلاحيات المسؤول. ربما لم يتم نشر القواعد بعد.';
-      return;
-    }
-    showDash(u);
+    } catch(e) { /* ignore */ }
+    // 2) reseller?
+    let pendingReseller = null;
+    try {
+      const rs = await db.ref('resellers/' + u.uid).once('value');
+      const rv = rs.val();
+      if (rv && rv.active === true) {
+        role = 'reseller';
+        myReseller = rv;
+        showDash(u);
+        return;
+      }
+      if (rv) pendingReseller = rv;
+    } catch(e) { /* ignore */ }
+    // 3) neither (or reseller pending activation)
+    let waNum = '';
+    try { const s = await TPCodes.getSettings(); waNum = String(s.whatsappNumber||'').replace(/[^\d+]/g,'').replace(/^\+/,''); } catch(_) {}
+    const activateLink = location.origin + '/admin.html?activate=' + encodeURIComponent(u.uid) + '&email=' + encodeURIComponent(u.email||'');
+    const reqMsg = encodeURIComponent('أرغب بتفعيل حسابي كوكيل في تخاطر\nالبريد: ' + (u.email||'') + '\nUID: ' + u.uid + '\n\n🔗 رابط التفعيل المباشر للأدمن:\n' + activateLink);
+    const waBtn = waNum
+      ? '<a href="https://wa.me/' + waNum + '?text=' + reqMsg + '" target="_blank" style="display:inline-block;margin-top:10px;background:#25D366;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:700">📲 إرسال طلب التفعيل عبر واتساب</a>'
+      : '<button onclick="navigator.clipboard.writeText(\'' + u.uid + '\').then(()=>this.textContent=\'✓ تم نسخ UID\')" style="display:inline-block;margin-top:10px;background:#a855f7;color:#fff;padding:10px 18px;border-radius:10px;border:0;font-weight:700;cursor:pointer">📋 نسخ UID</button>';
+    const headerTxt = pendingReseller
+      ? '⏸ <b>حسابك مسجّل لكنه موقوف</b>'
+      : '⏳ <b>حسابك جاهز لكنه ينتظر التفعيل</b>';
+    document.getElementById('loginMsg').innerHTML =
+      '<div style="background:#1a0e3a;border:1px solid rgba(168,85,247,.4);border-radius:12px;padding:16px;text-align:center;color:#f4e4a3">'
+      + '<div style="font-size:1rem;margin-bottom:8px">' + headerTxt + '</div>'
+      + '<div style="font-size:.82rem;color:rgba(255,255,255,.65);margin-bottom:10px">المعرّف التالي يحتاج تفعيل من الإدارة:</div>'
+      + '<code style="display:block;background:#0d0a25;color:#a855f7;padding:10px 14px;border-radius:8px;direction:ltr;font-size:.9rem;user-select:all;word-break:break-all">' + u.uid + '</code>'
+      + waBtn
+      + '</div>';
+    await auth.signOut();
   });
 
   function showLogin() {
@@ -254,63 +665,248 @@
   function showDash(u) {
     document.getElementById('loginView').classList.add('hidden');
     document.getElementById('dashView').classList.remove('hidden');
-    document.getElementById('meEmail').textContent = u.email || u.uid;
+    const me = u.email || u.uid;
+    document.getElementById('meEmail').innerHTML = escapeHtml(me) + ' <span class="role-chip">' + (role === 'reseller' ? 'وكيل' : 'أدمن') + '</span>';
+    // toggle role-specific elements
+    document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', role !== 'admin'));
+    document.querySelectorAll('.reseller-only').forEach(el => el.classList.toggle('hidden', role !== 'reseller'));
     refreshStats();
-    loadList();
+    loadDashboardOverview();
+    loadPricing().catch(()=>{});
+    if (role === 'admin') { loadResellers(); loadOpsLog(); loadOrders(); }
+    if (role === 'reseller') loadWallet();
+    setupCostPreview();
+    setupPackagePriceHelper();
+    // deep-link: ?activate=UID&email=EMAIL → open resellers tab and prefill
+    if (role === 'admin') handleActivateDeepLink();
+  }
+
+  function handleActivateDeepLink() {
+    try {
+      const params = new URLSearchParams(location.search);
+      const uid = params.get('activate');
+      const email = params.get('email') || '';
+      if (!uid) return;
+      activateTab('resellers');
+      setTimeout(() => {
+        const u = document.getElementById('rUid'); if (u) u.value = uid;
+        const e = document.getElementById('rEmail'); if (e) e.value = email;
+        const t = document.getElementById('rTier'); if (t) t.value = 'bronze';
+        const d = document.getElementById('rDisc'); if (d) d.value = '20';
+        const b = document.getElementById('rBal'); if (b) b.value = '10';
+        const card = document.querySelector('#tab-resellers .panel');
+        if (card) {
+          card.style.transition = 'box-shadow .4s';
+          card.style.boxShadow = '0 0 0 3px #a855f7, 0 0 30px rgba(168,85,247,.4)';
+          card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setTimeout(() => card.style.boxShadow = '', 3000);
+        }
+        toast('🚀 وكيل جديد جاهز للتفعيل — راجع البيانات ثم اضغط حفظ');
+        // clean URL so reload doesn't re-trigger
+        history.replaceState({}, '', '/admin.html');
+      }, 350);
+    } catch(_) {}
   }
 
   async function adminLogin() {
     const email = document.getElementById('loginEmail').value.trim();
     const pass  = document.getElementById('loginPass').value;
     const msg = document.getElementById('loginMsg');
+    if (!email || !pass) { msg.textContent = '✕ أدخل البريد وكلمة السر'; return; }
     msg.textContent = '⏳ جاري الدخول...';
     try {
-      try { await auth.signInWithEmailAndPassword(email, pass); }
-      catch(e) {
-        if (e.code === 'auth/user-not-found') {
-          // first-time bootstrap: create the account
-          await auth.createUserWithEmailAndPassword(email, pass);
-          msg.innerHTML = '✓ تم إنشاء الحساب. الـ UID الخاص بك:<br><b style="color:#a855f7">' + auth.currentUser.uid + '</b><br>أضفه يدوياً في Firebase Console عند: <code>admins/' + auth.currentUser.uid + ' = true</code>';
-          return;
-        }
-        throw e;
-      }
-    } catch(e) {
-      msg.textContent = '✕ ' + (e.message || 'فشل تسجيل الدخول');
+      await auth.signInWithEmailAndPassword(email, pass);
+    } catch (e) {
+      const friendly = {
+        'auth/invalid-email': 'صيغة البريد غير صحيحة',
+        'auth/user-not-found': 'الحساب غير موجود — جرّب «حساب جديد»',
+        'auth/wrong-password': 'كلمة السر غير صحيحة',
+        'auth/invalid-credential': 'بيانات الدخول غير صحيحة',
+        'auth/invalid-login-credentials': 'بيانات الدخول غير صحيحة',
+        'auth/too-many-requests': 'محاولات كثيرة، حاول لاحقاً',
+        'auth/network-request-failed': 'تعذّر الاتصال بالشبكة'
+      }[e.code] || (e.message || 'فشل الدخول');
+      msg.textContent = '✕ ' + friendly;
+    }
+  }
+
+  let signupMode = false;
+  function toggleSignupMode() {
+    signupMode = !signupMode;
+    document.getElementById('loginSubtitle').textContent = signupMode
+      ? 'أنشئ حساباً جديداً للوكيل (ستحتاج تفعيل من الإدارة)'
+      : 'سجّل دخول للوصول إلى إدارة الأكواد';
+    document.getElementById('loginPassLabel').textContent = signupMode ? 'كلمة سر جديدة (6 أحرف على الأقل)' : 'كلمة المرور';
+    document.getElementById('loginPass').autocomplete = signupMode ? 'new-password' : 'current-password';
+    document.getElementById('loginPass').value = '';
+    const primary = document.getElementById('loginPrimaryBtn');
+    primary.textContent = signupMode ? 'إنشاء حساب جديد' : 'دخول';
+    primary.setAttribute('onclick', signupMode ? 'adminSignup()' : 'adminLogin()');
+    document.getElementById('loginToggleBtn').textContent = signupMode ? '← لديّ حساب — رجوع للدخول' : 'حساب جديد للوكلاء؟ سجّل من هنا';
+    document.getElementById('loginForgotBtn').style.display = signupMode ? 'none' : '';
+    document.getElementById('loginMsg').textContent = '';
+  }
+
+  async function adminSignup() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const msg = document.getElementById('loginMsg');
+    if (!email || !pass) { msg.textContent = '✕ أدخل البريد وكلمة سر'; return; }
+    if (pass.length < 6) { msg.textContent = '✕ كلمة السر يجب أن تكون 6 أحرف على الأقل'; return; }
+    msg.textContent = '⏳ جاري إنشاء الحساب...';
+    try {
+      await auth.createUserWithEmailAndPassword(email, pass);
+      // onAuthStateChanged سيعرض رسالة "غير مخوّل + UID" تلقائياً
+    } catch (e) {
+      const friendly = {
+        'auth/email-already-in-use': 'هذا البريد مسجّل مسبقاً — جرّب «دخول» بدلاً من إنشاء',
+        'auth/invalid-email': 'صيغة البريد غير صحيحة',
+        'auth/weak-password': 'كلمة السر ضعيفة جداً',
+        'auth/operation-not-allowed': 'إنشاء الحسابات معطّل في Firebase Console',
+        'auth/network-request-failed': 'تعذّر الاتصال بالشبكة'
+      }[e.code] || (e.message || 'فشل إنشاء الحساب');
+      msg.textContent = '✕ ' + friendly;
+    }
+  }
+  async function adminPasswordReset() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const msg = document.getElementById('loginMsg');
+    if (!email) { msg.textContent = '✕ أدخل البريد أولاً'; return; }
+    msg.textContent = '⏳ جاري الإرسال...';
+    try {
+      await auth.sendPasswordResetEmail(email);
+      msg.textContent = '✓ تم إرسال رابط استعادة كلمة السر إلى ' + email;
+    } catch (e) {
+      msg.textContent = '✕ ' + (e.message || 'تعذّر الإرسال');
     }
   }
   async function adminLogout() { await auth.signOut(); }
 
   // ---------------- TABS ----------------
+  function activateTab(tabName) {
+    const t = document.querySelector('.tab[data-tab="' + tabName + '"]');
+    if (t) t.click();
+  }
   document.querySelectorAll('.tab').forEach(t => {
     t.onclick = () => {
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
       t.classList.add('active');
-      ['generate','list'].forEach(k => {
-        document.getElementById('tab-'+k).classList.toggle('hidden', k !== t.dataset.tab);
+      ['overview','orders','generate','list','resellers','pricing','packages','wallet'].forEach(k => {
+        const el = document.getElementById('tab-'+k);
+        if (el) el.classList.toggle('hidden', k !== t.dataset.tab);
       });
+      if (t.dataset.tab === 'overview') { loadDashboardOverview(); if (role === 'admin') loadOpsLog(); }
+      if (t.dataset.tab === 'orders') loadOrders();
+      if (t.dataset.tab === 'list') loadList();
+      if (t.dataset.tab === 'resellers') loadResellers();
+      if (t.dataset.tab === 'pricing') loadPricing();
+      if (t.dataset.tab === 'packages') { loadSettingsForm(); loadPackagesList(); }
+      if (t.dataset.tab === 'wallet') loadWallet();
     };
   });
 
   // ---------------- STATS ----------------
   async function refreshStats() {
     try {
-      const [snap, statSnap] = await Promise.all([
-        db.ref('accessCodes').orderByChild('createdAt').limitToLast(500).once('value'),
-        db.ref('stats/totals').once('value'),
-      ]);
-      let active = 0, used = 0;
-      snap.forEach(s => {
-        const v = s.val();
-        if (v.status === 'active') active++;
-        else if (v.status === 'used') used++;
-      });
-      document.getElementById('sActive').textContent = active;
-      document.getElementById('sUsed').textContent = used;
-      const st = statSnap.val() || {};
-      document.getElementById('sSessions').textContent = st.sessionsPlayed || 0;
-      document.getElementById('sShares').textContent = st.cardsShared || 0;
+      let active = 0, used = 0, sessions = 0;
+      if (role === 'admin') {
+        const [snap, statSnap] = await Promise.all([
+          db.ref('accessCodes').once('value'),
+          db.ref('stats/totals').once('value'),
+        ]);
+        snap.forEach(s => {
+          const v = s.val();
+          if (v.status === 'active') active++;
+          else if (v.status === 'used') used++;
+          sessions += Number(v.usedSessions || 0);
+        });
+        document.getElementById('sActive').textContent = active;
+        document.getElementById('sUsed').textContent = used;
+        const st = statSnap.val() || {};
+        document.getElementById('sSessions').textContent = st.sessionsPlayed || sessions;
+        document.getElementById('sShares').textContent = st.cardsShared || 0;
+      } else if (role === 'reseller') {
+        const arr = await TPCodes.listMyCodes(myUid);
+        arr.forEach(v => {
+          if (v.status === 'active') active++;
+          else if (v.status === 'used') used++;
+          sessions += Number(v.usedSessions || 0);
+        });
+        document.getElementById('sActive').textContent = active;
+        document.getElementById('sUsed').textContent = used;
+        document.getElementById('sSessions').textContent = sessions;
+        const rs = await TPCodes.getReseller(myUid);
+        myReseller = rs || myReseller;
+        document.getElementById('sShares').textContent = (rs && rs.balance) || 0;
+        // عنوان بطاقة الرصيد
+        const lbl = document.querySelector('#sShares').previousElementSibling;
+        if (lbl) lbl.textContent = 'رصيدي';
+      }
     } catch(e) { console.warn(e); }
+  }
+
+  async function loadDashboardOverview() {
+    const cards = document.getElementById('overviewCards');
+    const ops = document.getElementById('opsChecklist');
+    if (!cards || !ops) return;
+    cards.innerHTML = '<div class="empty" style="grid-column:1/-1">⏳ جاري تحميل المؤشرات...</div>';
+    ops.innerHTML = '<div class="empty">⏳ جاري الفحص...</div>';
+    try {
+      if (role === 'reseller') {
+        const [codes, reseller] = await Promise.all([TPCodes.listMyCodes(myUid), TPCodes.getReseller(myUid)]);
+        const active = codes.filter(c => c.status === 'active').length;
+        const used = codes.filter(c => c.status === 'used').length;
+        const sessions = codes.reduce((n,c) => n + Number(c.usedSessions || 0), 0);
+        const balance = Number((reseller && reseller.balance) || 0);
+        cards.innerHTML = metricCard('رصيدك', balance, 'كود متاح للتوليد', balance > 0 ? 'good' : 'warn')
+          + metricCard('أكواد نشطة', active, 'جاهزة للإرسال للعملاء', active ? 'good' : '')
+          + metricCard('أكواد مكتملة', used, 'استهلكت كل الجلسات', '')
+          + metricCard('جلسات مستخدمة', sessions, 'من أكوادك فقط', '');
+        ops.innerHTML = opsItem(balance > 0, 'الرصيد متاح', balance > 0 ? 'يمكنك توليد أكواد جديدة' : 'اطلب شحن رصيد من الإدارة')
+          + opsItem(active > 0, 'لديك أكواد جاهزة', active > 0 ? 'انسخ روابط اللعب من قائمة الأكواد' : 'ولّد أول دفعة من تبويب التوليد')
+          + opsItem(!!reseller && reseller.active === true, 'حساب الوكيل نشط', 'صلاحيات التوليد متاحة');
+        return;
+      }
+
+      const [codes, packagesList, resellers, settings, statSnap, orders] = await Promise.all([
+        TPCodes.listCodes(),
+        TPCodes.listPackages(),
+        TPCodes.listResellers(),
+        TPCodes.getSettings(),
+        db.ref('stats/totals').once('value'),
+        TPCodes.listOrders({ limit: 200 })
+      ]);
+      const totals = statSnap.val() || {};
+      const active = codes.filter(c => c.status === 'active').length;
+      const used = codes.filter(c => c.status === 'used').length;
+      const disabled = codes.filter(c => c.status === 'disabled').length;
+      const expired = codes.filter(c => c.status === 'expired').length;
+      const sessions = totals.sessionsPlayed || codes.reduce((n,c) => n + Number(c.usedSessions || 0), 0);
+      const visiblePackages = packagesList.filter(p => p.visible !== false).length;
+      const activeResellers = resellers.filter(r => r.active).length;
+      const pendingOrders = orders.filter(o => o.status === 'pending').length;
+      const noWhatsApp = !String(settings.whatsappNumber || '').trim();
+
+      cards.innerHTML = metricCard('أكواد نشطة', active, 'جاهزة للاستخدام', active ? 'good' : 'warn')
+        + metricCard('جلسات لعب', sessions, 'إجمالي الجلسات المسجلة', '')
+        + metricCard('طلبات تنتظر', pendingOrders, 'تحتاج تسليم كود', pendingOrders ? 'warn' : 'good')
+        + metricCard('وكلاء نشطون', activeResellers + '/' + resellers.length, 'شبكة البيع الحالية', activeResellers ? 'good' : '');
+      ops.innerHTML = opsItem(visiblePackages > 0, 'باقات الصفحة الرئيسية', visiblePackages > 0 ? 'هناك باقات ظاهرة للعملاء' : 'لا توجد باقات ظاهرة حالياً')
+        + opsItem(!noWhatsApp, 'رقم واتساب الطلبات', noWhatsApp ? 'أضف الرقم من تبويب الباقات' : 'زر الطلب يذهب للرقم المحدد')
+        + opsItem(pendingOrders === 0, 'طلبات الشراء', pendingOrders ? pendingOrders + ' طلب ينتظر التسليم' : 'لا توجد طلبات معلقة')
+        + opsItem(active > 0, 'مخزون الأكواد', active > 0 ? active + ' كود نشط' : 'ولّد أكواد جديدة قبل التسويق')
+        + opsItem(disabled + expired === 0, 'أكواد متوقفة/منتهية', (disabled + expired) ? (disabled + expired) + ' تحتاج مراجعة' : 'لا توجد مشاكل ظاهرة')
+        + opsItem(used >= 0, 'الأداء', used + ' كود اكتمل استخدامه');
+    } catch(e) {
+      cards.innerHTML = '<div class="empty" style="grid-column:1/-1">تعذّر تحميل المؤشرات: ' + escapeHtml(e.message || e.code || e) + '</div>';
+      ops.innerHTML = '<div class="empty">تعذّر الفحص</div>';
+    }
+  }
+  function metricCard(label, value, note, tone) {
+    return `<div class="metric-card ${tone || ''}"><div class="metric-k">${escapeHtml(label)}</div><div class="metric-v">${escapeHtml(value)}</div><div class="metric-note">${escapeHtml(note || '')}</div></div>`;
+  }
+  function opsItem(ok, title, note) {
+    return `<div class="ops-item"><div><b>${ok ? '✓' : '!' } ${escapeHtml(title)}</b><br><span>${escapeHtml(note || '')}</span></div><span class="pill ${ok ? 'active' : 'expired'}">${ok ? 'جاهز' : 'انتبه'}</span></div>`;
   }
 
   // ---------------- GENERATE ----------------
@@ -328,7 +924,18 @@
     out.textContent = '⏳ جاري التوليد...';
     try {
       let codes = [];
-      if (count === 1) {
+      if (role === 'reseller') {
+        // تحقق من الرصيد
+        const rs = await TPCodes.getReseller(myUid);
+        const bal = (rs && rs.balance) || 0;
+        if (bal < count) {
+          out.textContent = '✕ الرصيد المتاح ' + bal + ' فقط. اطلب شحناً من الإدارة.';
+          toast('الرصيد غير كافي', true);
+          return;
+        }
+        const res = await TPCodes.resellerCreateBatch({ ...opts, count, resellerId: myUid });
+        codes = res.codes;
+      } else if (count === 1) {
         const c = await TPCodes.createOne(opts);
         codes = [c];
       } else {
@@ -336,12 +943,15 @@
         codes = res.codes;
       }
       lastGenerated = codes;
-      out.textContent = codes.map(c => c.code).join('\n');
+      out.innerHTML = renderCodeCards(codes, true);
       toast(`✓ تم توليد ${codes.length} كود`);
       refreshStats();
-      if (document.getElementById('tab-list').classList.contains('hidden') === false) loadList();
+      loadList();
+      if (role === 'reseller') loadWallet();
     } catch(e) {
-      out.textContent = '✕ خطأ: ' + (e.message || e);
+      const msg = (e && e.message) || (e && e.code) || String(e);
+      const friendly = msg === 'insufficient_balance' ? 'الرصيد غير كافي' : msg;
+      out.textContent = '✕ خطأ: ' + friendly;
       toast('فشل التوليد', true);
     }
   }
@@ -350,57 +960,252 @@
     const txt = lastGenerated.map(c => c.code).join('\n');
     navigator.clipboard.writeText(txt).then(() => toast('✓ تم النسخ'));
   }
+  function copyGeneratedLinks() {
+    if (!lastGenerated.length) { toast('لا توجد روابط', true); return; }
+    const txt = lastGenerated.map(c => playLink(c.code)).join('\n');
+    navigator.clipboard.writeText(txt).then(() => toast('✓ تم نسخ روابط اللعب'));
+  }
+
+  // معاينة تكلفة حية
+  function setupCostPreview() {
+    ['gCount','gType','gMax'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateCostPreview);
+    });
+    updateCostPreview();
+  }
+  async function updateCostPreview() {
+    const box = document.getElementById('costPreview');
+    if (!box) return;
+    if (!pricingCache) { try { pricingCache = await TPCodes.getPricing(); } catch(_){ pricingCache = TPCodes.DEFAULT_PRICING; } }
+    const count = Math.max(1, Math.min(500, +document.getElementById('gCount').value || 1));
+    const personal = role === 'reseller' ? Number((myReseller && myReseller.discountPct) || 0) : 0;
+    const p = TPCodes.priceFor(count, pricingCache, personal);
+    let extra = '';
+    if (role === 'reseller') {
+      const bal = Number((myReseller && myReseller.balance) || 0);
+      const ok = bal >= count;
+      extra = `<div style="margin-top:6px;color:${ok ? '#86efac':'#fca5a5'}">الرصيد الحالي: <b>${bal}</b> — ${ok ? '✓ كافي' : '✕ غير كافي'}</div>`;
+    }
+    box.style.display = 'block';
+    box.innerHTML = `
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
+        <div><b>${count}</b> كود × ${p.unit} ${p.currency} = <b style="color:#a855f7;font-size:1.1em">${p.total} ${p.currency}</b></div>
+        <div style="font-size:.82rem;color:rgba(255,255,255,.65)">
+          خصم شريحة: ${p.tierDiscountPct}%${personal ? ' • شخصي: ' + personal + '%' : ''} • إجمالي: ${p.totalDiscountPct}%
+        </div>
+      </div>${extra}`;
+  }
 
   // ---------------- LIST ----------------
   async function loadList() {
-    document.getElementById('listOut').innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+    const out = document.getElementById('listOut');
+    if (!out) return;
+    out.innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
     try {
-      allCodes = await TPCodes.listCodes();
+      allCodes = role === 'reseller'
+        ? await TPCodes.listMyCodes(myUid)
+        : await TPCodes.listCodes();
       renderList();
     } catch(e) {
-      document.getElementById('listOut').innerHTML = '<div class="empty">✕ تعذّر التحميل</div>';
+      out.innerHTML = '<div class="empty">✕ تعذّر التحميل<br><span style="font-size:.8rem;color:rgba(255,255,255,.45)">' + escapeHtml(e.message || e.code || e) + '</span></div>';
     }
   }
 
   function renderList() {
     const status = document.getElementById('fStatus').value;
+    const type = (document.getElementById('fType')||{}).value || '';
+    const sort = (document.getElementById('fSort')||{}).value || 'newest';
+    const onlyRem = document.getElementById('chipRemaining') && document.getElementById('chipRemaining').classList.contains('on');
     const q = document.getElementById('fSearch').value.toLowerCase().trim();
-    let arr = allCodes;
-    if (status) arr = arr.filter(c => c.status === status);
-    if (q) arr = arr.filter(c => (c.code + ' ' + (c.label||'')).toLowerCase().includes(q));
+    const soldMode = soldFilter;
+
+    // Counts for status chips (respect type/search/remaining, ignore current status pick)
+    const baseArr = allCodes.filter(c => {
+      if (type && (c.type||'individual') !== type) return false;
+      if (onlyRem && Math.max(0,(c.maxSessions||0)-(c.usedSessions||0)) <= 0) return false;
+      if (soldMode === 'sold' && !c.sold) return false;
+      if (soldMode === 'unsold' && c.sold) return false;
+      if (q && !((c.code + ' ' + (c.label||'')).toLowerCase().includes(q))) return false;
+      return true;
+    });
+    renderStatusChips(baseArr, status);
+
+    let arr = baseArr.slice();
+    if (status === 'forsale') {
+      arr = arr.filter(c => c.status === 'active' && !c.sold && Math.max(0,(c.maxSessions||0)-(c.usedSessions||0)) > 0 && !(c.expiresAt && c.expiresAt < Date.now()));
+    } else if (status) {
+      arr = arr.filter(c => c.status === status);
+    }
+
+    const remOf = c => Math.max(0,(c.maxSessions||0)-(c.usedSessions||0));
+    const expOf = c => c.expiresAt || Infinity;
+    if (sort === 'oldest')        arr.sort((a,b)=> (a.createdAt||0)-(b.createdAt||0));
+    else if (sort === 'remaining') arr.sort((a,b)=> remOf(b)-remOf(a));
+    else if (sort === 'lowremaining') arr.sort((a,b)=> remOf(a)-remOf(b));
+    else if (sort === 'expiry')   arr.sort((a,b)=> expOf(a)-expOf(b));
+    else                          arr.sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+
+    // Summary strip
+    const sums = arr.reduce((acc,c)=>{
+      acc.total++;
+      acc[c.status] = (acc[c.status]||0)+1;
+      acc.remaining += remOf(c);
+      acc.used += Number(c.usedSessions||0);
+      if (c.sold) acc.sold++;
+      return acc;
+    }, {total:0, remaining:0, used:0, sold:0});
+    const sumEl = document.getElementById('listSummary');
+    if (sumEl) sumEl.innerHTML = ''
+      + `<div class="sum"><span>المعروض</span><b>${sums.total}</b></div>`
+      + `<div class="sum good"><span>نشط</span><b>${sums.active||0}</b></div>`
+      + `<div class="sum"><span>مستهلك</span><b>${sums.used||0}</b></div>`
+      + `<div class="sum warn"><span>تم بيعه</span><b>${sums.sold||0}</b></div>`
+      + `<div class="sum bad"><span>معطّل/منتهي</span><b>${(sums.disabled||0)+(sums.expired||0)}</b></div>`
+      + `<div class="sum good"><span>إجمالي جلسات متبقية</span><b>${sums.remaining}</b></div>`;
 
     if (!arr.length) {
-      document.getElementById('listOut').innerHTML = '<div class="empty">لا توجد أكواد</div>';
+      document.getElementById('listOut').innerHTML = '<div class="empty">لا توجد أكواد مطابقة</div>';
+      updateBulkBar();
       return;
     }
-    let html = `<table class="tbl">
-      <thead><tr>
-        <th>الكود</th><th>النوع</th><th>الحالة</th><th>الاستخدام</th><th>الوسم</th><th>تاريخ</th><th></th>
-      </tr></thead><tbody>`;
-    arr.forEach(c => {
-      html += `<tr>
-        <td class="code-cell">${c.code}</td>
-        <td><span class="pill ${c.type}">${c.type === 'business' ? 'شركات' : 'فردي'}</span></td>
-        <td><span class="pill ${c.status}">${labelStatus(c.status)}</span></td>
-        <td>${c.usedSessions}/${c.maxSessions}</td>
-        <td style="color:rgba(255,255,255,.6)">${escapeHtml(c.label || '-')}</td>
-        <td style="color:rgba(255,255,255,.45);font-size:.78rem">${TPCodes.fmtDate(c.createdAt)}</td>
-        <td>
-          ${c.status === 'active'
-            ? `<button class="btn btn-danger btn-sm" onclick="toggleCode('${c.code}','disabled')">إيقاف</button>`
-            : c.status === 'disabled'
-              ? `<button class="btn btn-ghost btn-sm" onclick="toggleCode('${c.code}','active')">تفعيل</button>`
-              : '-'
-          }
-          <button class="btn btn-ghost btn-sm" onclick="copyOne('${c.code}')">📋</button>
-        </td>
-      </tr>`;
-    });
-    html += '</tbody></table>';
+
+    const mode = (window.__listView || 'cards');
+    let html = '';
+    if (mode === 'cards') {
+      html = renderCodeCards(arr, true);
+    } else {
+      html = `<table class="tbl">
+        <thead><tr>
+          <th><input type="checkbox" id="thAll" onclick="bulkToggleAll(this.checked)"></th>
+          <th>الكود</th><th>النوع</th><th>الحالة</th><th>الاستخدام</th><th>المتبقي</th><th>الصلاحية</th><th>الوسم</th><th>تاريخ</th><th></th>
+        </tr></thead><tbody>`;
+      arr.forEach(c => {
+        const remaining = remOf(c);
+        const checked = bulkSel.has(c.code) ? 'checked' : '';
+        html += `<tr>
+          <td><input type="checkbox" class="bulk-chk" data-code="${c.code}" ${checked} onclick="bulkToggle('${c.code}', this.checked)"></td>
+          <td class="code-cell">${c.code}</td>
+          <td><span class="pill ${c.type}">${c.type === 'business' ? 'شركات' : 'فردي'}</span></td>
+          <td><span class="pill ${c.status}">${labelStatus(c.status)}</span> ${saleBadge(c)}</td>
+          <td>${c.usedSessions}/${c.maxSessions}</td>
+          <td style="font-weight:900;color:${remaining ? '#86efac' : '#fca5a5'}">${remaining}</td>
+          <td style="color:rgba(255,255,255,.55);font-size:.78rem">${expiryText(c)}</td>
+          <td style="color:rgba(255,255,255,.6)">${escapeHtml(c.label || '-')}</td>
+          <td style="color:rgba(255,255,255,.45);font-size:.78rem">${TPCodes.fmtDate(c.createdAt)}</td>
+          <td>
+            ${c.status === 'active'
+              ? `<button class="btn btn-ghost btn-sm" onclick="toggleCode('${c.code}','disabled')">إيقاف</button>`
+              : c.status === 'disabled'
+                ? `<button class="btn btn-ghost btn-sm" onclick="toggleCode('${c.code}','active')">تفعيل</button>`
+                : '-'
+            }
+            <button class="btn btn-ghost btn-sm" onclick="openCustomerCard('${c.code}')">🪪 بطاقة</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyOne('${c.code}')">📋</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyPlayLink('${c.code}')">🔗</button>
+            <button class="btn btn-ghost btn-sm" onclick="sendWhatsApp('${c.code}')">واتساب</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCode('${c.code}')">حذف</button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+    }
     document.getElementById('listOut').innerHTML = html;
+    updateBulkBar();
   }
   function labelStatus(s){return {active:'نشط',used:'مستهلك',disabled:'معطّل',expired:'منتهي'}[s]||s;}
+
+  function renderStatusChips(baseArr, current) {
+    const bar = document.getElementById('statusChipsBar');
+    if (!bar) return;
+    const counts = baseArr.reduce((a,c)=>{ a[c.status]=(a[c.status]||0)+1; return a; }, {});
+    const items = [
+      { v:'',         lbl:'الكل',     cnt: baseArr.length },
+      { v:'active',   lbl:'نشط',      cnt: counts.active   || 0 },
+      { v:'used',     lbl:'مستهلك',   cnt: counts.used     || 0 },
+      { v:'disabled', lbl:'موقوف',    cnt: counts.disabled || 0 },
+      { v:'expired',  lbl:'منتهي',    cnt: counts.expired  || 0 },
+    ];
+    // زر فلترة الأكواد المتاحة للبيع فقط
+    bar.innerHTML = `<span class="status-chip${current==='forsale'?' on':''}" data-st="forsale" onclick="pickStatus('forsale')">المتاحة للبيع فقط<span class="cnt">${baseArr.filter(c=>c.status==='active'&&!c.sold&&Math.max(0,(c.maxSessions||0)-(c.usedSessions||0))>0&&!(c.expiresAt&&c.expiresAt<Date.now())).length}</span></span>`
+      + items.map(it =>
+      `<span class="status-chip${it.v === current ? ' on' : ''}" data-st="${it.v||'all'}" onclick="pickStatus('${it.v}')">${it.lbl}<span class="cnt">${it.cnt}</span></span>`
+    ).join('');
+  }
+  function pickStatus(v) {
+    const sel = document.getElementById('fStatus'); if (!sel) return;
+    sel.value = v;
+    renderList();
+  }
+  function toggleSoldChip(mode) {
+    soldFilter = soldFilter === mode ? '' : mode;
+    const unsold = document.getElementById('chipUnsold');
+    const sold = document.getElementById('chipSold');
+    if (unsold) unsold.classList.toggle('on', soldFilter === 'unsold');
+    if (sold) sold.classList.toggle('on', soldFilter === 'sold');
+    renderList();
+  }
+  function saleBadge(c) {
+    const remaining = Math.max(0, (c.maxSessions || 0) - (c.usedSessions || 0));
+    const expired = c.status === 'expired' || (c.expiresAt && c.expiresAt < Date.now());
+    if (c.sold) return '<span class="pill used">تم بيعه</span>';
+    if (c.status === 'used') return '<span class="pill used">مستهلك</span>';
+    if (c.status === 'expired' || expired) return '<span class="pill expired">منتهي</span>';
+    if (c.status === 'disabled') return '<span class="pill disabled">موقوف</span>';
+    if (c.status === 'active' && !c.sold && remaining > 0 && !expired) return '<span class="pill active">متاح للبيع</span>';
+    return '';
+  }
+  function syncStatusChips() {
+    // No-op: renderList rebuilds the chips on every render
+  }
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+  function qrUrl(text){return 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=2&qzone=1&format=png&data=' + encodeURIComponent(text);}
+  function expiryText(c){
+    if (!c.expiresAt) return '-';
+    const days = Math.ceil((c.expiresAt - Date.now()) / 86400000);
+    if (days < 0) return 'منتهي';
+    if (days === 0) return 'ينتهي اليوم';
+    return days + ' يوم';
+  }
+  function renderCodeCards(codes, showAll) {
+    const visible = showAll ? codes : codes.slice(0, 12);
+    if (!visible.length) return '<div class="empty">لا توجد أكواد</div>';
+    return '<div class="cards-grid">' + visible.map(c => {
+      const remaining = Math.max(0, (c.maxSessions || 0) - (c.usedSessions || 0));
+      const link = playLink(c.code);
+      const checked = bulkSel.has(c.code) ? 'checked' : '';
+      const sel = bulkSel.has(c.code) ? ' selected' : '';
+      const isActive = (c.status||'active') === 'active';
+      const isDisabled = c.status === 'disabled';
+      return `<div class="code-card${sel}" data-code="${c.code}">
+        <input type="checkbox" class="card-check bulk-chk" data-code="${c.code}" ${checked} onclick="event.stopPropagation();bulkToggle('${c.code}', this.checked)" title="تحديد">
+        <div class="code-card-top">
+          <div class="code-card-title">${escapeHtml(c.code)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><span class="pill ${c.status || 'active'}">${labelStatus(c.status || 'active')}</span>${saleBadge(c)}</div>
+        </div>
+        <div class="qr-box"><img src="${qrUrl(link)}" alt="QR" loading="lazy" onerror="this.style.display='none'"></div>
+        <div class="code-card-meta">
+          <div class="mini-stat"><span>الاستخدام</span><b>${c.usedSessions || 0}/${c.maxSessions || 0}</b></div>
+          <div class="mini-stat"><span>المتبقي</span><b style="color:${remaining ? '#86efac' : '#fca5a5'}">${remaining}</b></div>
+          <div class="mini-stat"><span>النوع</span><b>${c.type === 'business' ? 'شركات' : 'فردي'}</b></div>
+          <div class="mini-stat"><span>الصلاحية</span><b>${expiryText(c)}</b></div>
+        </div>
+        <div class="link-line">${link}</div>
+        <div class="code-actions">
+          <button class="btn btn-primary btn-sm" onclick="openCustomerCard('${c.code}')">🪪 بطاقة العميل</button>
+          <button class="btn btn-ghost btn-sm" onclick="sendWhatsApp('${c.code}')">واتساب</button>
+        </div>
+        <div class="card-actions-row">
+          <button class="btn btn-ghost btn-sm" onclick="copyOne('${c.code}')">📋 الكود</button>
+          <button class="btn btn-ghost btn-sm" onclick="copyPlayLink('${c.code}')">🔗 الرابط</button>
+          ${isActive ? `<button class="btn btn-ghost btn-sm" onclick="toggleCode('${c.code}','disabled')">⏸ إيقاف</button>` :
+            isDisabled ? `<button class="btn btn-ghost btn-sm" onclick="toggleCode('${c.code}','active')">✅ تفعيل</button>` :
+            `<button class="btn btn-ghost btn-sm" disabled style="opacity:.45">—</button>`}
+          <button class="btn btn-danger btn-sm" onclick="deleteCode('${c.code}')">🗑 حذف</button>
+        </div>
+      </div>`;
+    }).join('') + '</div>';
+  }
 
   async function toggleCode(code, status) {
     try {
@@ -413,6 +1218,824 @@
   }
   function copyOne(code) {
     navigator.clipboard.writeText(code).then(() => toast('✓ تم نسخ ' + code));
+  }
+  function playLink(code) {
+    return location.origin + '/play?code=' + encodeURIComponent(code);
+  }
+  function cardLink(code) {
+    return location.origin + '/card?code=' + encodeURIComponent(code);
+  }
+  function copyPlayLink(code) {
+    navigator.clipboard.writeText(playLink(code)).then(() => toast('✓ تم نسخ رابط اللعب'));
+  }
+  function sendWhatsApp(code) {
+    const txt = 'كود تحدي التخاطر جاهز 🎮\n' + playLink(code);
+    window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+  }
+  async function deleteCode(code) {
+    if (!confirm('حذف الكود ' + code + ' نهائياً؟')) return;
+    try {
+      await TPCodes.removeCode(code);
+      allCodes = allCodes.filter(c => c.code !== code);
+      lastGenerated = lastGenerated.filter(c => c.code !== code);
+      bulkSel.delete(code);
+      renderList();
+      refreshStats();
+      toast('✓ تم حذف الكود');
+    } catch(e) { toast('فشل الحذف', true); }
+  }
+
+  // ---------------- ORDERS ----------------
+  async function loadOrders() {
+    if (role !== 'admin') return;
+    const out = document.getElementById('ordersOut');
+    if (!out) return;
+    out.innerHTML = '<div class="empty">⏳ جاري تحميل الطلبات...</div>';
+    try {
+      const status = (document.getElementById('orderStatusFilter') || {}).value || '';
+      allOrders = await TPCodes.listOrders({ status, limit: 300 });
+      renderOrders();
+    } catch (e) {
+      out.innerHTML = '<div class="empty">✕ تعذّر تحميل الطلبات<br><span style="font-size:.8rem;color:rgba(255,255,255,.45)">' + escapeHtml(e.message || e.code || e) + '</span></div>';
+    }
+  }
+
+  function orderStatusLabel(status) {
+    return { pending:'تنتظر التسليم', fulfilled:'تم التسليم', cancelled:'ملغاة' }[status] || status || 'غير معروف';
+  }
+  function orderStatusClass(status) {
+    return status === 'fulfilled' ? 'active' : status === 'cancelled' ? 'disabled' : 'used';
+  }
+  function renderOrders() {
+    const out = document.getElementById('ordersOut');
+    const count = document.getElementById('ordersCount');
+    const summary = document.getElementById('ordersSummary');
+    if (count) count.textContent = '(' + allOrders.length + ')';
+    const sums = allOrders.reduce((a,o)=>{ a[o.status || 'pending'] = (a[o.status || 'pending'] || 0) + 1; return a; }, {});
+    if (summary) summary.innerHTML = ''
+      + `<div class="sum warn"><span>تنتظر</span><b>${sums.pending||0}</b></div>`
+      + `<div class="sum good"><span>تم التسليم</span><b>${sums.fulfilled||0}</b></div>`
+      + `<div class="sum bad"><span>ملغاة</span><b>${sums.cancelled||0}</b></div>`;
+    if (!allOrders.length) {
+      out.innerHTML = '<div class="empty">لا توجد طلبات مطابقة</div>';
+      return;
+    }
+    out.innerHTML = '<div class="cards-grid">' + allOrders.map(order => {
+      const codes = Array.isArray(order.codes) ? order.codes : (order.code ? [order.code] : []);
+      const codesHtml = codes.length ? `<div class="link-line" style="direction:ltr;text-align:left">${codes.map(escapeHtml).join(' • ')}</div>` : '<div class="link-line">لم يتم تسليم كود بعد</div>';
+      const pending = (order.status || 'pending') === 'pending';
+      return `<div class="code-card">
+        <div class="code-card-top">
+          <div>
+            <div class="code-card-title" style="font-size:1rem">${escapeHtml(order.id)}</div>
+            <div style="font-size:.82rem;color:rgba(255,255,255,.55);margin-top:4px">${TPCodes.fmtDate(order.createdAt)}</div>
+          </div>
+          <span class="pill ${orderStatusClass(order.status)}">${orderStatusLabel(order.status)}</span>
+        </div>
+        <div class="code-card-meta">
+          <div class="mini-stat"><span>العميل</span><b>${escapeHtml(order.buyerName || '-')}</b></div>
+          <div class="mini-stat"><span>واتساب</span><b style="direction:ltr">${escapeHtml(order.buyerPhone || '-')}</b></div>
+          <div class="mini-stat"><span>الباقة</span><b>${escapeHtml(order.packageName || '-')}</b></div>
+          <div class="mini-stat"><span>السعر</span><b>${Number(order.price)||0} ${escapeHtml(order.currency || '')}</b></div>
+          <div class="mini-stat"><span>عدد الأكواد</span><b>${Number(order.codesCount)||1}</b></div>
+          <div class="mini-stat"><span>جلسات للكود</span><b>${Number(order.sessionsPerCode)||5}</b></div>
+        </div>
+        ${order.notes ? `<div style="margin:10px 0;color:rgba(255,255,255,.7);font-size:.9rem">${escapeHtml(order.notes)}</div>` : ''}
+        ${codesHtml}
+        <div class="code-actions">
+          ${pending ? `<button class="btn btn-primary btn-sm" onclick="fulfillOrder('${order.id}')">✅ تسليم وفتح واتساب</button>` : ''}
+          ${!pending && codes.length ? `<button class="btn btn-primary btn-sm" onclick="openCustomerCard('${codes[0]}')">🪪 بطاقة العميل</button>` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="copyOrderMessage('${order.id}')">📋 رسالة العميل</button>
+          <button class="btn btn-ghost btn-sm" onclick="openOrderWhatsApp('${order.id}')">إرسال البطاقة</button>
+          ${pending ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder('${order.id}')">إلغاء</button>` : ''}
+        </div>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  function orderById(id) { return allOrders.find(o => o.id === id); }
+  function orderCustomerMessage(order) {
+    const codes = Array.isArray(order.codes) ? order.codes : (order.code ? [order.code] : []);
+    const links = codes.map(code => playLink(code)).join('\n');
+    const cards = codes.map(code => cardLink(code)).join('\n');
+    return codes.length
+      ? `مرحباً ${order.buyerName || ''}\nتم تجهيز طلبك ${order.id}\n\nبطاقة الكود:\n${cards}\n\nكود اللعب:\n${codes.join('\n')}\n\nرابط اللعب المباشر:\n${links}\n\nافتح بطاقة الكود أو رابط اللعب، واكتب اسمك ثم ابدأ التحدي. استمتع بالتجربة.`
+      : `مرحباً ${order.buyerName || ''}\nوصلنا طلبك ${order.id} لباقة ${order.packageName || ''}. سنرسل لك الكود بعد التأكيد.`;
+  }
+  function copyOrderMessage(id) {
+    const order = orderById(id); if (!order) return;
+    navigator.clipboard.writeText(orderCustomerMessage(order)).then(() => toast('✓ تم نسخ رسالة العميل'));
+  }
+  function openOrderWhatsApp(id) {
+    const order = orderById(id); if (!order) return;
+    window.open(TPCodes.whatsappLink(order.buyerPhone, orderCustomerMessage(order)), '_blank');
+  }
+
+  function openFulfillmentWhatsApp(order, existingWindow) {
+    const url = TPCodes.whatsappLink(order.buyerPhone, orderCustomerMessage(order));
+    try {
+      if (existingWindow && !existingWindow.closed) {
+        existingWindow.location.href = url;
+        existingWindow.focus();
+        return true;
+      }
+    } catch (_) {}
+    const opened = window.open(url, '_blank');
+    if (!opened) {
+      navigator.clipboard.writeText(orderCustomerMessage(order)).then(() => toast('تم التسليم. المتصفح منع فتح واتساب، فنسخت رسالة العميل للحافظة.'));
+      return false;
+    }
+    return true;
+  }
+
+  async function fulfillOrder(id) {
+    const order = orderById(id); if (!order) return;
+    if (!confirm('تسليم كود لهذا الطلب وتعليمه كمباع؟')) return;
+    const waWindow = window.open('', '_blank');
+    if (waWindow) {
+      waWindow.document.write('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;background:#120b2e;color:#fff;display:grid;place-items:center;min-height:100vh;text-align:center"><div><h2>جاري تجهيز رسالة واتساب...</h2><p>سيتم تحويلك تلقائياً بعد تسليم الكود.</p></div></body>');
+      waWindow.document.close();
+    }
+    try {
+      const needed = Math.max(1, Number(order.codesCount) || 1);
+      const sessions = Math.max(1, Math.min(50, Number(order.sessionsPerCode) || 5));
+      const type = needed > 1 ? 'business' : (order.packageType || 'individual');
+      const inventory = await TPCodes.listCodes({ limit: 1000 });
+      const available = inventory.filter(c => !c.sold && (c.status || 'active') === 'active' && (c.type || 'individual') === type && Math.max(0, (c.maxSessions || 0) - (c.usedSessions || 0)) >= sessions);
+      let selected = available.slice(0, needed);
+      if (selected.length < needed) {
+        const missing = needed - selected.length;
+        const opts = { type, maxSessions: sessions, prefix: type === 'business' ? 'BIZ' : 'TP', label: 'طلب ' + id, createdBy: myUid };
+        if (missing === 1) selected.push(await TPCodes.createOne(opts));
+        else {
+          const created = await TPCodes.createBatch({ ...opts, count: missing });
+          selected = selected.concat(created.codes || []);
+        }
+      }
+      const codes = selected.map(c => c.code);
+      await Promise.all(codes.map(code => TPCodes.markCodeSold(code, order, myUid)));
+      await TPCodes.saveOrder(id, { status:'fulfilled', code: codes[0] || '', codes, fulfilledAt: Date.now(), fulfilledBy: myUid });
+      const fulfilledOrder = { ...order, status:'fulfilled', code: codes[0] || '', codes };
+      toast('✓ تم تسليم الطلب وتعليم الكود كمباع');
+      openFulfillmentWhatsApp(fulfilledOrder, waWindow);
+      await loadOrders();
+      await loadList();
+      refreshStats();
+    } catch (e) {
+      try { if (waWindow && !waWindow.closed) waWindow.close(); } catch (_) {}
+      toast('فشل تسليم الطلب: ' + (e.message || e.code || e), true);
+    }
+  }
+  async function cancelOrder(id) {
+    if (!confirm('إلغاء هذا الطلب؟')) return;
+    try {
+      await TPCodes.saveOrder(id, { status:'cancelled', cancelledAt: Date.now(), cancelledBy: myUid });
+      toast('✓ تم إلغاء الطلب');
+      loadOrders();
+    } catch (e) { toast('فشل إلغاء الطلب', true); }
+  }
+
+  // ============== Bulk selection ==============
+  const bulkSel = new Set();
+  function toggleChip(id) {
+    const el = document.getElementById(id); if (!el) return;
+    el.classList.toggle('on'); renderList();
+  }
+  function toggleViewMode() {
+    window.__listView = (window.__listView === 'table') ? 'cards' : 'table';
+    const chip = document.getElementById('chipView');
+    if (chip) chip.textContent = window.__listView === 'table' ? '📋 جدول' : '🃏 بطاقات';
+    renderList();
+  }
+  function bulkToggle(code, on) {
+    if (on) bulkSel.add(code); else bulkSel.delete(code);
+    // visual update without full re-render
+    document.querySelectorAll('.code-card[data-code="'+code+'"]').forEach(el => el.classList.toggle('selected', on));
+    document.querySelectorAll('.bulk-chk[data-code="'+code+'"]').forEach(el => { el.checked = on; });
+    updateBulkBar();
+  }
+  function bulkToggleAll(on) {
+    document.querySelectorAll('.bulk-chk[data-code]').forEach(el => {
+      const code = el.dataset.code;
+      if (on) bulkSel.add(code); else bulkSel.delete(code);
+      el.checked = on;
+    });
+    document.querySelectorAll('.code-card').forEach(el => el.classList.toggle('selected', on));
+    updateBulkBar();
+  }
+  function bulkSelectAll() {
+    document.querySelectorAll('.bulk-chk[data-code]').forEach(el => { bulkSel.add(el.dataset.code); el.checked = true; });
+    document.querySelectorAll('.code-card').forEach(el => el.classList.add('selected'));
+    updateBulkBar();
+  }
+  function bulkClear() {
+    bulkSel.clear();
+    document.querySelectorAll('.bulk-chk').forEach(el => el.checked = false);
+    document.querySelectorAll('.code-card').forEach(el => el.classList.remove('selected'));
+    updateBulkBar();
+  }
+  function updateBulkBar() {
+    const bar = document.getElementById('bulkBar');
+    const cnt = document.getElementById('bbCount');
+    if (!bar || !cnt) return;
+    cnt.textContent = bulkSel.size;
+    bar.classList.toggle('show', bulkSel.size > 0);
+  }
+  function bulkCopyLinks() {
+    if (!bulkSel.size) return;
+    const txt = Array.from(bulkSel).map(playLink).join('\n');
+    navigator.clipboard.writeText(txt).then(()=> toast('✓ نُسخت ' + bulkSel.size + ' روابط'));
+  }
+  async function bulkSetStatus(status) {
+    if (!bulkSel.size) return;
+    const codes = Array.from(bulkSel);
+    if (!confirm((status === 'disabled' ? 'إيقاف ' : 'تفعيل ') + codes.length + ' كود؟')) return;
+    let ok = 0, fail = 0;
+    for (const code of codes) {
+      try { await TPCodes.setStatus(code, status); ok++;
+        const item = allCodes.find(x => x.code === code); if (item) item.status = status;
+      } catch(_) { fail++; }
+    }
+    bulkClear(); renderList(); refreshStats();
+    toast('✓ ' + ok + ' محدّث' + (fail ? ' / ' + fail + ' فشل' : ''), fail > 0);
+  }
+  async function bulkDelete() {
+    if (!bulkSel.size) return;
+    const codes = Array.from(bulkSel);
+    if (!confirm('حذف ' + codes.length + ' كود نهائياً؟ لا يمكن التراجع!')) return;
+    const deleted = new Set();
+    let ok = 0, fail = 0;
+    for (const code of codes) {
+      try { await TPCodes.removeCode(code); deleted.add(code); ok++; } catch(_) { fail++; }
+    }
+    allCodes = allCodes.filter(c => !deleted.has(c.code));
+    lastGenerated = lastGenerated.filter(c => !deleted.has(c.code));
+    bulkSel.clear(); renderList(); refreshStats();
+    toast('✓ حُذف ' + ok + (fail ? ' / ' + fail + ' فشل' : ''), fail > 0);
+  }
+
+  // ============== Customer card (printable / shareable) ==============
+  function openCustomerCard(code) {
+    window.open(cardLink(code), '_blank');
+  }
+
+  // ============== Operations Log (admin) ==============
+  function _opTypeLabel(t){return {generate:'توليد',topup:'شحن رصيد',adjust:'تعديل'}[t] || t || '-';}
+  async function loadOpsLog(limit) {
+    if (role !== 'admin') return;
+    const out = document.getElementById('opsLogOut');
+    const cnt = document.getElementById('opsLogCount');
+    if (!out) return;
+    out.innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+    try {
+      const ops = await TPCodes.listResellerOps({ limit: limit || 100 });
+      cnt.textContent = '(' + ops.length + ')';
+      if (!ops.length) { out.innerHTML = '<div class="empty">لا توجد عمليات بعد</div>'; return; }
+      // map resellerId -> name (best effort)
+      const rmap = {};
+      (resellersCache || []).forEach(r => { rmap[r.uid] = r.name || r.email || r.uid; });
+      let html = '<div style="overflow-x:auto"><table class="tbl"><thead><tr>'
+        + '<th>التاريخ</th><th>النوع</th><th>الوكيل</th><th>الكمية</th><th>تفاصيل</th>'
+        + '</tr></thead><tbody>';
+      ops.forEach(o => {
+        const who = rmap[o.resellerId] || (o.resellerId || '-').slice(0, 10) + '…';
+        const detail = o.batchId ? ('Batch: ' + o.batchId) : (o.label || o.by ? ('بواسطة: ' + (o.by||'')) : '-');
+        html += `<tr>
+          <td style="font-size:.78rem;color:rgba(255,255,255,.6)">${TPCodes.fmtDate(o.at)}</td>
+          <td><span class="pill ${o.type === 'generate' ? 'individual' : 'active'}">${_opTypeLabel(o.type)}</span></td>
+          <td style="font-size:.85rem">${escapeHtml(who)}</td>
+          <td style="font-weight:900;color:#86efac">${Number(o.count)||0}</td>
+          <td style="font-size:.78rem;color:rgba(255,255,255,.55)">${escapeHtml(detail)}</td>
+        </tr>`;
+      });
+      html += '</tbody></table></div>';
+      out.innerHTML = html;
+    } catch(e) {
+      out.innerHTML = '<div class="empty">✕ ' + escapeHtml(e.message || e.code || e) + '</div>';
+    }
+  }
+
+  // ============== CSV Export ==============
+  function _csvCell(v){
+    const s = String(v == null ? '' : v).replace(/"/g, '""');
+    return /[",\n;]/.test(s) ? '"' + s + '"' : s;
+  }
+  function exportCodesCsv() {
+    if (!allCodes || !allCodes.length) { toast('لا توجد أكواد للتصدير', true); return; }
+    const status = document.getElementById('fStatus').value;
+    const q = document.getElementById('fSearch').value.toLowerCase().trim();
+    let arr = allCodes;
+    if (status) arr = arr.filter(c => c.status === status);
+    if (q) arr = arr.filter(c => (c.code + ' ' + (c.label||'')).toLowerCase().includes(q));
+    const headers = ['code','type','status','maxSessions','usedSessions','remaining','label','batchId','resellerId','createdAt','expiresAt','lastUsedAt'];
+    const lines = [headers.join(',')];
+    arr.forEach(c => {
+      const remaining = Math.max(0, (c.maxSessions||0) - (c.usedSessions||0));
+      lines.push([
+        c.code, c.type||'', c.status||'',
+        c.maxSessions||0, c.usedSessions||0, remaining,
+        c.label||'', c.batchId||'', c.resellerId||'',
+        c.createdAt ? new Date(c.createdAt).toISOString() : '',
+        c.expiresAt ? new Date(c.expiresAt).toISOString() : '',
+        c.lastUsedAt ? new Date(c.lastUsedAt).toISOString() : ''
+      ].map(_csvCell).join(','));
+    });
+    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'telepathy-codes-' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    toast('✓ تم تصدير ' + arr.length + ' كود');
+  }
+
+  // ============== RESELLERS (admin) ==============
+  let resellersCache = [];
+  async function loadResellers() {
+    if (role !== 'admin') return;
+    const out = document.getElementById('resellersOut');
+    if (!out) return;
+    out.innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+    try {
+      resellersCache = await TPCodes.listResellers();
+      document.getElementById('resellersCount').textContent = '(' + resellersCache.length + ')';
+      if (!resellersCache.length) { out.innerHTML = '<div class="empty">لا يوجد وكلاء بعد</div>'; return; }
+      let html = '<table class="tbl"><thead><tr><th>UID</th><th>الاسم</th><th>البريد</th><th>الفئة</th><th>خصم %</th><th>الرصيد</th><th>تم التوليد</th><th>الحالة</th><th></th></tr></thead><tbody>';
+      resellersCache.forEach(r => {
+        html += `<tr>
+          <td style="font-family:ui-monospace,monospace;font-size:.72rem;color:#a855f7">${escapeHtml((r.uid||'').slice(0,10))}…</td>
+          <td>${escapeHtml(r.name || '-')}</td>
+          <td style="font-size:.78rem">${escapeHtml(r.email || '-')}</td>
+          <td>${escapeHtml(r.tier || '-')}</td>
+          <td>${Number(r.discountPct||0)}%</td>
+          <td style="font-weight:900;color:#86efac">${Number(r.balance||0)}</td>
+          <td>${Number(r.totalGenerated||0)}</td>
+          <td><span class="pill ${r.active ? 'active':'disabled'}">${r.active ? 'نشط':'موقوف'}</span></td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="editReseller('${r.uid}')" title="تعديل">✏️</button>
+            <button class="btn btn-ghost btn-sm" onclick="topupReseller('${r.uid}')" title="شحن رصيد">💰</button>
+            <button class="btn btn-ghost btn-sm" onclick="sendResellerInstructions('${r.uid}')" title="إرسال تعليمات الدخول">📲</button>
+            <button class="btn btn-ghost btn-sm" onclick="promoteToAdmin('${r.uid}')" title="ترقية لأدمن">🛡</button>
+            <button class="btn btn-danger btn-sm" onclick="toggleReseller('${r.uid}', ${r.active ? 'false':'true'})">${r.active ? 'إيقاف':'تفعيل'}</button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      out.innerHTML = html;
+    } catch(e) {
+      out.innerHTML = '<div class="empty">✕ ' + escapeHtml(e.message || e.code || e) + '</div>';
+    }
+  }
+  function clearResellerForm() {
+    ['rUid','rEmail','rName','rPhone','rDisc','rBal','rNotes'].forEach(id => document.getElementById(id).value = id === 'rDisc' || id === 'rBal' ? '0' : '');
+    document.getElementById('rTier').value = 'bronze';
+  }
+  function editReseller(uid) {
+    const r = resellersCache.find(x => x.uid === uid);
+    if (!r) return;
+    document.getElementById('rUid').value = r.uid;
+    document.getElementById('rEmail').value = r.email || '';
+    document.getElementById('rName').value = r.name || '';
+    document.getElementById('rPhone').value = r.phone || '';
+    document.getElementById('rTier').value = r.tier || 'bronze';
+    document.getElementById('rDisc').value = r.discountPct || 0;
+    document.getElementById('rBal').value = r.balance || 0;
+    document.getElementById('rNotes').value = r.notes || '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast('✓ تم تحميل بيانات الوكيل في النموذج');
+  }
+  async function saveResellerForm() {
+    const uid = document.getElementById('rUid').value.trim();
+    if (!uid) { toast('UID مطلوب', true); return; }
+    const data = {
+      email: document.getElementById('rEmail').value.trim(),
+      name: document.getElementById('rName').value.trim(),
+      phone: document.getElementById('rPhone').value.trim(),
+      tier: document.getElementById('rTier').value,
+      discountPct: Math.max(0, Math.min(90, +document.getElementById('rDisc').value || 0)),
+      balance: Math.max(0, +document.getElementById('rBal').value || 0),
+      notes: document.getElementById('rNotes').value.trim(),
+      active: true,
+    };
+    const exists = resellersCache.find(x => x.uid === uid);
+    if (!exists) {
+      data.createdAt = Date.now();
+      data.totalGenerated = 0;
+      data.totalSpent = 0;
+    } else {
+      // do not regress totals
+      data.totalGenerated = exists.totalGenerated || 0;
+      data.totalSpent = exists.totalSpent || 0;
+    }
+    try {
+      await TPCodes.saveReseller(uid, data);
+      toast('✓ تم حفظ الوكيل');
+      clearResellerForm();
+      loadResellers();
+    } catch(e) { toast('فشل الحفظ: ' + (e.message||e), true); }
+  }
+  async function topupReseller(uid) {
+    const amt = prompt('كم كود تريد إضافته إلى رصيد هذا الوكيل؟', '50');
+    if (!amt) return;
+    const n = Math.floor(Number(amt));
+    if (!n || n < 1) return;
+    try {
+      await TPCodes.topUpReseller(uid, n, myUid);
+      toast('✓ تم شحن ' + n + ' كود');
+      loadResellers();
+    } catch(e) { toast('فشل: ' + (e.message||e), true); }
+  }
+  async function toggleReseller(uid, makeActive) {
+    try {
+      await TPCodes.saveReseller(uid, { active: !!makeActive });
+      toast('✓ تم التحديث');
+      loadResellers();
+    } catch(e) { toast('فشل: ' + (e.message||e), true); }
+  }
+
+  async function sendResellerInstructions(uid) {
+    const r = (resellersCache || []).find(x => x.uid === uid);
+    if (!r) { toast('لم يتم العثور على الوكيل', true); return; }
+    const url = location.origin + '/admin.html';
+    const lines = [
+      'مرحباً ' + (r.name || ''),
+      '',
+      '✅ حسابك كوكيل في تخاطر جاهز ومُفعّل.',
+      '',
+      '🔑 طريقة الدخول:',
+      '1) افتح: ' + url,
+      '2) سجّل دخول بالبريد: ' + (r.email || '') + ' وكلمة السر التي اخترتها عند التسجيل.',
+      '3) إذا لم تنشئ حساباً بعد: اضغط «حساب جديد للوكلاء؟» ثم سجّل بنفس البريد.',
+      '',
+      '💼 ستجد في لوحتك: أكوادك النشطة، رصيدك، طلب أكواد إضافية، وبطاقات جاهزة لعملائك.'
+    ].join('\n');
+    const phone = String(r.phone || '').replace(/[^\d+]/g,'').replace(/^\+/,'');
+    const wa = phone
+      ? 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines)
+      : 'https://wa.me/?text=' + encodeURIComponent(lines);
+    try { await navigator.clipboard.writeText(lines); toast('✓ تم نسخ التعليمات + فتح واتساب'); } catch(_) {}
+    window.open(wa, '_blank');
+  }
+
+  async function promoteToAdmin(uid) {
+    if (!confirm('ترقية هذا الوكيل إلى أدمن كامل الصلاحيات؟\nسيستطيع رؤية كل الأكواد، إدارة الوكلاء، تغيير الأسعار والباقات.\nUID: ' + uid)) return;
+    try {
+      await db.ref('admins/' + uid).set(true);
+      toast('✓ تم منح صلاحية الأدمن. يجب أن يسجّل خروج ثم دخول ليرى التغييرات.');
+    } catch(e) { toast('فشل: ' + (e.message||e), true); }
+  }
+
+  // ============== PRICING (admin) ==============
+  async function loadPricing() {
+    try {
+      pricingCache = await TPCodes.getPricing();
+      document.getElementById('pBase').value = pricingCache.basePerCode;
+      document.getElementById('pCurr').value = pricingCache.currency || 'USD';
+      renderTiers(pricingCache.tiers || []);
+      updateCostPreview();
+      updatePackagePriceHint();
+    } catch(e) { console.warn(e); }
+  }
+  function renderTiers(tiers) {
+    const box = document.getElementById('tiersBox');
+    if (!box) return;
+    box.innerHTML = tiers.map((t, idx) => `
+      <div class="row" style="margin-bottom:8px;align-items:end">
+        <div><label>من</label><input type="number" data-tier="${idx}" data-k="min" value="${t.min}" min="1" /></div>
+        <div><label>إلى</label><input type="number" data-tier="${idx}" data-k="max" value="${t.max}" min="1" /></div>
+        <div><label>خصم %</label><input type="number" data-tier="${idx}" data-k="discountPct" value="${t.discountPct}" min="0" max="90" /></div>
+        <div><button class="btn btn-danger btn-sm" onclick="removeTier(${idx})">حذف</button></div>
+      </div>`).join('');
+  }
+  function readTiersFromForm() {
+    const inputs = document.querySelectorAll('#tiersBox input');
+    const map = {};
+    inputs.forEach(i => {
+      const idx = i.dataset.tier;
+      map[idx] = map[idx] || {};
+      map[idx][i.dataset.k] = Number(i.value) || 0;
+    });
+    return Object.values(map);
+  }
+  function addTier() {
+    const tiers = readTiersFromForm();
+    tiers.push({ min: 1, max: 9, discountPct: 0 });
+    renderTiers(tiers);
+  }
+  function removeTier(idx) {
+    const tiers = readTiersFromForm();
+    tiers.splice(idx, 1);
+    renderTiers(tiers);
+  }
+  async function savePricing() {
+    const p = {
+      basePerCode: Number(document.getElementById('pBase').value) || 0,
+      currency: document.getElementById('pCurr').value.trim() || 'USD',
+      tiers: readTiersFromForm()
+        .filter(t => t.min > 0 && t.max >= t.min)
+        .sort((a,b) => a.min - b.min),
+    };
+    try {
+      await TPCodes.setPricing(p);
+      pricingCache = p;
+      toast('✓ تم حفظ التسعير');
+      updateCostPreview();
+      updatePackagePriceHint();
+    } catch(e) { toast('فشل: ' + (e.message||e), true); }
+  }
+
+  // ============== WALLET (reseller) ==============
+  let walletActiveCodes = [];
+  async function loadWallet() {
+    if (role !== 'reseller') return;
+    try {
+      const r = await TPCodes.getReseller(myUid);
+      if (!r) return;
+      myReseller = r;
+      document.getElementById('wBalance').textContent = r.balance || 0;
+      document.getElementById('wGen').textContent = r.totalGenerated || 0;
+      document.getElementById('wTier').textContent = (r.tier || '-').toUpperCase();
+      document.getElementById('wDisc').textContent = (r.discountPct || 0) + '%';
+      updateCostPreview();
+      loadWalletCodes();
+    } catch(e) { console.warn(e); }
+  }
+
+  async function loadWalletCodes() {
+    if (role !== 'reseller') return;
+    const out = document.getElementById('walletCodesOut');
+    const cnt = document.getElementById('walletActiveCount');
+    if (!out) return;
+    out.innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+    try {
+      const all = await TPCodes.listMyCodes(myUid);
+      const active = all.filter(c => c.status === 'active' && (!c.expiresAt || Date.now() < c.expiresAt) && (Number(c.usedSessions||0) < Number(c.maxSessions||0)));
+      walletActiveCodes = active;
+      if (cnt) cnt.textContent = '(' + active.length + ')';
+      if (!active.length) {
+        out.innerHTML = '<div class="empty">لا توجد أكواد نشطة حالياً.<br><span style="font-size:.85rem;color:rgba(255,255,255,.5)">ولّد أكوادك من تبويب «⚡ توليد أكواد» أو اطلب شحن رصيد.</span></div>';
+        return;
+      }
+      out.innerHTML = renderCodeCards(active, true);
+    } catch(e) {
+      out.innerHTML = '<div class="empty">✕ تعذّر التحميل<br><span style="font-size:.8rem;color:rgba(255,255,255,.45)">' + escapeHtml(e.message || e.code || e) + '</span></div>';
+    }
+  }
+
+  function walletCopyAllLinks() {
+    if (!walletActiveCodes.length) { toast('لا توجد أكواد نشطة', true); return; }
+    const txt = walletActiveCodes.map(c => playLink(c.code)).join('\n');
+    navigator.clipboard.writeText(txt).then(() => toast('✓ تم نسخ ' + walletActiveCodes.length + ' رابط'));
+  }
+
+  async function requestMoreCodes() {
+    let count = prompt('كم كود تحتاج؟', '50');
+    if (!count) return;
+    count = Math.max(1, Math.min(1000, parseInt(count, 10) || 0));
+    if (!count) { toast('عدد غير صالح', true); return; }
+    let settings = {};
+    try { settings = await TPCodes.getSettings(); } catch(_) {}
+    const wa = String(settings.whatsappNumber || '').replace(/[^\d+]/g,'').replace(/^\+/,'');
+    const name = (myReseller && myReseller.name) || (auth.currentUser && auth.currentUser.email) || myUid;
+    const msg = 'طلب شحن أكواد جديدة\nالاسم: ' + name + '\nUID: ' + myUid + '\nالعدد المطلوب: ' + count + ' كود';
+    const url = wa ? ('https://wa.me/' + wa + '?text=' + encodeURIComponent(msg)) : ('https://wa.me/?text=' + encodeURIComponent(msg));
+    window.open(url, '_blank');
+    toast('✓ افتح واتساب لإكمال الطلب');
+  }
+
+  // ============== SETTINGS (admin) ==============
+  async function loadSettingsForm() {
+    try {
+      const s = await TPCodes.getSettings();
+      document.getElementById('setBrand').value = s.brandName || '';
+      document.getElementById('setTagline').value = s.tagline || '';
+      document.getElementById('setWa').value = s.whatsappNumber || '';
+      document.getElementById('setCurr').value = (s.currency || 'USD').toUpperCase();
+      const ht = document.getElementById('setHeroTitle'); if (ht) ht.value = s.heroTitle || '';
+      const hb = document.getElementById('setHeroBadge'); if (hb) hb.value = s.heroBadge || '';
+      const hs = document.getElementById('setHeroStats'); if (hs) hs.value = s.heroStats || '';
+      const bm = document.getElementById('setBizMsg'); if (bm) bm.value = s.bizMessage || '';
+    } catch(e) { console.warn(e); }
+  }
+  async function saveSettingsForm() {
+    const s = {
+      brandName: document.getElementById('setBrand').value.trim(),
+      tagline: document.getElementById('setTagline').value.trim(),
+      whatsappNumber: document.getElementById('setWa').value.trim().replace(/[^\d+]/g,'').replace(/^\+/,''),
+      currency: document.getElementById('setCurr').value,
+      heroTitle: (document.getElementById('setHeroTitle')?.value || '').trim(),
+      heroBadge: (document.getElementById('setHeroBadge')?.value || '').trim(),
+      heroStats: (document.getElementById('setHeroStats')?.value || '').trim(),
+      bizMessage: (document.getElementById('setBizMsg')?.value || '').trim()
+    };
+    try { await TPCodes.setSettings(s); toast('✓ تم حفظ الإعدادات'); }
+    catch(e) { toast('فشل الحفظ: '+(e.message||e), true); }
+  }
+
+  // ============== PACKAGES (admin) ==============
+  let editingPkgId = null;
+  let packagePriceHelperReady = false;
+  function _esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function setupPackagePriceHelper() {
+    if (packagePriceHelperReady) return;
+    packagePriceHelperReady = true;
+    ['pkgCodes','pkgPrice','pkgCurr'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => updatePackagePriceHint());
+    });
+    updatePackagePriceHint();
+  }
+  async function ensurePricingCache() {
+    if (pricingCache) return pricingCache;
+    try { pricingCache = await TPCodes.getPricing(); }
+    catch (_) { pricingCache = TPCodes.DEFAULT_PRICING; }
+    return pricingCache;
+  }
+  async function updatePackagePriceHint() {
+    const box = document.getElementById('pkgPriceHint');
+    if (!box) return;
+    const pricing = await ensurePricingCache();
+    const count = Math.max(1, Number(document.getElementById('pkgCodes')?.value) || 1);
+    const calc = TPCodes.priceFor(count, pricing, 0);
+    const current = Number(document.getElementById('pkgPrice')?.value) || 0;
+    const currency = document.getElementById('pkgCurr')?.value.trim() || calc.currency;
+    const isSame = current > 0 && Math.abs(current - calc.total) < 0.01 && currency === calc.currency;
+    box.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div>
+          السعر المحسوب من تسعير الأكواد: <b style="color:#67e8f9">${calc.total} ${calc.currency}</b>
+          <span style="color:rgba(255,255,255,.45)">(${count} كود × ${calc.unit} بعد خصم ${calc.tierDiscountPct}%)</span>
+          <br><span style="color:rgba(255,255,255,.45)">سعر البيع يمكن أن يكون مختلفاً لو عندك عرض أو هامش ربح مختلف.</span>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="applyCalculatedPackagePrice()" ${isSame ? 'disabled' : ''}>استخدم السعر المحسوب</button>
+      </div>`;
+  }
+  async function applyCalculatedPackagePrice() {
+    const pricing = await ensurePricingCache();
+    const count = Math.max(1, Number(document.getElementById('pkgCodes')?.value) || 1);
+    const calc = TPCodes.priceFor(count, pricing, 0);
+    document.getElementById('pkgPrice').value = calc.total;
+    document.getElementById('pkgCurr').value = calc.currency;
+    updatePackagePriceHint();
+  }
+  function clearPackageForm() {
+    editingPkgId = null;
+    document.getElementById('pkgFormTitle').textContent = '➕ إضافة باقة للصفحة الرئيسية';
+    ['pkgId','pkgName','pkgIcon','pkgPrice','pkgCurr','pkgBadge','pkgBtn','pkgUnit','pkgWa','pkgDesc','pkgFeatures'].forEach(id=>{document.getElementById(id).value='';});
+    document.getElementById('pkgOrder').value = 1;
+    document.getElementById('pkgCodes').value = 1;
+    document.getElementById('pkgSessions').value = 5;
+    document.getElementById('pkgVisible').checked = true;
+    document.getElementById('pkgFeatured').checked = false;
+    document.getElementById('pkgId').disabled = false;
+    updatePackagePriceHint();
+  }
+  function fillPackageForm(p) {
+    editingPkgId = p.id;
+    document.getElementById('pkgFormTitle').textContent = '✏️ تعديل: ' + (p.name||p.id);
+    document.getElementById('pkgId').value = p.id; document.getElementById('pkgId').disabled = true;
+    document.getElementById('pkgName').value = p.name || '';
+    document.getElementById('pkgIcon').value = p.icon || '';
+    document.getElementById('pkgPrice').value = p.price || 0;
+    document.getElementById('pkgCurr').value = p.currency || 'USD';
+    document.getElementById('pkgOrder').value = p.order || 1;
+    document.getElementById('pkgCodes').value = p.codesCount || 1;
+    document.getElementById('pkgSessions').value = p.sessionsPerCode || 5;
+    document.getElementById('pkgBadge').value = p.badge || '';
+    document.getElementById('pkgBtn').value = p.buttonText || '';
+    document.getElementById('pkgUnit').value = p.unitNote || '';
+    document.getElementById('pkgWa').value = p.whatsappMsg || '';
+    document.getElementById('pkgDesc').value = p.desc || '';
+    document.getElementById('pkgFeatures').value = p.features || '';
+    document.getElementById('pkgVisible').checked = p.visible !== false;
+    document.getElementById('pkgFeatured').checked = !!p.featured;
+    updatePackagePriceHint();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  async function savePackageForm() {
+    const id = document.getElementById('pkgId').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'-');
+    if (!id) return toast('المعرف مطلوب', true);
+    if (!/^[a-z][a-z0-9_-]*$/.test(id)) return toast('المعرف: ابدأ بحرف إنجليزي صغير', true);
+    const data = {
+      name: document.getElementById('pkgName').value.trim(),
+      icon: document.getElementById('pkgIcon').value.trim(),
+      price: Number(document.getElementById('pkgPrice').value)||0,
+      currency: document.getElementById('pkgCurr').value.trim() || 'USD',
+      order: Number(document.getElementById('pkgOrder').value)||1,
+      codesCount: Number(document.getElementById('pkgCodes').value)||1,
+      sessionsPerCode: Number(document.getElementById('pkgSessions').value)||5,
+      badge: document.getElementById('pkgBadge').value.trim(),
+      buttonText: document.getElementById('pkgBtn').value.trim() || 'اطلب الآن',
+      unitNote: document.getElementById('pkgUnit').value.trim(),
+      whatsappMsg: document.getElementById('pkgWa').value.trim(),
+      desc: document.getElementById('pkgDesc').value.trim(),
+      features: document.getElementById('pkgFeatures').value,
+      visible: document.getElementById('pkgVisible').checked,
+      featured: document.getElementById('pkgFeatured').checked
+    };
+    if (!data.name) return toast('الاسم مطلوب', true);
+    try {
+      // mutex: if featured, un-feature others
+      if (data.featured) {
+        const all = await TPCodes.listPackages();
+        for (const p of all) {
+          if (p.id !== id && p.featured) {
+            await TPCodes.savePackage(p.id, { featured: false });
+          }
+        }
+      }
+      await TPCodes.savePackage(id, data);
+      toast('✓ تم حفظ الباقة');
+      clearPackageForm();
+      loadPackagesList();
+    } catch(e) { toast('فشل الحفظ: '+(e.message||e), true); }
+  }
+  async function deletePackageBtn(id) {
+    if (!confirm('حذف الباقة "'+id+'" نهائياً؟')) return;
+    try { await TPCodes.deletePackage(id); toast('✓ تم الحذف'); loadPackagesList(); }
+    catch(e) { toast('فشل: '+(e.message||e), true); }
+  }
+  async function toggleVisibleBtn(id, current) {
+    try { await TPCodes.savePackage(id, { visible: !current }); loadPackagesList(); }
+    catch(e) { toast('فشل: '+(e.message||e), true); }
+  }
+  async function setFeaturedBtn(id) {
+    try {
+      const all = await TPCodes.listPackages();
+      for (const p of all) {
+        if (p.featured && p.id !== id) await TPCodes.savePackage(p.id, { featured: false });
+      }
+      await TPCodes.savePackage(id, { featured: true });
+      toast('✓ تم تعيين كمميّزة');
+      loadPackagesList();
+    } catch(e) { toast('فشل: '+(e.message||e), true); }
+  }
+  async function seedDefaultsBtn() {
+    if (!confirm('سيتم إضافة الباقات الافتراضية إذا كانت القائمة فارغة. متابعة؟')) return;
+    try {
+      const did = await TPCodes.seedPackagesIfEmpty();
+      toast(did ? '✓ تمت إضافة الباقات الافتراضية' : 'القائمة ليست فارغة — لم يتم تغيير شيء');
+      loadPackagesList();
+    } catch(e) { toast('فشل: '+(e.message||e), true); }
+  }
+  async function loadPackagesList() {
+    const out = document.getElementById('pkgListOut');
+    const cnt = document.getElementById('pkgCount');
+    out.innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+    try {
+      const list = await TPCodes.listPackages();
+      cnt.textContent = '(' + list.length + ')';
+      if (!list.length) {
+        out.innerHTML = '<div class="empty">لا توجد باقات. استخدم زر "إضافة الباقات الافتراضية" أعلاه.</div>';
+        return;
+      }
+      out.innerHTML = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.9rem">'
+        + '<thead><tr style="background:rgba(255,255,255,.05);text-align:right">'
+        + '<th style="padding:10px">#</th><th style="padding:10px">الاسم</th><th style="padding:10px">السعر</th>'
+        + '<th style="padding:10px">ظاهرة</th><th style="padding:10px">مميّزة</th><th style="padding:10px">إجراءات</th>'
+        + '</tr></thead><tbody>'
+        + list.map(p => {
+          const visTxt = p.visible !== false ? '✅' : '❌';
+          const featTxt = p.featured ? '⭐' : '—';
+          return `<tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+            <td style="padding:10px">${Number(p.order)||0}</td>
+            <td style="padding:10px"><b>${_esc(p.icon||'')} ${_esc(p.name)}</b><br><span style="color:rgba(255,255,255,.4);font-size:.8em">${_esc(p.id)}</span></td>
+            <td style="padding:10px">${Number(p.price)||0} ${_esc(p.currency||'USD')}</td>
+            <td style="padding:10px;text-align:center">${visTxt}</td>
+            <td style="padding:10px;text-align:center">${featTxt}</td>
+            <td style="padding:10px">
+              <button class="btn btn-ghost btn-sm" onclick='fillPackageForm(${JSON.stringify(p).replace(/'/g,"&#39;")})'>✏️</button>
+              <button class="btn btn-ghost btn-sm" onclick="toggleVisibleBtn('${_esc(p.id)}', ${p.visible !== false})">${p.visible !== false ? '🙈 إخفاء' : '👁️ إظهار'}</button>
+              <button class="btn btn-ghost btn-sm" onclick="setFeaturedBtn('${_esc(p.id)}')" ${p.featured ? 'disabled' : ''}>⭐ مميّزة</button>
+              <button class="btn btn-danger btn-sm" onclick="deletePackageBtn('${_esc(p.id)}')">🗑️</button>
+            </td>
+          </tr>`;
+        }).join('') + '</tbody></table></div>';
+    } catch(e) {
+      out.innerHTML = '<div class="empty">فشل التحميل: '+_esc(e.message||e)+'</div>';
+    }
+  }
+
+  // ---- Service Worker auto-reload on update ----
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              if (!sessionStorage.getItem('__sw_reloaded')) {
+                sessionStorage.setItem('__sw_reloaded', '1');
+                window.location.reload();
+              }
+            }
+          });
+        });
+        setInterval(() => reg.update().catch(() => {}), 6 * 60 * 60 * 1000);
+      }).catch(() => {});
+    });
   }
 </script>
 </body>

@@ -1,4 +1,4 @@
-/* =========================================================================
+﻿/* =========================================================================
    Telepathy Challenge – 2026 Modernization Layer
    Adds: PWA install, Web Audio + Vibration, View Transitions, QR Code,
          Voice Mode, Gemini Nano semantic similarity, Replay mode,
@@ -13,7 +13,24 @@
    * ------------------------------------------------------------------ */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        // Auto-reload when a new SW takes control — prevents users being stuck on stale version
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              // Avoid infinite reload loop
+              if (!sessionStorage.getItem('__sw_reloaded')) {
+                sessionStorage.setItem('__sw_reloaded', '1');
+                window.location.reload();
+              }
+            }
+          });
+        });
+        // Keep update checks light; deploys are still picked up without polling every minute.
+        setInterval(() => reg.update().catch(() => {}), 6 * 60 * 60 * 1000);
+      }).catch(() => {});
     });
   }
 
@@ -80,17 +97,28 @@
       },
       startBinaural() {
         const c = ensure(); if (!c || binauralNodes) return;
-        // 7Hz theta wave (meditation)
+        // Soft ambient pad: two slowly-detuned sines + gentle filter (theta ~7Hz feel)
         const left = c.createOscillator(), right = c.createOscillator();
         const gainL = c.createGain(), gainR = c.createGain();
+        const filter = c.createBiquadFilter();
         const merger = c.createChannelMerger(2);
-        left.frequency.value = 200; right.frequency.value = 207;
-        gainL.gain.value = 0.04; gainR.gain.value = 0.04;
-        left.connect(gainL).connect(merger, 0, 0);
-        right.connect(gainR).connect(merger, 0, 1);
+        filter.type = 'lowpass'; filter.frequency.value = 900; filter.Q.value = 0.8;
+        left.type = 'sine';  left.frequency.value = 196;   // G3
+        right.type = 'sine'; right.frequency.value = 203;  // 7Hz binaural beat
+        gainL.gain.value = 0.025; gainR.gain.value = 0.025; // very subtle
+        left.connect(gainL).connect(filter);
+        right.connect(gainR).connect(filter);
+        filter.connect(merger, 0, 0); filter.connect(merger, 0, 1);
         merger.connect(c.destination);
         left.start(); right.start();
-        binauralNodes = { left, right };
+        binauralNodes = { left, right, gainL, gainR, filter };
+      },
+      // Interactive: subtle filter sweep on pointer move (called from app init)
+      ambientPulse(intensity) {
+        if (!binauralNodes) return;
+        const c = ctx; if (!c) return;
+        const f = 700 + Math.min(1, Math.max(0, intensity)) * 600;
+        try { binauralNodes.filter.frequency.linearRampToValueAtTime(f, c.currentTime + 0.4); } catch {}
       },
       stopBinaural() {
         if (!binauralNodes) return;
@@ -128,7 +156,7 @@
     }
   });
 
-  // Override the inline confirmPassword to validate + consume access code
+  // Override the inline confirmPassword to validate the access code and route to its active room.
   window.confirmPassword = async function () {
     const input = document.getElementById('passwordInput');
     const code = (input.value || '').toUpperCase().trim();
@@ -139,7 +167,7 @@
     }
     input.disabled = true;
     try {
-      const res = await TPCodes.consume(code);
+      const res = await TPCodes.validate(code);
       if (!res.ok) {
         originalShowToast('✕ ' + (res.message || 'كود غير صالح'));
         Audio2026.noMatch();
@@ -151,12 +179,16 @@
       sessionStorage.setItem('tp_access_code', code);
       window.__activeAccessCode = code;
       window.__codeRemaining = res.remaining;
+      window.__codeMaxSessions = res.maxSessions || 5;
+      window.__codeUsedSessions = res.usedSessions || 0;
       document.getElementById('passwordModal').classList.remove('show');
       input.disabled = false;
       input.value = '';
+      if (typeof window.enterWithAccessCode === 'function') {
+        await window.enterWithAccessCode(code, res);
+        return;
+      }
       if (typeof window.createRoom === 'function') window.createRoom();
-      // (best-effort) bump global session counter
-      if (TPCodes.bumpSessions) TPCodes.bumpSessions();
     } catch (e) {
       originalShowToast('خطأ في الاتصال — حاول مرة أخرى');
       input.disabled = false;
@@ -166,8 +198,9 @@
   /* ------------------------------------------------------------------ *
    * 4) View Transitions API – smoother section changes
    * ------------------------------------------------------------------ */
+  const ENABLE_VIEW_TRANSITIONS = false;
   const originalShowSection = window.showSection;
-  if (originalShowSection && document.startViewTransition) {
+  if (ENABLE_VIEW_TRANSITIONS && originalShowSection && document.startViewTransition) {
     window.showSection = function (id) {
       document.startViewTransition(() => originalShowSection(id));
     };
@@ -179,18 +212,15 @@
    * For 6-char alphanumeric room code we use a public API fallback if
    * dependencies allowed; here we use a tiny implementation.
    * ------------------------------------------------------------------ */
-  // Use Google Charts as fallback (works offline via cache after first load)
   function qrSvg(text, size = 180) {
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=2&data=${encodeURIComponent(text)}`;
-    return `<img alt="QR" src="${url}" width="${size}" height="${size}" style="border-radius:14px;background:#fff;padding:8px"/>`;
+    return `<div style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.78);font-size:12px;line-height:1.6;word-break:break-all;direction:ltr;max-width:100%">${text}</div>`;
   }
 
   function injectQR(containerId, value) {
     const el = document.getElementById(containerId);
     if (!el || !value) return;
-    const link = `${location.origin}/?room=${value}`;
-    el.innerHTML = qrSvg(link, 180) +
-      `<div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.45);word-break:break-all">${link}</div>`;
+    const link = `${location.origin}/play?room=${value}`;
+    el.innerHTML = qrSvg(link, 180);
   }
   window.injectQR = injectQR;
 
@@ -201,10 +231,12 @@
     const params = new URLSearchParams(location.search);
     const roomParam = params.get('room');
     if (roomParam && /^[A-Z0-9]{6}$/i.test(roomParam)) {
-      const input = document.getElementById('roomCodeInput');
-      if (input) input.value = roomParam.toUpperCase();
-      // wait for name input — show join section
-      if (typeof window.showSection === 'function') window.showSection('joinSection');
+      const code = roomParam.toUpperCase();
+      const roomInput = document.getElementById('roomCodeInput');
+      const quickInput = document.getElementById('quickCode');
+      if (roomInput) roomInput.value = code;
+      if (quickInput) quickInput.value = code;
+      if (typeof window.showSection === 'function') window.showSection('homeSection');
     }
   });
 
@@ -346,15 +378,16 @@
   })();
   window.AI2026 = AI;
 
-  // Pre-init on first user interaction (model download is heavy)
-  document.addEventListener('click', () => AI.init().catch(() => {}), { once: true });
+  // AI remains available for future presentation features, but launch scoring stays exact-match.
+  // The confirmed two-player flow is now treated as fixed gameplay logic.
 
   /* ------------------------------------------------------------------ *
    * 10) Override calculateAndShowResults to use semantic similarity
    * for text phases (2,3,4). Phase 1 stays exact (emojis).
    * ------------------------------------------------------------------ */
+  const EXACT_SCORING_LOCKED = true;
   const origCalc = window.calculateAndShowResults;
-  if (origCalc && window.roomRef !== undefined) {
+  if (!EXACT_SCORING_LOCKED && origCalc && window.roomRef !== undefined) {
     window.calculateAndShowResults = async function () {
       try {
         const snap = await window.roomRef.child('answers').once('value');
@@ -552,34 +585,15 @@
     if (document.getElementById('topControls')) return;
     const bar = document.createElement('div');
     bar.id = 'topControls';
-    bar.style.cssText = 'position:fixed;top:12px;left:12px;display:flex;gap:8px;z-index:50;';
+    bar.style.cssText = 'position:fixed;top:max(12px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));display:flex;gap:8px;z-index:50;';
+    // Only PWA install button — mic & sound buttons removed (background audio is now ambient & auto)
     bar.innerHTML = `
-      <button id="muteBtn" title="كتم الصوت" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:50%;width:42px;height:42px;font-size:18px;cursor:pointer;backdrop-filter:blur(10px)">🔊</button>
-      <button id="voiceBtn" title="الوضع الصوتي" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:50%;width:42px;height:42px;font-size:18px;cursor:pointer;backdrop-filter:blur(10px);display:none">🎤</button>
-      <button id="installPwaBtn" title="تثبيت" style="background:rgba(168,85,247,0.2);border:1px solid rgba(168,85,247,0.4);color:#fff;border-radius:50%;width:42px;height:42px;font-size:18px;cursor:pointer;backdrop-filter:blur(10px);display:none">⬇️</button>
+      <button id="installPwaBtn" title="تثبيت كتطبيق" aria-label="تثبيت" style="background:linear-gradient(135deg,rgba(168,85,247,0.35),rgba(255,91,147,0.35));border:1px solid rgba(255,255,255,0.18);color:#fff;border-radius:14px;height:42px;padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(14px);display:none;align-items:center;gap:6px;box-shadow:0 8px 24px rgba(168,85,247,0.35)">⬇️ تثبيت</button>
     `;
     document.body.appendChild(bar);
 
-    const muteBtn = document.getElementById('muteBtn');
-    muteBtn.textContent = Audio2026.isMuted() ? '🔇' : '🔊';
-    muteBtn.onclick = () => {
-      const m = Audio2026.toggleMute();
-      muteBtn.textContent = m ? '🔇' : '🔊';
-    };
-
-    const voiceBtn = document.getElementById('voiceBtn');
-    if (Voice.available()) {
-      voiceBtn.style.display = 'inline-flex';
-      voiceBtn.style.opacity = Voice.isOn() ? '1' : '0.5';
-      voiceBtn.onclick = () => {
-        const on = Voice.toggle();
-        voiceBtn.style.opacity = on ? '1' : '0.5';
-        originalShowToast(on ? '🎤 الوضع الصوتي مفعّل' : 'الوضع الصوتي متوقف');
-      };
-    }
-
     const installBtn = document.getElementById('installPwaBtn');
-    installBtn.onclick = () => window.installPwa();
+    installBtn.onclick = () => window.installPwa && window.installPwa();
   }
 
   /* ------------------------------------------------------------------ *
@@ -630,15 +644,26 @@
    * 15) Init UI on DOM ready
    * ------------------------------------------------------------------ */
   function init() {
-    ensureQrSlots();
-    bindQrUpdates();
+    // QR image generation was removed from the hot path for performance.
+    // The lobby already has copy/share invitation buttons.
     buildControlsBar();
-    // Start binaural during gameplay only
-    document.addEventListener('click', function once() {
-      // unlock audio context on first interaction
-      Audio2026.click();
-      document.removeEventListener('click', once);
+
+    // Privacy-friendly: ambient sound is OFF by default. We do NOT auto-start it.
+    // It is only triggered by startGame() (active gameplay) and stopped on:
+    //  - tab hidden, page hide, before unload
+    //  - results shown / new challenge / leave room
+    function stopAmbient() { try { Audio2026.stopBinaural(); } catch {} }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') stopAmbient();
     });
+    window.addEventListener('pagehide', stopAmbient);
+    window.addEventListener('beforeunload', stopAmbient);
+    window.addEventListener('blur', stopAmbient);
+
+    // Unlock audio context on first interaction (no sound played)
+    document.addEventListener('pointerdown', function once() {
+      try { Audio2026.click(); } catch {}
+    }, { once: true });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -653,19 +678,42 @@
   if (origStartGame) {
     window.startGame = async function () {
       const r = await origStartGame.apply(this, arguments);
-      Audio2026.startBinaural();
-      Audio2026.go();
+      // No ambient drone — only a brief "go" cue (privacy-friendly, ends quickly)
+      try { Audio2026.go(); } catch {}
       return r;
     };
   }
   const origNewChallenge = window.newChallenge;
   if (origNewChallenge) {
     window.newChallenge = function () {
-      Audio2026.stopBinaural();
+      try { Audio2026.stopBinaural(); } catch {}
       const r = origNewChallenge.apply(this, arguments);
       // hide AI card and replay button on new challenge
       const ac = document.getElementById('aiAnalysisCard'); if (ac) ac.style.display = 'none';
       return r;
     };
   }
+
+  // Stop ambient when results are shown
+  const _origShowResultsForAudio = window.showResults;
+  if (_origShowResultsForAudio) {
+    const wrapped = window.showResults;
+    window.showResults = function () {
+      try { Audio2026.stopBinaural(); } catch {}
+      return wrapped.apply(this, arguments);
+    };
+  }
+
+  // Stop ambient when leaving the room / going home
+  ['leaveRoom', 'goHome', 'showSection'].forEach((fn) => {
+    const orig = window[fn];
+    if (typeof orig === 'function') {
+      window[fn] = function () {
+        // showSection: only stop when navigating AWAY from gameSection
+        if (fn === 'showSection' && arguments[0] === 'gameSection') return orig.apply(this, arguments);
+        try { Audio2026.stopBinaural(); } catch {}
+        return orig.apply(this, arguments);
+      };
+    }
+  });
 })();

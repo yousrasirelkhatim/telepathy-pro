@@ -7,9 +7,10 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0a0a1a",
-  "theme_color": "#a855f7",
+  "display_override": ["fullscreen", "window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#05050f",
+  "theme_color": "#0a0a1a",
   "categories": ["games", "social", "entertainment"],
   "icons": [
     {

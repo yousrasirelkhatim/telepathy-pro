@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
@@ -8,16 +8,34 @@
 <meta name="theme-color" content="#0a0a1a" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet" />
 <meta property="og:title" content="Telepathy Challenge - تحدي التخاطر" />
 <meta property="og:description" content="هل تفكران بنفس الطريقة؟ اكتشفا الإجابة الآن." />
 <meta property="og:image" content="/icon.svg" />
 <style>
+  /* === Design tokens (shared) === */
+  :root{
+    --bg:#05050f;
+    --surface:rgba(255,255,255,.04); --surface-2:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
+    --text:#fff; --text-muted:rgba(255,255,255,.78); --text-dim:rgba(255,255,255,.55);
+    --brand-1:#ff5b93; --brand-2:#a855f7; --brand-3:#00d4ff;
+    --grad-brand:linear-gradient(135deg,#ff5b93,#a855f7);
+    --grad-cool:linear-gradient(135deg,#00d4ff,#a855f7);
+    --radius-sm:10px; --radius-md:14px; --radius-lg:18px; --radius-xl:24px;
+    --shadow-1:0 8px 24px rgba(0,0,0,.28);
+    --shadow-2:0 14px 34px rgba(168,85,247,.5);
+    --bp-mobile:768px;
+  }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  html,body{font-family:'Tajawal',system-ui,sans-serif;background:#05050f;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-  body{min-height:100vh;background:radial-gradient(ellipse at top,#1a0d3e 0%,#05050f 60%,#000 100%)}
-  a{color:inherit;text-decoration:none}
+  html,body{font-family:'Tajawal',system-ui,sans-serif;background:#05050f;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{min-height:100dvh;background:radial-gradient(ellipse at top,#1a0d3e 0%,#05050f 60%,#000 100%);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+  *{-webkit-tap-highlight-color:transparent}
+  a{color:inherit;text-decoration:none;touch-action:manipulation}
+  button,.btn,.nav-link,summary,details{touch-action:manipulation}
+  button,.btn{-webkit-user-select:none;user-select:none}
   button{font-family:inherit;cursor:pointer;border:0}
+  input,select,textarea{font-size:16px;max-width:100%}
   img{max-width:100%;display:block}
 
   /* Floating glow blobs */
@@ -37,21 +55,28 @@
   nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:rgba(10,10,30,.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.06);border-radius:18px;margin-bottom:48px}
   .logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.25rem}
   .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#ff5b93,#a855f7,#00d4ff);border-radius:11px;display:grid;place-items:center;font-size:1.2rem;box-shadow:0 8px 24px rgba(168,85,247,.5)}
-  .nav-link{padding:10px 18px;border-radius:12px;font-weight:600;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.95rem;transition:.2s;color:#fff}
-  .nav-link:hover{background:rgba(255,255,255,.1)}
+  .nav-link{padding:10px 18px;border-radius:12px;font-weight:600;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.95rem;transition:.2s;color:#fff;min-height:44px;display:inline-flex;align-items:center}
+  @media (hover:hover) and (pointer:fine){
+    .nav-link:hover{background:rgba(255,255,255,.1)}
+  }
 
   /* Hero */
   .hero{text-align:center;padding:40px 0 70px}
+  .hero-content{max-width:100%;margin:auto}
   .hero-badge{display:inline-block;padding:8px 18px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);border-radius:999px;font-size:.85rem;font-weight:600;color:#d8b4fe;margin-bottom:22px;letter-spacing:.5px}
   .hero h1{font-size:clamp(2.2rem,7vw,4.5rem);font-weight:900;line-height:1.15;margin-bottom:24px;background:linear-gradient(135deg,#fff 0%,#d8b4fe 50%,#fda4af 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero p{font-size:clamp(1rem,2.5vw,1.3rem);color:rgba(255,255,255,.75);max-width:680px;margin:0 auto 36px;line-height:1.7}
 
   .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
-  .btn{padding:18px 38px;border-radius:16px;font-size:1.05rem;font-weight:700;transition:.25s;display:inline-flex;align-items:center;gap:10px;color:#fff}
+  .btn{padding:18px 38px;border-radius:16px;font-size:1.05rem;font-weight:700;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:10px;color:#fff;min-height:54px}
   .btn-primary{background:linear-gradient(135deg,#ff5b93,#a855f7);box-shadow:0 12px 32px rgba(168,85,247,.5)}
-  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(168,85,247,.7)}
   .btn-secondary{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);backdrop-filter:blur(10px)}
-  .btn-secondary:hover{background:rgba(255,255,255,.13)}
+  .btn:active{transform:scale(.97)}
+  @media (hover:hover) and (pointer:fine){
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(168,85,247,.7)}
+    .btn-secondary:hover{background:rgba(255,255,255,.13)}
+  }
+  .btn-start{font-size:1.05rem;animation:none}
 
   .hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:22px;color:rgba(255,255,255,.55);font-size:.9rem}
   .hero-stats span{display:flex;align-items:center;gap:6px}
@@ -73,15 +98,19 @@
   /* Pricing */
   .pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
   .price-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:34px 28px;position:relative;transition:.3s;backdrop-filter:blur(20px)}
-  .price-card:hover{transform:translateY(-6px);border-color:rgba(168,85,247,.4);box-shadow:0 20px 60px rgba(168,85,247,.25)}
+  @media (hover:hover) and (pointer:fine){
+    .price-card:hover{transform:translateY(-6px);border-color:rgba(168,85,247,.4);box-shadow:0 20px 60px rgba(168,85,247,.25)}
+  }
   .price-card.popular{border-color:rgba(255,91,147,.5);background:linear-gradient(160deg,rgba(255,91,147,.1),rgba(168,85,247,.05))}
-  .badge-pop{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff5b93,#a855f7);padding:6px 18px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.5px}
+  .badge-pop{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff5b93,#a855f7);padding:6px 18px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.5px;color:#fff}
+  .price-head{display:block;margin-bottom:0}
   .price-icon{font-size:2.4rem;margin-bottom:14px}
-  .price-name{font-size:1.4rem;font-weight:800;margin-bottom:6px}
-  .price-desc{color:rgba(255,255,255,.55);font-size:.92rem;margin-bottom:22px;min-height:42px}
+  .price-name{font-size:1.4rem;font-weight:800;margin-bottom:6px;padding-left:0}
+  .price-desc{color:rgba(255,255,255,.55);font-size:.92rem;margin-bottom:22px;min-height:42px;line-height:1.55}
   .price-amount{font-size:2.6rem;font-weight:900;background:linear-gradient(135deg,#fff,#d8b4fe);-webkit-background-clip:text;background-clip:text;color:transparent}
   .price-currency{font-size:1rem;color:rgba(255,255,255,.5);font-weight:600}
   .price-unit{color:rgba(255,255,255,.5);font-size:.9rem;margin-bottom:24px}
+  .pkg-metrics{display:none}
   .price-features{list-style:none;margin-bottom:28px}
   .price-features li{padding:8px 0;color:rgba(255,255,255,.8);font-size:.95rem;display:flex;gap:10px;align-items:start}
   .price-features li::before{content:"✓";color:#34d399;font-weight:900;flex-shrink:0}
@@ -90,7 +119,9 @@
   /* Features */
   .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px}
   .feat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;text-align:center;transition:.3s}
-  .feat:hover{transform:translateY(-4px);background:rgba(255,255,255,.05)}
+  @media (hover:hover) and (pointer:fine){
+    .feat:hover{transform:translateY(-4px);background:rgba(255,255,255,.05)}
+  }
   .feat-icon{font-size:2.5rem;margin-bottom:14px;display:inline-block;background:linear-gradient(135deg,#ff5b93,#a855f7);width:70px;height:70px;line-height:70px;border-radius:18px;box-shadow:0 8px 24px rgba(168,85,247,.4)}
   .feat h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
   .feat p{color:rgba(255,255,255,.6);font-size:.92rem;line-height:1.6}
@@ -109,13 +140,13 @@
 
   /* FAQ */
   .faq{max-width:760px;margin:0 auto}
-  details{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 22px;margin-bottom:12px;cursor:pointer;transition:.2s}
+  details{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:12px;transition:.2s;overflow:hidden}
   details[open]{background:rgba(255,255,255,.05)}
-  summary{font-weight:700;font-size:1.05rem;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  summary{font-weight:700;font-size:1.05rem;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:18px 22px;cursor:pointer;min-height:56px;-webkit-user-select:none;user-select:none}
   summary::-webkit-details-marker{display:none}
   summary::after{content:"+";font-size:1.5rem;color:#a855f7;transition:.2s}
   details[open] summary::after{transform:rotate(45deg)}
-  details p{margin-top:14px;color:rgba(255,255,255,.7);line-height:1.7}
+  details > p{margin:0 22px 18px;color:rgba(255,255,255,.7);line-height:1.7}
 
   /* Footer */
   footer{padding:40px 0;text-align:center;color:rgba(255,255,255,.4);font-size:.9rem;border-top:1px solid rgba(255,255,255,.06);margin-top:60px}
@@ -127,17 +158,48 @@
   .modal-box{background:linear-gradient(160deg,#1a1535,#0d0a25);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:36px 32px;max-width:480px;width:100%;text-align:center;animation:slideUp .3s}
   .modal h3{font-size:1.5rem;font-weight:900;margin-bottom:12px}
   .modal p{color:rgba(255,255,255,.7);margin-bottom:22px;line-height:1.6}
-  .modal .close-x{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.08);border:0;color:#fff;width:34px;height:34px;border-radius:50%;font-size:1.2rem}
+  .modal .close-x{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.08);border:0;color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.3rem;display:grid;place-items:center;line-height:1;z-index:2}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
 
-  /* Mobile */
-  @media (max-width:600px){
-    nav{padding:14px 18px;flex-wrap:wrap;gap:10px}
+  /* Mobile / narrow tablet */
+  @media (max-width:768px){
     .container{padding:18px}
-    .hero{padding:20px 0 50px}
-    .section{padding:60px 0}
+    nav{padding:14px 18px;flex-wrap:wrap;gap:10px;margin-bottom:26px}
+    .hero{padding:20px 0 42px}
+    .hero-badge{margin-bottom:18px}
+    .hero h1{margin-bottom:20px}
+    .hero p{margin-bottom:28px}
+    .hero-cta{align-items:stretch}
+    .btn{width:100%;max-width:340px;margin:0 auto;padding:15px 20px;font-size:1rem;min-height:50px}
+    .hero-stats{gap:18px;margin-top:18px}
+    .section{padding:54px 0}
+    .code-strip{flex-direction:column;padding:8px;gap:6px}
+    .code-strip input,.code-strip button{width:100%;padding:14px}
+    .pricing{grid-template-columns:1fr;gap:16px}
+    .price-card{padding:24px 20px;min-height:auto}
     .biz{padding:32px 22px}
+    .modal-box{padding:26px 18px;max-width:calc(100% - 24px)}
+  }
+  @media (max-width:900px) and (max-height:520px){
+    .container{padding:14px 18px}
+    nav{margin-bottom:18px;padding:12px 16px}
+    .hero{padding:12px 0 28px}
+    .hero-badge{margin-bottom:12px;font-size:.8rem}
+    .hero h1{margin-bottom:14px;font-size:clamp(2rem,6vw,3.2rem)}
+    .hero p{margin-bottom:18px;line-height:1.6}
+    .hero-cta{margin-bottom:16px;align-items:center}
+    .btn{width:auto;min-width:260px;max-width:none;padding:14px 28px}
+    .hero-stats{margin-top:12px;gap:16px}
+    .section{padding:44px 0}
+    .section-sub{margin-bottom:34px}
+  }
+  @media (max-width:380px){
+    .features{grid-template-columns:1fr}
+    .hero-stats{flex-direction:column;gap:8px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}
   }
 </style>
 </head>
@@ -154,19 +216,21 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge">✨ الإصدار الجديد 2026</div>
-    <h1>هل تفكران بنفس الطريقة؟</h1>
-    <p>تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.</p>
+    <div class="hero-content">
+      <div class="hero-badge" id="heroBadge">✨ الإصدار الجديد 2026</div>
+      <h1 id="heroTitle">هل تفكران بنفس الطريقة؟</h1>
+      <p id="heroTagline">تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.</p>
 
-    <div class="hero-cta">
-      <a href="#pricing" class="btn btn-primary">🛒 احصل على كودك</a>
-      <button class="btn btn-secondary" id="enterCodeBtn">🔑 لديّ كود — ابدأ التحدي</button>
-    </div>
+      <div class="hero-cta">
+        <a href="#pricing" class="btn btn-primary">🛒 احصل على كودك</a>
+        <a href="/play" class="btn btn-secondary btn-start" id="enterCodeBtn">لديّ كود — ابدأ التحدي</a>
+      </div>
 
-    <div class="hero-stats">
-      <span>⚡ بدء فوري</span>
-      <span>📱 يعمل على الجوال</span>
-      <span>🎁 5 تحديات لكل كود</span>
+      <div class="hero-stats" id="heroStats">
+        <span>⚡ بدء فوري</span>
+        <span>📱 يعمل على الجوال</span>
+        <span>🎁 5 تحديات لكل كود</span>
+      </div>
     </div>
   </section>
 
@@ -187,54 +251,8 @@
     <h2 class="section-title">اختر الباقة المناسبة</h2>
     <p class="section-sub">دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.</p>
 
-    <div class="pricing">
-      <div class="price-card">
-        <div class="price-icon">💝</div>
-        <div class="price-name">فردي</div>
-        <div class="price-desc">مثالي لأمسية ممتعة مع الشريك أو صديق</div>
-        <div><span class="price-amount">10</span><span class="price-currency"> $</span></div>
-        <div class="price-unit">دفعة واحدة</div>
-        <ul class="price-features">
-          <li>5 جلسات تحدي كاملة</li>
-          <li>بطاقة نتيجة قابلة للتنزيل</li>
-          <li>قوالب تصميم متعددة</li>
-          <li>صلاحية الكود سنة كاملة</li>
-        </ul>
-        <button class="btn btn-secondary" data-buy="individual">اشترِ الآن</button>
-      </div>
-
-      <div class="price-card popular">
-        <div class="badge-pop">⭐ الأكثر طلباً</div>
-        <div class="price-icon">🏪</div>
-        <div class="price-name">باقة شركات صغيرة</div>
-        <div class="price-desc">لمطاعم، كافيهات، ومتاجر صغيرة</div>
-        <div><span class="price-amount">200</span><span class="price-currency"> $</span></div>
-        <div class="price-unit">50 كود — توفير 60%</div>
-        <ul class="price-features">
-          <li>50 كود، كل كود = 5 جلسات</li>
-          <li>إجمالي 250 جلسة لعميلكم</li>
-          <li>لوحة إدارة الأكواد</li>
-          <li>إمكانية تخصيص اسم البزنس على البطاقة</li>
-          <li>دعم فني مباشر</li>
-        </ul>
-        <button class="btn btn-primary" data-buy="business-50">طلب الباقة</button>
-      </div>
-
-      <div class="price-card">
-        <div class="price-icon">🏬</div>
-        <div class="price-name">باقة شركات كبرى</div>
-        <div class="price-desc">للمولات، الفنادق، وسلاسل المطاعم</div>
-        <div><span class="price-amount">350</span><span class="price-currency"> $</span></div>
-        <div class="price-unit">100 كود — توفير 65%</div>
-        <ul class="price-features">
-          <li>100 كود، إجمالي 500 جلسة</li>
-          <li>لوحة إدارة وتقارير شاملة</li>
-          <li>اسم وشعار البزنس على البطاقة</li>
-          <li>QR لكل كود لطباعته</li>
-          <li>أولوية في الدعم</li>
-        </ul>
-        <button class="btn btn-secondary" data-buy="business-100">طلب الباقة</button>
-      </div>
+    <div class="pricing" id="pricingGrid">
+      <div class="empty-pricing" style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.4)">⏳ جاري تحميل الباقات...</div>
     </div>
   </section>
 
@@ -253,7 +271,7 @@
     <div class="biz">
       <h2>🏢 للأعمال — حوّل عملاءك إلى ذكريات</h2>
       <p>هل تملك مطعماً، كافيه، أو فندقاً؟ قدّم لعملائك تجربة فريدة. كود على فاتورتهم = ذكرى لن ينسوها وصورة يشاركونها مع علامتك التجارية.</p>
-      <a href="https://wa.me/?text=أرغب%20بمعرفة%20المزيد%20عن%20باقات%20الأعمال" class="btn btn-primary">تواصل معنا الآن</a>
+      <a id="bizContactBtn" href="https://wa.me/?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D9%85%D8%B9%D8%B1%D9%81%D8%A9%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D8%B9%D9%86%20%D8%A8%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84" target="_blank" rel="noopener" class="btn btn-primary">تواصل معنا الآن</a>
     </div>
   </section>
 
@@ -294,47 +312,184 @@
   <div class="modal-box" style="position:relative">
     <button class="close-x" onclick="closeBuyModal()">✕</button>
     <h3>🛒 شراء كود</h3>
-    <p id="buyDesc">اطلب الكود مباشرة عبر WhatsApp وسنرسل لك الكود فوراً.</p>
-    <a id="waLink" href="#" target="_blank" class="btn btn-primary" style="width:100%;justify-content:center">📱 طلب عبر WhatsApp</a>
-    <p style="margin-top:18px;font-size:.85rem;color:rgba(255,255,255,.5)">سيتم إضافة الدفع الإلكتروني المباشر قريباً</p>
+    <p id="buyDesc">املأ بياناتك وسيظهر طلبك فوراً في لوحة الإدارة. سنرسل لك الكود بعد تأكيد الدفع.</p>
+    <div style="display:grid;gap:10px;text-align:right;margin:16px 0">
+      <input id="buyerName" type="text" placeholder="الاسم" autocomplete="name" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
+      <input id="buyerPhone" type="tel" placeholder="رقم واتساب — مثال 2010xxxxxxx" autocomplete="tel" inputmode="tel" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
+      <input id="buyerEmail" type="email" placeholder="البريد الإلكتروني (اختياري)" autocomplete="email" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
+      <textarea id="buyerNotes" rows="3" placeholder="ملاحظات للطلب (اختياري)" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <button id="placeOrderBtn" onclick="placeOrder()" class="btn btn-primary" style="width:100%;justify-content:center">تسجيل الطلب الآن</button>
+    <a id="waLink" href="#" target="_blank" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:10px;display:none">📱 متابعة عبر WhatsApp</a>
+    <div class="code-msg" id="orderMsg" style="margin-top:12px"></div>
+    <p style="margin-top:18px;font-size:.85rem;color:rgba(255,255,255,.5)">الطلبات تظهر مباشرة في لوحة التحكم لتسليم كود غير مباع مسبقاً.</p>
   </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="/js/codes.js"></script>
+<script src="/js/codes.js?v=37"></script>
 <script>
   TPCodes.init();
 
   // Auto-detect ?code= or ?room= and forward to /play
   const params = new URLSearchParams(location.search);
   if (params.get('room')) location.replace('/play?room=' + encodeURIComponent(params.get('room')));
-  if (params.get('code')) {
-    document.getElementById('codeInput').value = params.get('code');
-    openCodeModal();
-  }
+  if (params.get('code')) location.replace('/play?code=' + encodeURIComponent(params.get('code')));
 
   function openCodeModal() { document.getElementById('codeModal').classList.add('open'); document.getElementById('codeInput').focus(); }
   function closeCodeModal() { document.getElementById('codeModal').classList.remove('open'); }
   function openBuyModal() { document.getElementById('buyModal').classList.add('open'); }
   function closeBuyModal() { document.getElementById('buyModal').classList.remove('open'); }
 
-  document.getElementById('enterCodeBtn').onclick = openCodeModal;
+  // enterCodeBtn now navigates directly to /play (anchor) — no modal needed.
   document.getElementById('codeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitCode(); });
 
-  document.querySelectorAll('[data-buy]').forEach(b => {
-    b.onclick = () => {
-      const t = b.getAttribute('data-buy');
-      const map = {
-        'individual':  { txt: 'أرغب بشراء كود فردي (5 جلسات - 10$)', desc: 'كود فردي = 5 جلسات تحدي. السعر 10$ دفعة واحدة.' },
-        'business-50': { txt: 'أرغب بطلب باقة شركات (50 كود - 200$)', desc: 'باقة 50 كود = 250 جلسة. السعر 200$ مع لوحة إدارة.' },
-        'business-100':{ txt: 'أرغب بطلب باقة شركات كبرى (100 كود - 350$)', desc: 'باقة 100 كود = 500 جلسة. السعر 350$ مع لوحة وتقارير وQR.' }
+  // ============== Dynamic Pricing (from Firebase) ==============
+  let SETTINGS = { whatsappNumber: '', currency: 'USD' };
+  let PACKAGES = [];
+  let CURRENT_PACKAGE = null;
+
+  function escapeHtml(s) {
+    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function currencySymbol(c) {
+    return ({USD:'$', EUR:'€', SAR:'ر.س', AED:'د.إ', EGP:'ج.م', QAR:'ر.ق', KWD:'د.ك'})[String(c||'').toUpperCase()] || (c || '$');
+  }
+  function renderPackages() {
+    const grid = document.getElementById('pricingGrid');
+    if (!grid) return;
+    const visible = PACKAGES.filter(p => p.visible !== false);
+    if (!visible.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5)">لا توجد باقات معروضة حالياً.</div>';
+      return;
+    }
+    grid.innerHTML = visible.map(p => {
+      const sym = currencySymbol(p.currency || SETTINGS.currency);
+      const features = String(p.features||'').split(/\r?\n/).filter(Boolean)
+        .map(f => `<li>${escapeHtml(f)}</li>`).join('');
+      const badge = p.badge ? `<div class="badge-pop">${escapeHtml(p.badge)}</div>` : '';
+      const btnClass = p.featured ? 'btn-primary' : 'btn-secondary';
+      return `<div class="price-card${p.featured ? ' popular':''}">
+        ${badge}
+        <div class="price-head"><div class="price-icon">${escapeHtml(p.icon || '📦')}</div></div>
+        <div class="price-name">${escapeHtml(p.name)}</div>
+        <div class="price-desc">${escapeHtml(p.desc || '')}</div>
+        <div><span class="price-amount">${Number(p.price)||0}</span><span class="price-currency"> ${sym}</span></div>
+        <div class="price-unit">${escapeHtml(p.unitNote || '')}</div>
+        <div class="pkg-metrics">
+          <div class="pkg-metric"><span>الأكواد</span><b>${Number(p.codesCount)||1}</b></div>
+          <div class="pkg-metric"><span>جلسات/كود</span><b>${Number(p.sessionsPerCode)||5}</b></div>
+        </div>
+        <ul class="price-features">${features}</ul>
+        <button class="btn ${btnClass}" data-buy="${escapeHtml(p.id)}">${escapeHtml(p.buttonText || 'اطلب الآن')}</button>
+      </div>`;
+    }).join('');
+
+    // bind buy buttons
+    grid.querySelectorAll('[data-buy]').forEach(b => {
+      b.onclick = () => {
+        const id = b.getAttribute('data-buy');
+        const pkg = PACKAGES.find(x => x.id === id);
+        if (!pkg) return;
+        const sym = currencySymbol(pkg.currency || SETTINGS.currency);
+        const summary = `<b>${escapeHtml(pkg.name)}</b> — ${Number(pkg.price)||0} ${sym}`;
+        CURRENT_PACKAGE = pkg;
+        document.getElementById('buyDesc').innerHTML = summary + (pkg.unitNote ? `<br><span style="color:rgba(255,255,255,.5);font-size:.9em">${escapeHtml(pkg.unitNote)}</span>` : '');
+        const msg = pkg.whatsappMsg || `أرغب بطلب: ${pkg.name} (${pkg.price} ${sym})`;
+        document.getElementById('waLink').href = TPCodes.whatsappLink(SETTINGS.whatsappNumber, msg);
+        document.getElementById('waLink').style.display = 'none';
+        document.getElementById('orderMsg').textContent = '';
+        openBuyModal();
       };
-      document.getElementById('buyDesc').textContent = map[t].desc;
-      document.getElementById('waLink').href = 'https://wa.me/?text=' + encodeURIComponent(map[t].txt);
-      openBuyModal();
-    };
-  });
+    });
+  }
+
+  async function placeOrder() {
+    const msg = document.getElementById('orderMsg');
+    const btn = document.getElementById('placeOrderBtn');
+    if (!CURRENT_PACKAGE) { msg.className = 'code-msg err'; msg.textContent = 'اختر باقة أولاً'; return; }
+    const buyerName = document.getElementById('buyerName').value.trim();
+    const buyerPhone = document.getElementById('buyerPhone').value.trim();
+    const buyerEmail = document.getElementById('buyerEmail').value.trim();
+    const notes = document.getElementById('buyerNotes').value.trim();
+    if (!buyerName || !buyerPhone) {
+      msg.className = 'code-msg err';
+      msg.textContent = 'أدخل الاسم ورقم واتساب حتى نرسل لك الكود';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'جاري تسجيل الطلب...';
+    msg.className = 'code-msg';
+    msg.textContent = '⏳ لحظة واحدة...';
+    try {
+      const pkg = CURRENT_PACKAGE;
+      const order = await TPCodes.createOrder({
+        packageId: pkg.id,
+        packageName: pkg.name,
+        packageType: (Number(pkg.codesCount)||1) > 1 ? 'business' : 'individual',
+        codesCount: Number(pkg.codesCount) || 1,
+        sessionsPerCode: Number(pkg.sessionsPerCode) || 5,
+        price: Number(pkg.price) || 0,
+        currency: pkg.currency || SETTINGS.currency || 'USD',
+        buyerName,
+        buyerPhone,
+        buyerEmail,
+        notes,
+      });
+      const waText = 'طلب شراء جديد في Telepathy\nرقم الطلب: ' + order.id + '\nالباقة: ' + order.packageName + '\nالاسم: ' + order.buyerName + '\nواتساب: ' + order.buyerPhone + '\nالسعر: ' + order.price + ' ' + order.currency;
+      const wa = TPCodes.whatsappLink(SETTINGS.whatsappNumber, waText);
+      const waLink = document.getElementById('waLink');
+      waLink.href = wa;
+      waLink.style.display = 'inline-flex';
+      msg.className = 'code-msg ok';
+      msg.innerHTML = '✓ تم تسجيل طلبك برقم <b style="direction:ltr;display:inline-block">' + escapeHtml(order.id) + '</b>. اضغط واتساب لإرسال تأكيد الطلب للإدارة.';
+      window.open(wa, '_blank');
+    } catch (e) {
+      msg.className = 'code-msg err';
+      msg.textContent = '✕ تعذّر تسجيل الطلب. جرّب مرة أخرى أو تواصل عبر واتساب.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'تسجيل الطلب الآن';
+    }
+  }
+
+  function applyLandingSettings(s) {
+    if (!s) return;
+    const badge = document.getElementById('heroBadge');
+    const title = document.getElementById('heroTitle');
+    const tagline = document.getElementById('heroTagline');
+    const stats = document.getElementById('heroStats');
+
+    if (badge && s.heroBadge) badge.textContent = s.heroBadge;
+    if (title && s.heroTitle) title.textContent = s.heroTitle;
+    if (tagline && s.tagline) tagline.textContent = s.tagline;
+    if (stats && s.heroStats) {
+      const parts = String(s.heroStats).split('|').map(x => x.trim()).filter(Boolean);
+      if (parts.length) stats.innerHTML = parts.map(x => `<span>${escapeHtml(x)}</span>`).join('');
+    }
+  }
+
+  async function loadLanding() {
+    PACKAGES = TPCodes.DEFAULT_PACKAGES.slice();
+    renderPackages();
+    try {
+      const [settings, packages] = await Promise.all([
+        TPCodes.getSettings(),
+        TPCodes.listPackages()
+      ]);
+      SETTINGS = settings || { ...TPCodes.DEFAULT_SETTINGS };
+      PACKAGES = (packages && packages.length) ? packages : TPCodes.DEFAULT_PACKAGES.slice();
+      applyLandingSettings(SETTINGS);
+      renderPackages();
+    } catch (e) {
+      console.warn('Falling back to defaults:', e);
+      SETTINGS = { ...TPCodes.DEFAULT_SETTINGS };
+    }
+    const biz = document.getElementById('bizContactBtn');
+    if (biz) biz.href = TPCodes.whatsappLink(SETTINGS.whatsappNumber, SETTINGS.bizMessage || 'أرغب بمعرفة المزيد عن باقات الأعمال');
+  }
+  loadLanding();
 
   async function submitCode() {
     const msg = document.getElementById('codeMsg');
@@ -356,6 +511,27 @@
   document.querySelectorAll('.modal').forEach(m => {
     m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); });
   });
+
+  // ---- Service Worker auto-reload on update (prevents stale cache lockout) ----
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              if (!sessionStorage.getItem('__sw_reloaded')) {
+                sessionStorage.setItem('__sw_reloaded', '1');
+                window.location.reload();
+              }
+            }
+          });
+        });
+        setInterval(() => reg.update().catch(() => {}), 6 * 60 * 60 * 1000);
+      }).catch(() => {});
+    });
+  }
 </script>
 </body>
 </html>

@@ -4,33 +4,16 @@
       "$roomId": {
         ".read": "$roomId.matches(/^[A-Z0-9]{6}$/)",
         ".write": "$roomId.matches(/^[A-Z0-9]{6}$/)",
-        "code": {
-          ".validate": "newData.isString() && newData.val() === $roomId"
-        },
-        "status": {
-          ".validate": "newData.isString() && (newData.val() === 'waiting' || newData.val() === 'playing')"
-        },
-        "phase": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4"
-        },
-        "round": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5"
-        },
-        "maxUses": {
-          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 50"
-        },
-        "totalUses": {
-          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 51"
-        },
-        "expired": {
-          ".validate": "newData.isBoolean()"
-        },
-        "createdAt": {
-          ".validate": "newData.isNumber()"
-        },
-        "accessCode": {
-          ".validate": "newData.isString() && newData.val().length <= 24"
-        },
+        "code": { ".validate": "newData.isString() && newData.val() === $roomId" },
+        "status": { ".validate": "newData.isString() && (newData.val() === 'waiting' || newData.val() === 'playing')" },
+        "phase": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" },
+        "round": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5" },
+        "maxUses": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 50" },
+        "totalUses": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 51" },
+        "expired": { ".validate": "newData.isBoolean()" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "accessCode": { ".validate": "newData.isString() && newData.val().length <= 24" },
+        "accessConsumed": { ".validate": "newData.isBoolean()" },
         "players": {
           "$pid": {
             ".validate": "$pid === 'player1' || $pid === 'player2'",
@@ -46,66 +29,210 @@
             ".validate": "$pid === 'player1' || $pid === 'player2'",
             "$phase": {
               ".validate": "$phase.matches(/^phase[1-4]$/)",
-              "$round": {
-                ".validate": "newData.isString() && newData.val().length <= 60"
-              }
+              "$round": { ".validate": "newData.isString() && newData.val().length <= 60" }
             }
           }
         },
         "roundSubmissions": {
           "$rk": {
             ".validate": "$rk.matches(/^p[1-4]_r[0-4]$/)",
-            "$pid": {
-              ".validate": "($pid === 'player1' || $pid === 'player2') && newData.isBoolean()"
-            }
+            "$pid": { ".validate": "($pid === 'player1' || $pid === 'player2') && newData.isBoolean()" }
           }
         },
-        "gameState": {
-          ".validate": "newData.hasChild('event')"
-        },
-        "$other": {
-          ".validate": false
-        }
+        "gameState": { ".validate": "newData.hasChild('event')" },
+        "$other": { ".validate": false }
       }
     },
+
+    "accessRooms": {
+      "$code": {
+        ".read": "$code.matches(/^[A-Z0-9-]{1,24}$/)",
+        ".write": "$code.matches(/^[A-Z0-9-]{1,24}$/)",
+        "roomId": { ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9]{6}$/)" },
+        "at": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
+
     "accessCodes": {
-      ".indexOn": ["status", "ownerId", "batchId", "createdAt"],
+      ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || (query.orderByChild === 'resellerId' && query.equalTo === auth.uid))",
+      ".indexOn": ["status", "ownerId", "batchId", "createdAt", "resellerId", "sold"],
       "$code": {
         ".read": true,
-        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (data.exists() && newData.exists() && newData.child('usedSessions').val() <= newData.child('maxSessions').val()))",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (root.child('resellers').child(auth.uid).child('active').val() === true && (!data.exists() || data.child('resellerId').val() === auth.uid)))",
         ".validate": "newData.hasChildren(['type','status','maxSessions','usedSessions','createdAt'])",
-        "type":          { ".validate": "newData.isString() && (newData.val() === 'individual' || newData.val() === 'business')" },
-        "status":        { ".validate": "newData.isString() && newData.val().matches(/^(active|used|expired|disabled)$/)" },
-        "maxSessions":   { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 50" },
-        "usedSessions":  { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 51" },
-        "expiresAt":     { ".validate": "newData.isNumber()" },
-        "createdAt":     { ".validate": "newData.isNumber()" },
-        "ownerId":       { ".validate": "newData.isString() && newData.val().length <= 64" },
-        "batchId":       { ".validate": "newData.isString() && newData.val().length <= 64" },
-        "label":         { ".validate": "newData.isString() && newData.val().length <= 80" },
-        "lastUsedAt":    { ".validate": "newData.isNumber()" },
-        "$other":        { ".validate": false }
+        "type": { ".validate": "newData.isString() && (newData.val() === 'individual' || newData.val() === 'business')" },
+        "status": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || (data.parent().child('status').val() === 'active' && newData.isString() && newData.val().matches(/^(active|used|expired)$/))",
+          ".validate": "newData.isString() && newData.val().matches(/^(active|used|expired|disabled)$/)"
+        },
+        "maxSessions": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 50" },
+        "usedSessions": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || (data.parent().child('status').val() === 'active' && newData.isNumber() && newData.val() === data.val() + 1 && newData.val() <= data.parent().child('maxSessions').val())",
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 51"
+        },
+        "expiresAt": { ".validate": "newData.isNumber()" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "ownerId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "batchId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "resellerId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "soldPrice": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "sold": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isBoolean()" },
+        "soldAt": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isNumber()" },
+        "soldBy": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isString() && newData.val().length <= 64" },
+        "soldToName": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isString() && newData.val().length <= 80" },
+        "soldToPhone": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isString() && newData.val().length <= 30" },
+        "soldOrderId": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isString() && newData.val().length <= 64" },
+        "soldPackageId": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isString() && newData.val().length <= 64" },
+        "label": { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "lastUsedAt": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || (data.parent().child('status').val() === 'active' && newData.isNumber())",
+          ".validate": "newData.isNumber()"
+        },
+        "$other": { ".validate": false }
       }
     },
+
     "businesses": {
       ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
       ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
       ".indexOn": ["createdAt"]
     },
+
     "batches": {
-      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
-      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
-      ".indexOn": ["createdAt", "businessId"]
+      ".read":  "auth != null && (root.child('admins').child(auth.uid).val() === true || (query.orderByChild === 'resellerId' && query.equalTo === auth.uid))",
+      ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('resellers').child(auth.uid).child('active').val() === true)",
+      ".indexOn": ["createdAt", "businessId", "resellerId"]
     },
+
     "admins": {
       ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
       ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
-      "$uid": { ".validate": "newData.isBoolean()" }
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".validate": "newData.isBoolean()"
+      }
     },
+
+    "resellers": {
+      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["createdAt", "email"],
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        "balance": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && newData.isNumber() && newData.val() >= 0 && newData.val() <= data.val()))",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "totalGenerated": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && newData.isNumber() && newData.val() >= data.val()))",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "totalSpent": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && newData.isNumber() && newData.val() >= data.val()))",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "active":      { ".validate": "newData.isBoolean()" },
+        "email":       { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "name":        { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "phone":       { ".validate": "newData.isString() && newData.val().length <= 30" },
+        "tier":        { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "discountPct": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 90" },
+        "createdAt":   { ".validate": "newData.isNumber()" },
+        "notes":       { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "$other":      { ".validate": false }
+      }
+    },
+
+    "resellerOps": {
+      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["resellerId", "at", "type"],
+      "$opId": {
+        ".read":  "auth != null && (root.child('admins').child(auth.uid).val() === true || data.child('resellerId').val() === auth.uid)",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (root.child('resellers').child(auth.uid).child('active').val() === true && newData.child('resellerId').val() === auth.uid && !data.exists()))",
+        ".validate": "newData.hasChildren(['resellerId','type','at'])"
+      }
+    },
+
+    "pricing": {
+      ".read":  true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true"
+    },
+
+    "packages": {
+      ".read":  true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["order", "visible"],
+      "$pkgId": {
+        ".validate": "newData.hasChildren(['name','price'])",
+        "name":          { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "desc":          { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "icon":          { ".validate": "newData.isString() && newData.val().length <= 8" },
+        "price":         { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000" },
+        "currency":      { ".validate": "newData.isString() && newData.val().length <= 6" },
+        "codesCount":    { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000" },
+        "sessionsPerCode": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100" },
+        "features":      { ".validate": "newData.isString() && newData.val().length <= 1000" },
+        "badge":         { ".validate": "newData.isString() && newData.val().length <= 30" },
+        "featured":      { ".validate": "newData.isBoolean()" },
+        "buttonText":    { ".validate": "newData.isString() && newData.val().length <= 30" },
+        "order":         { ".validate": "newData.isNumber()" },
+        "visible":       { ".validate": "newData.isBoolean()" },
+        "whatsappMsg":   { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "unitNote":      { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "$other":        { ".validate": false }
+      }
+    },
+
+    "orders": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["status", "createdAt", "buyerPhone", "packageId"],
+      "$orderId": {
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || (!data.exists() && newData.child('status').val() === 'pending')",
+        ".validate": "newData.hasChildren(['packageId','packageName','status','codesCount','sessionsPerCode','price','currency','buyerName','buyerPhone','createdAt'])",
+        "packageId": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 64" },
+        "packageName": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
+        "packageType": { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "status": { ".validate": "newData.isString() && newData.val().matches(/^(pending|fulfilled|cancelled)$/)" },
+        "codesCount": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000" },
+        "sessionsPerCode": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100" },
+        "price": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000" },
+        "currency": { ".validate": "newData.isString() && newData.val().length <= 8" },
+        "buyerName": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
+        "buyerPhone": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 30" },
+        "buyerEmail": { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "notes": { ".validate": "newData.isString() && newData.val().length <= 300" },
+        "source": { ".validate": "newData.isString() && newData.val().length <= 30" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "fulfilledAt": { ".validate": "newData.isNumber()" },
+        "fulfilledBy": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "code": { ".validate": "newData.isString() && newData.val().length <= 24" },
+        "codes": { "$idx": { ".validate": "newData.isString() && newData.val().length <= 24" } },
+        "cancelledAt": { ".validate": "newData.isNumber()" },
+        "cancelledBy": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "settings": {
+      ".read":  true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      "whatsappNumber": { ".validate": "newData.isString() && newData.val().length <= 24" },
+      "currency":       { ".validate": "newData.isString() && newData.val().length <= 6" },
+      "brandName":      { ".validate": "newData.isString() && newData.val().length <= 40" },
+      "tagline":        { ".validate": "newData.isString() && newData.val().length <= 200" },
+      "heroTitle":      { ".validate": "newData.isString() && newData.val().length <= 120" },
+      "heroBadge":      { ".validate": "newData.isString() && newData.val().length <= 60" },
+      "heroStats":      { ".validate": "newData.isString() && newData.val().length <= 240" },
+      "bizMessage":     { ".validate": "newData.isString() && newData.val().length <= 200" },
+      "$other":         { ".validate": false }
+    },
+
     "stats": {
       ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
       ".write": true,
       "totals": {
+        ".read": true,
         "sessionsPlayed": { ".validate": "newData.isNumber()" },
         "cardsShared":    { ".validate": "newData.isNumber()" },
         "$other":         { ".validate": false }

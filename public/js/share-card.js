@@ -118,6 +118,17 @@
     return { txt: 'تخاطر استثنائي', emoji: '🧠⚡' };
   }
 
+  function fitText(ctx, text, maxWidth, fontSize, weight, family) {
+    let size = fontSize;
+    const safeFamily = family || 'Tajawal, sans-serif';
+    do {
+      ctx.font = `${weight || 'bold'} ${size}px ${safeFamily}`;
+      if (ctx.measureText(text).width <= maxWidth) break;
+      size -= 2;
+    } while (size >= 28);
+    return size;
+  }
+
   /** Render the share card as a Canvas. opts: {pct, name1, name2, photo1, photo2, template, brandName, brandLogo, qrUrl} */
   async function render(opts) {
     await loadFont();
@@ -128,9 +139,9 @@
 
     // Background gradient
     const bg = gradient(ctx, 0, 0, W, H, [
-      [0,   '#0a0a1a'],
-      [0.4, '#15102e'],
-      [1,   '#050511'],
+      [0,   '#090a1f'],
+      [0.46, '#171233'],
+      [1,   '#070616'],
     ]);
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
@@ -149,81 +160,133 @@
     drawStars(ctx, 110);
 
     // Frame (glass)
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
-    roundRect(ctx, 50, 50, W - 100, H - 100, 60);
+    ctx.fillStyle = 'rgba(255,255,255,0.045)';
+    roundRect(ctx, 64, 64, W - 128, H - 128, 58);
     ctx.fill();
     ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+    ctx.stroke();
+
+    // Soft inner panel for the score area
+    ctx.fillStyle = 'rgba(0,0,0,0.16)';
+    roundRect(ctx, 118, 560, W - 236, 440, 46);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.stroke();
 
     // Top label / template badge
-    ctx.font = '600 36px Tajawal, sans-serif';
+    ctx.font = '700 34px Tajawal, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.fillText(palette.heading, W / 2, 160);
+    ctx.fillStyle = 'rgba(255,255,255,0.62)';
+    ctx.fillText(palette.heading, W / 2, 150);
+
+    ctx.font = '900 42px Tajawal, sans-serif';
+    ctx.fillStyle = '#fff';
+    ctx.fillText('بطاقة نتيجة التخاطر', W / 2, 208);
 
     // Logo / brand top-right
     if (opts.brandName) {
       ctx.font = 'bold 28px Tajawal, sans-serif';
       ctx.textAlign = 'right';
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      ctx.fillText(opts.brandName, W - 90, 110);
+      ctx.fillText(opts.brandName, W - 90, 118);
     }
 
     // Photos circle
     const [img1, img2] = await Promise.all([loadImage(opts.photo1), loadImage(opts.photo2)]);
-    drawCircleImage(ctx, img1, 280, 360, 100);
-    drawCircleImage(ctx, img2, W - 280, 360, 100);
+    drawCircleImage(ctx, img1, 268, 375, 92);
+    drawCircleImage(ctx, img2, W - 268, 375, 92);
 
     // Heart / link icon between
-    ctx.font = '90px serif';
+    ctx.font = '82px serif';
     ctx.textAlign = 'center';
     ctx.fillStyle = palette.a;
     ctx.shadowColor = palette.a; ctx.shadowBlur = 30;
-    ctx.fillText(opts.template === 'romantic' ? '💞' : '🧠', W / 2, 380);
+    ctx.fillText(opts.template === 'romantic' ? '💞' : '🧠', W / 2, 386);
     ctx.shadowBlur = 0;
 
     // Names
-    ctx.font = 'bold 56px Tajawal, sans-serif';
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
     const n1 = (opts.name1 || 'اللاعب 1').slice(0, 18);
     const n2 = (opts.name2 || 'اللاعب 2').slice(0, 18);
-    ctx.fillText(`${n1}  ✦  ${n2}`, W / 2, 540);
+    fitText(ctx, `${n1}  ✦  ${n2}`, 760, 56, 'bold');
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${n1}  ✦  ${n2}`, W / 2, 515);
 
     // Big result ring
-    const cx = W / 2, cy = 830;
-    drawProgressRing(ctx, cx, cy, 200, opts.pct || 0, palette);
+    const cx = W / 2, cy = 755;
+    drawProgressRing(ctx, cx, cy, 178, opts.pct || 0, palette);
 
     // Pct text
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 180px Tajawal, sans-serif';
+    ctx.font = 'bold 168px Tajawal, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${Math.round(opts.pct || 0)}%`, cx, cy - 10);
+    ctx.fillText(`${Math.round(opts.pct || 0)}%`, cx, cy - 8);
 
     ctx.font = '600 38px Tajawal, sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.fillText('نسبة التخاطر', cx, cy + 100);
+    ctx.fillText('نسبة التخاطر', cx, cy + 90);
 
     // Rating
     const r = ratingFor(opts.pct || 0);
-    ctx.font = 'bold 56px Tajawal, sans-serif';
+    fitText(ctx, opts.rating || `${r.emoji}  ${r.txt}`, 680, 54, 'bold');
     const ratingGrad = gradient(ctx, 0, 0, W, 0, [[0, palette.a], [1, palette.b]]);
     ctx.fillStyle = ratingGrad;
-    ctx.fillText(`${r.emoji}  ${r.txt}`, cx, 1130);
+    ctx.fillText(opts.rating || `${r.emoji}  ${r.txt}`, cx, 980);
+
+    const phases = opts.phases || [];
+    if (phases.length) {
+      const cardW = 370;
+      const cardH = 92;
+      const gapX = 36;
+      const gapY = 28;
+      const startX = (W - (cardW * 2 + gapX)) / 2;
+      const startY = 1048;
+      ctx.textAlign = 'center';
+      phases.slice(0, 4).forEach((p, i) => {
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        const x = startX + col * (cardW + gapX);
+        const y = startY + row * (cardH + gapY);
+        const pct = Math.max(0, Math.min(100, Number(p.pct || 0)));
+
+        ctx.fillStyle = 'rgba(255,255,255,0.065)';
+        roundRect(ctx, x, y, cardW, cardH, 24);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.font = '800 38px Tajawal, sans-serif';
+        ctx.fillStyle = gradient(ctx, x, y, x + cardW, y + cardH, [[0, palette.a], [1, palette.b]]);
+        ctx.fillText(`${pct}%`, x + cardW / 2, y + 43);
+
+        ctx.font = '700 28px Tajawal, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.fillText(p.label, x + cardW / 2, y + 73);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        roundRect(ctx, x + 30, y + cardH - 13, cardW - 60, 7, 4);
+        ctx.fill();
+        ctx.fillStyle = gradient(ctx, x + 30, y, x + cardW - 30, y, [[0, palette.a], [1, palette.b]]);
+        const fillW = (cardW - 60) * pct / 100;
+        roundRect(ctx, x + 30 + (cardW - 60 - fillW), y + cardH - 13, fillW, 7, 4);
+        ctx.fill();
+      });
+    }
 
     // Footer
     ctx.font = '500 28px Tajawal, sans-serif';
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.textAlign = 'center';
-    ctx.fillText('Telepathy Challenge  •  تحدي التخاطر', W / 2, H - 110);
+    ctx.fillText(opts.roomCode ? `غرفة ${opts.roomCode}  •  Telepathy Challenge` : 'Telepathy Challenge  •  تحدي التخاطر', W / 2, H - 95);
 
     // Site / QR text
     ctx.font = 'bold 32px Tajawal, sans-serif';
     ctx.fillStyle = palette.a;
-    ctx.fillText(opts.siteUrl || 'four-fruits-fun.web.app', W / 2, H - 70);
+    ctx.fillText(opts.siteUrl || 'teleplay.online', W / 2, H - 58);
 
     return canvas;
   }
@@ -267,6 +330,31 @@
     return false;
   }
 
+  function printPdf(canvas, filename) {
+    const dataUrl = canvas.toDataURL('image/png');
+    const win = window.open('', '_blank');
+    if (!win) {
+      download(canvas, (filename || 'telepathy-result.pdf').replace(/\.pdf$/i, '.png'));
+      return false;
+    }
+    win.document.write(`<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>${filename || 'telepathy-result.pdf'}</title>
+<style>
+  @page { size: 1080px 1350px; margin: 0; }
+  html,body{margin:0;background:#05050f;width:100%;min-height:100%;display:grid;place-items:center}
+  img{width:100vw;max-width:1080px;height:auto;display:block}
+  @media print { html,body{background:#05050f} img{width:100%;height:auto} }
+</style>
+</head>
+<body><img alt="Telepathy result card" src="${dataUrl}"><script>window.onload=function(){setTimeout(function(){window.print()},250)}<\/script></body>
+</html>`);
+    win.document.close();
+    return true;
+  }
+
   /** Convert a File (image upload) to a small base64 data URL (max 320x320) */
   function fileToDataURL(file, maxSide = 320) {
     return new Promise((resolve, reject) => {
@@ -295,6 +383,7 @@
     render,
     download,
     share,
+    printPdf,
     fileToDataURL,
     ratingFor,
   };

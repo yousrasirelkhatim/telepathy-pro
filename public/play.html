@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -25,7 +25,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
@@ -78,7 +78,7 @@ body {
 
 /* Floating orbs */
 .orb {
-  position: fixed; border-radius:50%; filter:blur(60px); pointer-events:none; z-index:0;
+  position: fixed; border-radius:50%; filter:blur(32px); pointer-events:none; z-index:0;
   animation: orbFloat 8s ease-in-out infinite;
 }
 .orb-1 { width:300px; height:300px; background:rgba(168,85,247,0.2); top:10%; left:10%; animation-delay:0s; }
@@ -94,8 +94,8 @@ body {
 /* Glass panel */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: 1px solid var(--glass-border);
   border-radius: 24px;
 }
@@ -616,16 +616,7 @@ body {
 /* 2026 Modernization layer                                            */
 /* ================================================================== */
 
-/* View Transitions API – cross-fade with subtle scale */
-@view-transition { navigation: auto; }
-::view-transition-old(root) {
-  animation: fade-out 320ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
-}
-::view-transition-new(root) {
-  animation: fade-in 420ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
-}
-@keyframes fade-out { to { opacity: 0; transform: scale(0.98); filter: blur(2px); } }
-@keyframes fade-in  { from { opacity: 0; transform: scale(1.02); filter: blur(2px); } }
+/* View transitions disabled for lighter mobile performance. */
 
 /* :has() – glass panels glow when contain a focused input */
 .glass:has(.input-field:focus),
@@ -673,8 +664,8 @@ body {
 .brain-icon::after {
   content:''; position:absolute; inset:-12px; border-radius:50%;
   background: conic-gradient(from 0deg, var(--neon-blue), var(--neon-purple), var(--neon-pink), var(--neon-blue));
-  filter: blur(18px); opacity: 0.35; z-index:-1;
-  animation: ringSpin 8s linear infinite;
+  filter: none; opacity: 0; z-index:-1;
+  animation: none;
 }
 @keyframes ringSpin { to { transform: rotate(360deg); } }
 
@@ -730,17 +721,14 @@ html { scroll-behavior: smooth; }
     radial-gradient(1000px 500px at 85% 15%, rgba(0,212,255,0.16), transparent 60%),
     radial-gradient(900px 600px at 50% 95%, rgba(255,45,170,0.14), transparent 60%),
     linear-gradient(180deg, #07071a 0%, #0a0a1a 50%, #050511 100%);
-  animation: bgShift 18s ease-in-out infinite alternate;
+  animation: none;
 }
-@keyframes bgShift {
-  0%   { filter: hue-rotate(0deg) saturate(1); }
-  100% { filter: hue-rotate(20deg) saturate(1.15); }
-}
+@keyframes bgShift { to { opacity: 1; } }
 
 /* Subtle grain overlay for premium feel */
 .bg-animation::after {
   content:''; position:absolute; inset:0; pointer-events:none; opacity:0.06;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
+  background-image: none;
   mix-blend-mode: overlay;
 }
 
@@ -988,7 +976,7 @@ html { scroll-behavior: smooth; }
   color: #fff;
   box-shadow: 0 8px 22px rgba(168,85,247,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
   text-shadow: 0 0 14px rgba(168,85,247,0.6);
-  animation: codePulse 2.4s ease-in-out infinite;
+  animation: none;
 }
 @keyframes codePulse {
   0%,100% { box-shadow: 0 8px 22px rgba(168,85,247,0.25), inset 0 1px 0 rgba(255,255,255,0.1); }
@@ -1003,10 +991,447 @@ html { scroll-behavior: smooth; }
   #topControls { top: max(8px, env(safe-area-inset-top)) !important; left: max(8px, env(safe-area-inset-left)) !important; }
 }
 
+/* === 2026 Mobile-fit overhaul: rock-solid sizes, no jumpiness === */
+html, body {
+  /* Use dynamic viewport to avoid jump when mobile address bar shows/hides */
+  min-height: 100dvh;
+  /* Lock font size to prevent iOS auto-zoom on input focus */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior-y: contain;
+}
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+* { -webkit-tap-highlight-color: transparent; }
+button, .btn, .option-card, .copy-btn { touch-action: manipulation; }
+/* All inputs: prevent iOS zoom (font must be >= 16px) */
+input, select, textarea {
+  font-size: 16px !important;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  :root { font-size: 15px; }
+  .container { padding: 12px !important; max-width: 100% !important; }
+  .glass { padding: 16px 14px !important; border-radius: 18px !important; }
+  .game-title { font-size: clamp(20px, 5.4vw, 28px) !important; line-height: 1.25 !important; }
+  .room-code-value { font-size: clamp(26px, 8vw, 36px) !important; letter-spacing: 6px !important; word-break: keep-all; }
+  .options-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; gap: 10px !important; }
+  .option-card { padding: 14px 8px !important; min-height: 84px; }
+  .option-card .emoji { font-size: clamp(24px, 7vw, 32px) !important; }
+  .option-card .label, .option-card span { font-size: 13px !important; line-height: 1.3; }
+  .brain-icon { font-size: clamp(48px, 14vw, 70px) !important; }
+  .result-percentage { font-size: clamp(36px, 11vw, 56px) !important; }
+  .btn { padding: 14px 18px !important; font-size: 15px !important; min-height: 48px; }
+  .toast { left: 50%; right: auto; transform: translateX(-50%) translateY(-120%); width: calc(100% - 32px); max-width: 360px; text-align: center; }
+  /* Top controls don't overlap content */
+  #topControls { gap: 6px !important; }
+  #topControls button { height: 38px !important; padding: 0 12px !important; font-size: 12px !important; }
+  /* Prevent horizontal overflow */
+  body { overflow-x: hidden; }
+  .container, .glass, section { max-width: 100vw; box-sizing: border-box; }
+  /* Modals fit screen */
+  .modal-box, .password-modal { width: calc(100% - 24px) !important; max-width: 420px !important; padding: 22px 18px !important; }
+}
+
+@media (max-width: 360px) {
+  :root { font-size: 14px; }
+  .options-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; gap: 8px !important; }
+  .option-card { padding: 12px 6px !important; min-height: 76px; }
+  .room-code-value { letter-spacing: 4px !important; }
+}
+
+/* Landscape phones — avoid huge headings eating screen */
+@media (max-height: 480px) and (orientation: landscape) {
+  .brain-icon { font-size: 40px !important; }
+  .game-title { font-size: 20px !important; }
+  .container { padding: 8px 16px !important; }
+}
+
+/* Mobile text safety: preserve the old look while preventing clipped words */
+@media (max-width: 600px) {
+  .option-card.text-option .emoji {
+    font-size: clamp(15px, 4.8vw, 22px) !important;
+    line-height: 1.35 !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .comparison-row {
+    gap: 4px;
+    padding: 8px;
+    font-size: 12px;
+  }
+  .comparison-row span {
+    min-width: 0;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  .comparison-row .cr-vs {
+    width: 22px;
+  }
+}
+
+/* === Performance cleanup v35: keep the original look, remove costly paint work === */
+.bg-animation,
+.bg-animation::before,
+.bg-animation::after,
+.orb,
+.brain-icon,
+.brain-icon::after,
+.game-title,
+.timer-bar,
+.result-circle,
+#createdCode,
+#lobbyRoomCode {
+  animation: none !important;
+}
+
+.bg-animation::after,
+.brain-icon::after,
+.glass::before,
+.glass::after,
+.option-card::before,
+#aiAnalysisCard::before {
+  display: none !important;
+}
+
+.bg-animation {
+  filter: none !important;
+  background:
+    radial-gradient(900px 520px at 16% 24%, rgba(168,85,247,0.18), transparent 62%),
+    radial-gradient(780px 420px at 86% 18%, rgba(0,212,255,0.12), transparent 62%),
+    linear-gradient(180deg, #07071a 0%, #0a0a1a 58%, #050511 100%) !important;
+}
+
+.orb {
+  filter: blur(32px) !important;
+  opacity: 0.45 !important;
+}
+
+.glass,
+.btn-secondary,
+#topControls,
+.modal-overlay,
+.modal,
+#shareCardModal {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.glass {
+  background: rgba(255,255,255,0.045) !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,0.36) !important;
+}
+
+.btn,
+.option-card,
+.copy-btn,
+.input-field,
+input[type="text"],
+input[type="password"] {
+  transition: background-color .18s ease, border-color .18s ease, opacity .18s ease, transform .18s ease !important;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .glass:hover::before,
+  .option-card:hover::before { display: block !important; }
+}
+
+@media (max-width: 700px), (prefers-reduced-motion: reduce) {
+  .orb { display: none !important; }
+  .section { animation: none !important; }
+  .btn:hover,
+  .option-card:hover,
+  #topControls button:hover,
+  .logo-area:hover .brain-icon[style*="font-size:50px"] {
+    transform: none !important;
+  }
+  .brain-icon,
+  .result-circle,
+  .timer-bar {
+    filter: none !important;
+  }
+}
+
 /* Light/contrast accessibility */
 @media (prefers-contrast: more) {
   .glass { border-color: rgba(255,255,255,0.25); }
   .option-card { border-color: rgba(255,255,255,0.2) !important; }
+}
+
+/* ================================================================== */
+/* v36 Premium Identity – disciplined palette + cleaner UX             */
+/* Applied as final layer, doesn't break anything below it             */
+/* ================================================================== */
+:root {
+  --gold: #d4af37;
+  --gold-soft: rgba(212,175,55,0.18);
+  --purple-deep: #6d28d9;
+  --purple-mid: #9333ea;
+  --ink: #07061a;
+  --ink-2: #0d0a22;
+}
+body { background: var(--ink) !important; }
+.bg-animation {
+  background:
+    radial-gradient(900px 520px at 18% 22%, rgba(147,51,234,0.18), transparent 60%),
+    radial-gradient(780px 420px at 84% 16%, rgba(212,175,55,0.08), transparent 62%),
+    linear-gradient(180deg, #07061a 0%, #0a0820 55%, #050410 100%) !important;
+}
+
+/* Premium primary button: deep purple → gold accent on hover */
+.btn-primary {
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 60%, #b45ee3 100%) !important;
+  background-size: 180% 180% !important;
+  border: 1px solid rgba(212,175,55,0.35) !important;
+  box-shadow:
+    0 14px 36px -10px rgba(109,40,217,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  letter-spacing: 0.3px;
+}
+.btn-primary:hover {
+  background-position: 100% 50% !important;
+  border-color: rgba(212,175,55,0.7) !important;
+  box-shadow:
+    0 20px 48px -12px rgba(109,40,217,0.7),
+    0 0 0 1px rgba(212,175,55,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.22) !important;
+}
+
+/* Game title – gold-tinted gradient (was rainbow) */
+.game-title {
+  background: linear-gradient(110deg, #f4e4a3 0%, #d4af37 35%, #b45ee3 70%, #9333ea 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  letter-spacing: -0.5px !important;
+}
+
+/* Logo SVG block (replaces brain emoji) */
+.tp-logo {
+  width: 92px; height: 92px; margin: 0 auto 12px;
+  filter: drop-shadow(0 8px 24px rgba(147,51,234,0.45)) drop-shadow(0 0 36px rgba(212,175,55,0.18));
+}
+.tp-logo circle, .tp-logo path { transition: stroke 0.3s; }
+@media (max-width: 600px) {
+  .tp-logo { width: 72px; height: 72px; }
+}
+
+/* Refined input - bigger, more focused */
+.input-xl {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: 4px !important;
+  text-transform: uppercase !important;
+  padding: 18px 16px !important;
+  text-align: center !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,0.04) !important;
+  border: 1.5px solid rgba(212,175,55,0.18) !important;
+}
+.input-xl:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 4px rgba(212,175,55,0.15) !important;
+  background: rgba(212,175,55,0.04) !important;
+}
+
+/* Code-type chip (live feedback) */
+.code-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 700;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.55);
+  transition: all 0.25s ease;
+  margin-top: 10px;
+  min-height: 30px;
+}
+.code-chip.is-room {
+  background: rgba(147,51,234,0.14);
+  border-color: rgba(147,51,234,0.4);
+  color: #d8b4fe;
+}
+.code-chip.is-access {
+  background: rgba(212,175,55,0.12);
+  border-color: rgba(212,175,55,0.4);
+  color: #f4e4a3;
+}
+.code-chip.is-bad {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.4);
+  color: #fca5a5;
+}
+.code-chip .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Compact photo chip (smaller than before) */
+.photo-chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 14px 6px 6px; border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer; transition: all 0.25s;
+  font-size: 13px; color: rgba(255,255,255,0.65);
+}
+.photo-chip:hover { border-color: rgba(212,175,55,0.4); color: #fff; }
+.photo-chip-circle {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(147,51,234,0.25), rgba(212,175,55,0.15));
+  display: grid; place-items: center;
+  font-size: 16px; overflow: hidden; position: relative;
+}
+.photo-chip-circle img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+
+/* Premium secondary link – minimal */
+.tp-link {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+.tp-link:hover { color: var(--gold); }
+.tp-link strong { color: var(--gold); font-weight: 700; }
+
+/* HIDE legacy / redundant pieces */
+#joinSection,
+#codeCreatedSection,
+#autoReadyState,
+#lobbyExtraButtons {
+  display: none !important;
+}
+
+/* Lobby single invite button styled premium */
+.invite-btn-xl {
+  width: 100%;
+  padding: 16px 20px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, rgba(212,175,55,0.18), rgba(147,51,234,0.18)) !important;
+  border: 1.5px solid rgba(212,175,55,0.45) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  font-size: 16px !important;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all 0.3s;
+  margin-top: 18px;
+}
+.invite-btn-xl:hover {
+  background: linear-gradient(135deg, rgba(212,175,55,0.28), rgba(147,51,234,0.28)) !important;
+  border-color: var(--gold) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -10px rgba(212,175,55,0.3);
+}
+
+/* Lobby code chip – premium */
+#lobbyRoomCode, #createdCode {
+  background: linear-gradient(135deg, rgba(147,51,234,0.22), rgba(212,175,55,0.14)) !important;
+  border: 1px solid rgba(212,175,55,0.45) !important;
+  /* Override the rainbow gradient-text on .room-code-value so digits are readable */
+  -webkit-text-fill-color: #f4e4a3 !important;
+  color: #f4e4a3 !important;
+  background-clip: padding-box !important;
+  -webkit-background-clip: padding-box !important;
+  text-shadow: 0 0 14px rgba(212,175,55,0.55), 0 2px 6px rgba(0,0,0,0.4) !important;
+  font-weight: 900 !important;
+  letter-spacing: 8px !important;
+  font-variant-numeric: tabular-nums;
+  padding: 14px 26px !important;
+  border-radius: 18px !important;
+}
+/* Hide ugly "------" placeholder until real code arrives */
+#lobbyRoomCode:empty::before,
+#createdCode:empty::before { content: '•••••'; opacity: 0.35; }
+
+/* Premium action cards on results screen */
+.action-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 14px;
+  background: linear-gradient(135deg, rgba(147,51,234,0.08), rgba(212,175,55,0.05));
+  border: 1px solid rgba(212,175,55,0.22);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: right;
+  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.25s;
+  font-family: inherit;
+  min-height: 70px;
+}
+.action-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212,175,55,0.55);
+  box-shadow: 0 12px 32px -10px rgba(109,40,217,0.55), 0 0 0 1px rgba(212,175,55,0.25);
+}
+.action-card:active { transform: translateY(0); }
+.action-card .action-icon {
+  flex: 0 0 44px; width: 44px; height: 44px;
+  border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px -4px rgba(0,0,0,0.5);
+}
+.action-card .action-text {
+  display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;
+}
+.action-card .action-text strong {
+  font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 0;
+}
+.action-card .action-text small {
+  font-size: 11.5px; color: rgba(255,255,255,0.55); font-weight: 500;
+}
+@media (max-width: 480px) {
+  .result-actions-row { grid-template-columns: 1fr !important; }
+}
+
+/* Auto-ready visual feedback */
+.lobby-ready-state {
+  text-align: center; padding: 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(147,51,234,0.12), rgba(212,175,55,0.08));
+  border: 1px solid rgba(212,175,55,0.3);
+  margin-top: 14px;
+  font-weight: 700;
+  color: #f4e4a3;
+}
+.lobby-ready-state .pulse-dot {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--gold); margin-inline-end: 8px;
+  animation: readyPulse 1.2s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--gold);
+}
+@keyframes readyPulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* Loading state on the start button */
+.btn-loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+.btn-loading::before {
+  content: ''; display: inline-block;
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  animation: spin 0.6s linear infinite;
+  margin-inline-end: 8px;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Quieter sub-text */
+.muted-sub {
+  font-size: 12.5px; color: rgba(255,255,255,0.4);
+  text-align: center; margin-top: 10px;
 }
 </style>
 </head>
@@ -1020,8 +1445,8 @@ html { scroll-behavior: smooth; }
 <div class="toast" id="toast"></div>
 <div class="password-modal-overlay" id="passwordModal">
   <div class="password-modal">
-    <h2>� كود التحدي</h2>
-    <p>أدخل الكود لإنشاء غرفة جديدة (يستهلك جلسة واحدة)</p>
+    <h2>كود التحدي</h2>
+    <p>أدخل الكود لإنشاء غرفة جديدة أو متابعة غرفة مفتوحة</p>
     <div class="password-input-group">
       <input type="text" id="passwordInput" placeholder="مثال: TP-AB12CD34" maxlength="24" style="text-align:center;letter-spacing:2px;font-weight:700;text-transform:uppercase">
     </div>
@@ -1044,24 +1469,66 @@ html { scroll-behavior: smooth; }
 
 <div class="container">
 
-  <!-- HOME -->
+  <!-- HOME (v36 redesigned: single-step focused flow) -->
   <div class="section active" id="homeSection">
-    <div class="logo-area">
-      <div class="brain-icon">🧠</div>
-      <h1 class="game-title">Telepathy Challenge</h1>
-      <p class="game-subtitle">تحدي التخاطر الذهني – هل تفكران بنفس الطريقة؟</p>
+    <div style="text-align:center;margin-bottom:14px">
+      <a href="/" class="tp-link" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">← الرئيسية</a>
     </div>
-    <div class="glass" style="padding:32px">
-      <div class="input-group">
-        <label>اسمك</label>
-        <input type="text" class="input-field" id="playerName" placeholder="أدخل اسمك..." maxlength="20">
+    <div class="logo-area" style="margin-bottom:22px">
+      <svg class="tp-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="tpLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#d4af37"/>
+            <stop offset="50%" stop-color="#b45ee3"/>
+            <stop offset="100%" stop-color="#9333ea"/>
+          </linearGradient>
+        </defs>
+        <circle cx="36" cy="50" r="24" fill="none" stroke="url(#tpLogoGrad)" stroke-width="2.6" opacity="0.95"/>
+        <circle cx="64" cy="50" r="24" fill="none" stroke="url(#tpLogoGrad)" stroke-width="2.6" opacity="0.95"/>
+        <circle cx="50" cy="50" r="4" fill="#d4af37"/>
+      </svg>
+      <h1 class="game-title">Telepathy Challenge</h1>
+      <p class="game-subtitle">قِس مدى توافق عقولكما — في 4 مراحل ذكية</p>
+    </div>
+
+    <div class="glass" style="padding:26px 22px">
+
+      <!-- STEP 1: code entry, large & primary -->
+      <div style="text-align:center;margin-bottom:6px">
+        <label for="quickCode" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">أدخل الكود</label>
+        <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX  أو  ABC123" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
+        <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span>اكتب كودك للبدء</span></div>
       </div>
-      <button class="btn btn-primary" onclick="showPasswordModal()" style="margin-bottom:12px">
-        ⚡ ابدأ تحدي جديد (يلزم كود)
+
+      <!-- STEP 2: name (compact) -->
+      <div class="input-group" style="margin-top:18px;margin-bottom:14px">
+        <input type="text" class="input-field" id="playerName" placeholder="اسمك" maxlength="20" style="text-align:center;font-weight:600">
+      </div>
+
+      <!-- STEP 3: photo as small chip (was a 100px circle) -->
+      <div style="text-align:center;margin-bottom:18px">
+        <label for="qsPhoto" id="qsPhotoLabel" class="photo-chip">
+          <span class="photo-chip-circle">
+            <span id="qsPhotoIcon">+</span>
+            <img id="qsPhotoPreview" alt="" style="display:none">
+          </span>
+          <span>أضف صورتك (اختياري)</span>
+        </label>
+        <input type="file" id="qsPhoto" accept="image/*" style="display:none">
+      </div>
+
+      <!-- Single primary CTA -->
+      <button class="btn btn-primary" id="quickStartBtn" onclick="quickStart()">
+        ابدأ التحدي  ←
       </button>
-      <button class="btn btn-secondary" onclick="showJoin()">
-        🔗 الانضمام لغرفة
+
+      <button class="btn btn-secondary hidden" id="lastResultBtn" onclick="showSavedResult()" style="margin-top:10px">
+        عرض آخر نتيجة
       </button>
+
+      <p class="muted-sub" style="margin-top:14px">
+        لا تملك كوداً؟ <a href="/" class="tp-link"><strong>احصل على واحد</strong></a>
+      </p>
     </div>
   </div>
 
@@ -1119,14 +1586,36 @@ html { scroll-behavior: smooth; }
     <div class="glass" style="padding:32px">
       <div class="room-code-display">
         <div class="room-code-label">كود الغرفة – شاركه مع صديقك</div>
-        <div class="room-code-value" id="lobbyRoomCode">------</div>
-        <div style="margin-top:12px; text-align:center; color:rgba(255,255,255,0.5); font-size:12px;">
-          الاستخدامات المتبقية: <span id="usesRemaining" style="color:var(--neon-green); font-weight:700;">5</span>/5
+        <div class="room-code-value" id="lobbyRoomCode"></div>
+        <div id="usesRemainingWrap" style="margin-top:12px; text-align:center; color:rgba(255,255,255,0.55); font-size:12.5px; line-height:1.7;">
+          متاح في كودك:
+          <span id="usesRemaining" style="color:var(--neon-green); font-weight:800; font-size:14px; transition:all 0.4s">5</span>
+          <span style="opacity:0.6">/ <span id="usesMax">5</span> جلسات</span>
+          <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px">سيُحسم 1 عند بدء التحدي فقط</div>
         </div>
-        <button class="copy-btn" onclick="copyCode()">📋 نسخ الكود</button>
+        <button class="invite-btn-xl" onclick="shareInviteSmart()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          ادعُ صديقك للانضمام
+        </button>
+        <div style="display:flex;gap:8px;margin-top:8px;justify-content:center;flex-wrap:wrap">
+          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyInviteLink()">📋 نسخ الرابط</button>
+          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyCode()">🔢 نسخ الكود</button>
+        </div>
+        <div id="lobbyQrWrap" style="margin-top:18px;text-align:center;display:none">
+          <div style="display:inline-block;padding:10px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.45),0 0 0 1px rgba(212,175,55,0.4)">
+            <img id="lobbyQrImg" alt="QR" width="170" height="170" style="display:block;border-radius:6px">
+          </div>
+          <div style="margin-top:8px;font-size:11.5px;color:rgba(255,255,255,0.5)">امسح الرمز بكاميرا صديقك للانضمام</div>
+        </div>
+        <p class="muted-sub" style="margin-top:8px">سيُنسخ الرابط تلقائياً إذا لم تتوفّر المشاركة</p>
+        <div id="lobbyExtraButtons" aria-hidden="true">
+          <button class="copy-btn" onclick="copyCode()">نسخ الكود</button>
+          <button class="copy-btn" onclick="copyInviteLink()">نسخ الرابط</button>
+          <button class="copy-btn" onclick="shareInviteLink()">مشاركة</button>
+        </div>
       </div>
       <div class="waiting-area" id="waitingArea">
-        <p style="font-size:16px;color:rgba(255,255,255,0.7)">في انتظار اللاعب الثاني...</p>
+        <p style="font-size:15px;color:rgba(255,255,255,0.65)">في انتظار اللاعب الثاني...</p>
         <div class="waiting-dots"><span></span><span></span><span></span></div>
       </div>
       <div id="lobbyPlayers" style="display:none">
@@ -1141,8 +1630,12 @@ html { scroll-behavior: smooth; }
             <div class="player-name" id="lobbyP2Name">-</div>
           </div>
         </div>
+        <div class="lobby-ready-state" id="autoReadyState">
+          <span class="pulse-dot"></span>
+          تم الاتصال — التحدي يبدأ خلال لحظات...
+        </div>
         <button class="btn btn-primary" id="readyBtn" onclick="playerReady()">
-          ✅ مستعد – ابدأ التحدي
+          مستعد – ابدأ التحدي
         </button>
       </div>
     </div>
@@ -1264,9 +1757,33 @@ html { scroll-behavior: smooth; }
         <div class="comparison-grid" id="comparisonGrid"></div>
 
         <div class="share-area">
-          <button class="btn btn-primary" onclick="openShareCard()">📸 إنشاء بطاقة جميلة</button>
-          <button class="btn btn-secondary" onclick="shareResult()" style="margin-top:10px">📤 مشاركة نصية</button>
-          <button class="btn btn-secondary" onclick="newChallenge()" style="margin-top:10px">🔄 تحدي جديد</button>
+          <button class="btn btn-primary" onclick="openShareCard()">
+            <span style="display:inline-flex;align-items:center;gap:10px;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+              بطاقة + PDF للمشاركة
+            </span>
+          </button>
+
+          <div class="result-actions-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:14px">
+            <button class="action-card" onclick="playSameFriend()" type="button">
+              <span class="action-icon" style="background:linear-gradient(135deg,#6d28d9,#9333ea)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </span>
+              <span class="action-text">
+                <strong>جولة جديدة</strong>
+                <small>مع نفس الصديق</small>
+              </span>
+            </button>
+            <button class="action-card" onclick="newChallenge()" type="button">
+              <span class="action-icon" style="background:linear-gradient(135deg,#d4af37,#b45ee3)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              </span>
+              <span class="action-text">
+                <strong>تحدي جديد</strong>
+                <small>غادر الغرفة وابدأ من جديد</small>
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1340,6 +1857,7 @@ var usesRemainingCount = 5;
 var roomRef = null;
 var gameStarted = false;
 var myPlayerId = 'p_' + Math.random().toString(36).substr(2,9) + Date.now().toString(36);
+var playerPhotos = ['', ''];
 
 // Phase info - نفس المعلومات بالضبط
 const phaseInfo = {
@@ -1373,6 +1891,95 @@ function generateRoomCode() {
   return code;
 }
 
+function setAvatar(el, name, photo) {
+  if (!el) return;
+  el.style.backgroundImage = '';
+  el.style.backgroundSize = '';
+  el.style.backgroundPosition = '';
+  if (photo) {
+    el.textContent = '';
+    el.style.backgroundImage = `url(${photo})`;
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center';
+  } else {
+    el.textContent = (name || '؟')[0];
+  }
+}
+
+function inviteLinkFor(code) {
+  // Prefer the player-facing TP access code so invitee sees the same code
+  // they'd type manually. Falls back to internal room code otherwise.
+  const tp = (window.__activeAccessCode || '').toString().toUpperCase();
+  if (tp) return `${location.origin}/play?code=${encodeURIComponent(tp)}`;
+  return `${location.origin}/play?room=${encodeURIComponent(code)}`;
+}
+
+function accessRoomRef(accessCode) {
+  const key = TPCodes.normalize(accessCode);
+  return db.ref('accessRooms/' + key);
+}
+
+async function inspectAccessRoom(accessCode) {
+  const code = TPCodes.normalize(accessCode);
+  const markerSnap = await accessRoomRef(code).once('value');
+  const marker = markerSnap.val();
+  if (!marker || !/^[A-Z0-9]{6}$/.test(marker.roomId || '')) return { state: 'empty' };
+
+  const roomSnap = await db.ref('rooms/' + marker.roomId).once('value');
+  const room = roomSnap.val();
+  if (!room || room.accessCode !== code || room.expired) return { state: 'stale', roomId: marker.roomId };
+
+  const players = room.players || {};
+  const hasP1 = !!players.player1;
+  const hasP2 = !!players.player2;
+  if (!hasP1) return { state: 'stale', roomId: marker.roomId };
+  if (room.status === 'waiting' && hasP1 && !hasP2) return { state: 'join', roomId: marker.roomId };
+  return { state: 'busy', roomId: marker.roomId };
+}
+
+async function enterWithAccessCode(accessCode, validation) {
+  if (roomRef && roomCode) return showToast('أنت داخل غرفة بالفعل');
+  const code = TPCodes.normalize(accessCode);
+  if (!code) return showToast('أدخل الكود');
+
+  const res = validation || await TPCodes.validate(code);
+  if (!res.ok) return showToast(res.message || 'كود غير صالح');
+
+  window.__activeAccessCode = code;
+  window.__codeRemaining = res.remaining;
+  window.__codeMaxSessions = res.maxSessions || 5;
+  window.__codeUsedSessions = res.usedSessions || 0;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const existing = await inspectAccessRoom(code);
+    if (existing.state === 'join') {
+      document.getElementById('roomCodeInput').value = existing.roomId;
+      await joinRoom();
+      return;
+    }
+    if (existing.state === 'busy') {
+      showToast('الغرفة مشغولة الآن. انتظر انتهاء الجلسة أو استخدم الرابط الصحيح لاحقاً');
+      return;
+    }
+    if (existing.state === 'stale') {
+      await accessRoomRef(code).remove().catch(() => {});
+    }
+
+    const newRoomId = generateRoomCode();
+    const tx = await accessRoomRef(code).transaction((cur) => {
+      if (cur && cur.roomId) return cur;
+      return { roomId: newRoomId, at: Date.now() };
+    });
+    const claimed = tx.snapshot && tx.snapshot.val();
+    if (claimed && claimed.roomId === newRoomId) {
+      await createRoom(newRoomId);
+      return;
+    }
+  }
+
+  showToast('تعذّر تجهيز الغرفة الآن. حاول مرة أخرى');
+}
+
 // ===== كلمة المرور =====
 function showPasswordModal() {
   const name = getName();
@@ -1400,19 +2007,30 @@ function confirmPassword() {
 }
 
 // ===== إنشاء غرفة (Firebase بدل Socket.IO) =====
-async function createRoom() {
-  const code = generateRoomCode();
-  roomCode = code;
+async function createRoom(roomCodeOverride) {
+  const name = getName();
+  if (!name) return showToast('أدخل اسمك أولاً');
 
-  await db.ref('rooms/' + code).set({
+  const code = roomCodeOverride || generateRoomCode();
+  roomCode = code;
+  roomRef = db.ref('rooms/' + code);
+  myIndex = 0;
+  const player = { name: name, id: myPlayerId, ready: false };
+  if (window.__pendingPhoto) player.photo = window.__pendingPhoto;
+  const maxUses = Number(window.__codeMaxSessions || 5);
+  const totalUses = Number(window.__codeUsedSessions || 0);
+
+  await roomRef.set({
     code: code,
     status: 'waiting',
     phase: 0,
     round: 0,
-    maxUses: 5,
-    totalUses: 0,
+    maxUses: maxUses,
+    totalUses: totalUses,
     expired: false,
-    players: {},
+    accessCode: window.__activeAccessCode || '',
+    accessConsumed: false,
+    players: { player1: player },
     answers: {
       player1: { phase1: {}, phase2: {}, phase3: {}, phase4: {} },
       player2: { phase1: {}, phase2: {}, phase3: {}, phase4: {} }
@@ -1421,9 +2039,16 @@ async function createRoom() {
     createdAt: firebase.database.ServerValue.TIMESTAMP
   });
 
+  playerNames[0] = name;
+  playerPhotos[0] = window.__pendingPhoto || '';
   document.getElementById('createdCode').textContent = code;
-  showToast('✅ تم إنشاء الكود بنجاح!');
-  showSection('codeCreatedSection');
+  document.getElementById('lobbyRoomCode').textContent = code;
+  usesRemainingCount = maxUses - totalUses;
+  document.getElementById('usesRemaining').textContent = usesRemainingCount;
+  const _maxEl = document.getElementById('usesMax'); if (_maxEl) _maxEl.textContent = maxUses;
+  showToast('✅ تم إنشاء الغرفة. شارك الرابط مع اللاعب الثاني');
+  showSection('lobbySection');
+  attachRoomListeners();
 }
 
 // نسخ الكود المُنشأ
@@ -1435,13 +2060,6 @@ function copyCreatedCode() {
 // تجهيز الانضمام بالكود
 function prepareJoinWithCode(code) {
   document.getElementById('roomCodeInput').value = code;
-  showSection('joinSection');
-}
-
-// عرض صفحة الانضمام
-function showJoin() {
-  const name = getName();
-  if (!name) return showToast('أدخل اسمك أولاً');
   showSection('joinSection');
 }
 
@@ -1467,24 +2085,33 @@ async function joinRoom() {
   const playerKeys = Object.keys(players);
 
   if (room.status === 'playing' && playerKeys.length >= 2) return showToast('اللعبة بدأت بالفعل');
-  if (playerKeys.length >= 2) return showToast('الغرفة ممتلئة');
+  if (playerKeys.length >= 2) return showToast('الغرفة مشغولة الآن');
+  if (!players.player1 && players.player2) return showToast('الغرفة غير جاهزة الآن. أنشئ غرفة جديدة');
 
   roomCode = code;
   roomRef = ref;
 
   if (playerKeys.length === 0) {
     myIndex = 0;
-    await ref.child('players/player1').set({ name: name, id: myPlayerId, ready: false });
+    const player = { name: name, id: myPlayerId, ready: false };
+    if (window.__pendingPhoto) player.photo = window.__pendingPhoto;
+    const joined = await ref.child('players/player1').transaction((current) => current ? undefined : player);
+    if (!joined.committed) return showToast('الغرفة مشغولة الآن');
   } else {
     myIndex = 1;
-    await ref.child('players/player2').set({ name: name, id: myPlayerId, ready: false });
+    const player = { name: name, id: myPlayerId, ready: false };
+    if (window.__pendingPhoto) player.photo = window.__pendingPhoto;
+    const joined = await ref.child('players/player2').transaction((current) => current ? undefined : player);
+    if (!joined.committed) return showToast('الغرفة مشغولة الآن');
   }
 
   playerNames[myIndex] = name;
+  playerPhotos[myIndex] = window.__pendingPhoto || '';
   usesRemainingCount = room.maxUses - room.totalUses;
 
   document.getElementById('lobbyRoomCode').textContent = code;
   document.getElementById('usesRemaining').textContent = usesRemainingCount;
+  const _maxEl2 = document.getElementById('usesMax'); if (_maxEl2) _maxEl2.textContent = room.maxUses || 5;
   showToast('✅ انضممت للغرفة بنجاح');
   showSection('lobbySection');
 
@@ -1494,6 +2121,21 @@ async function joinRoom() {
 // نسخ الكود
 function copyCode() {
   navigator.clipboard.writeText(roomCode).then(() => showToast('تم نسخ الكود ✅'));
+}
+
+function copyInviteLink() {
+  if (!roomCode) return showToast('لا يوجد كود غرفة بعد');
+  navigator.clipboard.writeText(inviteLinkFor(roomCode)).then(() => showToast('تم نسخ رابط الدعوة ✅'));
+}
+
+async function shareInviteLink() {
+  if (!roomCode) return showToast('لا يوجد كود غرفة بعد');
+  const url = inviteLinkFor(roomCode);
+  const text = `انضم لتحدي التخاطر معي: ${url}`;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Telepathy Challenge', text, url }); return; } catch(e) {}
+  }
+  navigator.clipboard.writeText(text).then(() => showToast('تم نسخ الدعوة ✅'));
 }
 
 // ===== مستعد (Firebase بدل Socket.IO) =====
@@ -1511,16 +2153,16 @@ function attachRoomListeners() {
     const p = snap.val();
     if (!p) return;
 
-    if (p.player1) playerNames[0] = p.player1.name;
-    if (p.player2) playerNames[1] = p.player2.name;
+    if (p.player1) { playerNames[0] = p.player1.name; playerPhotos[0] = p.player1.photo || ''; }
+    if (p.player2) { playerNames[1] = p.player2.name; playerPhotos[1] = p.player2.photo || ''; }
 
     if (p.player1 && p.player2) {
       document.getElementById('waitingArea').style.display = 'none';
       document.getElementById('lobbyPlayers').style.display = 'block';
       document.getElementById('lobbyP1Name').textContent = playerNames[0];
       document.getElementById('lobbyP2Name').textContent = playerNames[1];
-      document.getElementById('lobbyP1Avatar').textContent = playerNames[0][0];
-      document.getElementById('lobbyP2Avatar').textContent = playerNames[1][0];
+      setAvatar(document.getElementById('lobbyP1Avatar'), playerNames[0], playerPhotos[0]);
+      setAvatar(document.getElementById('lobbyP2Avatar'), playerNames[1], playerPhotos[1]);
 
       // كلا اللاعبين جاهزين - اللاعب الأول يبدأ اللعبة
       if (p.player1.ready && p.player2.ready && myIndex === 0 && !gameStarted) {
@@ -1600,11 +2242,28 @@ function attachRoomListeners() {
 async function startGame() {
   const snap = await roomRef.once('value');
   const room = snap.val();
-  const newUses = (room.totalUses || 0) + 1;
+  let maxUses = Number(room.maxUses || 5);
+  let newUses = (room.totalUses || 0) + 1;
+  let remainingAfterStart = maxUses - newUses;
 
-  if (newUses > room.maxUses) {
+  if (room.accessCode) {
+    const access = await TPCodes.consume(room.accessCode);
+    if (!access.ok) {
+      await roomRef.update({ expired: true });
+      await roomRef.child('gameState').set({ event: 'roomExpired', message: access.message || 'انتهت صلاحية الكود' });
+      await accessRoomRef(room.accessCode).remove().catch(() => {});
+      return;
+    }
+    maxUses = Number(access.maxSessions || maxUses);
+    newUses = Number(access.usedSessions || (maxUses - access.remaining));
+    remainingAfterStart = Number(access.remaining || 0);
+    if (TPCodes.bumpSessions) TPCodes.bumpSessions();
+  }
+
+  if (newUses > maxUses) {
     await roomRef.update({ expired: true });
     await roomRef.child('gameState').set({ event: 'roomExpired', message: 'انتهت صلاحية الكود' });
+    if (room.accessCode) await accessRoomRef(room.accessCode).remove().catch(() => {});
     return;
   }
 
@@ -1612,6 +2271,7 @@ async function startGame() {
     status: 'playing',
     phase: 1,
     round: 0,
+    maxUses: maxUses,
     totalUses: newUses,
     answers: {
       player1: { phase1: {}, phase2: {}, phase3: {}, phase4: {} },
@@ -1619,6 +2279,15 @@ async function startGame() {
     },
     roundSubmissions: {}
   });
+
+  usesRemainingCount = remainingAfterStart;
+  const _ur = document.getElementById('usesRemaining');
+  if (_ur) {
+    _ur.textContent = usesRemainingCount;
+    _ur.style.transform = 'scale(1.4)';
+    _ur.style.color = '#fbbf24';
+    setTimeout(() => { _ur.style.transform = ''; _ur.style.color = ''; }, 600);
+  }
 
   await roomRef.child('gameState').remove();
 }
@@ -1798,8 +2467,8 @@ function setupGame(data) {
   playerNames = data.players;
   hasAnswered = false;
 
-  document.getElementById('gameP1Avatar').textContent = playerNames[0][0];
-  document.getElementById('gameP2Avatar').textContent = playerNames[1][0];
+  setAvatar(document.getElementById('gameP1Avatar'), playerNames[0], playerPhotos[0]);
+  setAvatar(document.getElementById('gameP2Avatar'), playerNames[1], playerPhotos[1]);
   document.getElementById('syncName1').textContent = playerNames[0];
   document.getElementById('syncName2').textContent = playerNames[1];
 
@@ -1914,12 +2583,14 @@ function startTimer() {
 
 // ===== عرض النتائج (نفسه بالضبط) =====
 function showResults(results) {
+  gameResults = results;
+  saveLastResult(results);
   showSection('resultsSection');
 
   document.getElementById('resP1Name').textContent = playerNames[0];
   document.getElementById('resP2Name').textContent = playerNames[1];
-  document.getElementById('resP1Avatar').textContent = playerNames[0][0];
-  document.getElementById('resP2Avatar').textContent = playerNames[1][0];
+  setAvatar(document.getElementById('resP1Avatar'), playerNames[0], playerPhotos[0]);
+  setAvatar(document.getElementById('resP2Avatar'), playerNames[1], playerPhotos[1]);
 
   const pctEl = document.getElementById('resultPctNum');
   const progressEl = document.getElementById('resultProgress');
@@ -1965,6 +2636,63 @@ function showResults(results) {
   }, 500);
 
   buildComparison(results);
+}
+
+function saveLastResult(results) {
+  try {
+    const saved = {
+      results,
+      playerNames: playerNames.slice(0, 2),
+      playerPhotos: playerPhotos.slice(0, 2),
+      roomCode,
+      savedAt: Date.now()
+    };
+    localStorage.setItem('tp_last_result', JSON.stringify(saved));
+    if (roomCode) localStorage.setItem('tp_result_' + roomCode, JSON.stringify(saved));
+    const btn = document.getElementById('lastResultBtn');
+    if (btn) btn.classList.remove('hidden');
+  } catch (e) {}
+}
+
+function showSavedResult() {
+  try {
+    const urlRoom = (new URLSearchParams(location.search).get('room') || '').toUpperCase();
+    const saved = JSON.parse((urlRoom && localStorage.getItem('tp_result_' + urlRoom)) || localStorage.getItem('tp_last_result') || 'null');
+    if (!saved || !saved.results) return showToast('لا توجد نتيجة محفوظة بعد');
+    playerNames = saved.playerNames || playerNames;
+    playerPhotos = saved.playerPhotos || playerPhotos;
+    roomCode = saved.roomCode || roomCode;
+    gameResults = saved.results;
+    showResults(saved.results);
+  } catch (e) { showToast('تعذّر فتح النتيجة المحفوظة'); }
+}
+
+async function restoreFinishedRoomResult() {
+  const urlRoom = (new URLSearchParams(location.search).get('room') || '').toUpperCase();
+  if (!urlRoom || !/^[A-Z0-9]{6}$/.test(urlRoom)) return;
+  try {
+    const local = JSON.parse(localStorage.getItem('tp_result_' + urlRoom) || 'null');
+    if (local && local.results) {
+      playerNames = local.playerNames || playerNames;
+      playerPhotos = local.playerPhotos || playerPhotos;
+      roomCode = local.roomCode || urlRoom;
+      showResults(local.results);
+      return;
+    }
+    const snap = await db.ref('rooms/' + urlRoom).once('value');
+    const room = snap.val();
+    if (!room || !room.gameState || room.gameState.event !== 'gameOver' || !room.gameState.results) return;
+    playerNames = [
+      room.players && room.players.player1 && room.players.player1.name || 'لاعب 1',
+      room.players && room.players.player2 && room.players.player2.name || 'لاعب 2'
+    ];
+    playerPhotos = [
+      room.players && room.players.player1 && room.players.player1.photo || '',
+      room.players && room.players.player2 && room.players.player2.photo || ''
+    ];
+    roomCode = urlRoom;
+    showResults(room.gameState.results);
+  } catch (e) {}
 }
 
 function buildComparison(results) {
@@ -2023,43 +2751,82 @@ function shareResult() {
   }
 }
 
-// ===== تحدي جديد (نفسه بالضبط) =====
+// ===== تحدي جديد: مغادرة كاملة + العودة للصفحة الرئيسية =====
 function newChallenge() {
+  // Detach Firebase listeners and remove this player from the room
+  try {
+    if (roomRef) {
+      const pk = (typeof myIndex !== 'undefined' && myIndex === 0) ? 'player1' : 'player2';
+      roomRef.child('players/' + pk).remove().catch(() => {});
+      roomRef.off();
+    }
+  } catch (_) {}
+
+  // Reset all in-memory state so the next challenge starts fresh
+  roomRef = null;
+  roomCode = '';
+  myIndex = -1;
   hasAnswered = false;
   gameStarted = false;
   currentPhase = 1;
   currentRound = 0;
-  showSection('lobbySection');
-  document.getElementById('waitingArea').style.display = 'block';
-  document.getElementById('lobbyPlayers').style.display = 'none';
-  document.getElementById('readyBtn').disabled = false;
-  document.getElementById('readyBtn').textContent = '✅ مستعد – ابدأ التحدي';
+  gameResults = null;
+  playerNames = ['', ''];
+  playerPhotos = ['', ''];
+  window.__pendingPhoto = null;
+  window.__activeAccessCode = null;
+  window.__codeRemaining = null;
+  window.__codeMaxSessions = null;
+  window.__codeUsedSessions = null;
+  try { sessionStorage.removeItem('tp_access_code'); } catch (_) {}
 
-  // التحقق إذا كان اللاعبان لا يزالان في الغرفة
-  if (roomRef) {
-    roomRef.child('players').once('value').then(snap => {
-      const p = snap.val();
-      if (p && p.player1 && p.player2) {
-        document.getElementById('waitingArea').style.display = 'none';
-        document.getElementById('lobbyPlayers').style.display = 'block';
-        document.getElementById('lobbyP1Name').textContent = p.player1.name;
-        document.getElementById('lobbyP2Name').textContent = p.player2.name;
-        document.getElementById('lobbyP1Avatar').textContent = p.player1.name[0];
-        document.getElementById('lobbyP2Avatar').textContent = p.player2.name[0];
-      }
-    });
-  }
+  // Reset visible inputs back to a clean home
+  const codeF = document.getElementById('quickCode');  if (codeF) codeF.value = '';
+  const nameF = document.getElementById('playerName'); if (nameF) nameF.value = '';
+  const lobbyCode = document.getElementById('lobbyRoomCode'); if (lobbyCode) lobbyCode.textContent = '';
+  const lobbyPlayers = document.getElementById('lobbyPlayers'); if (lobbyPlayers) lobbyPlayers.style.display = 'none';
+  const waitingArea  = document.getElementById('waitingArea');  if (waitingArea)  waitingArea.style.display  = 'block';
+  if (typeof updateCodeChip === 'function') updateCodeChip();
+
+  showSection('homeSection');
+  showToast('جاهز لتحدٍّ جديد ✨');
+}
+
+// ===== جولة جديدة مع نفس الصديق (يبقى الاثنان في نفس الغرفة) =====
+async function playSameFriend() {
+  if (!roomRef) return newChallenge(); // safety: if room is gone, full reset
+  hasAnswered = false;
+  gameStarted = false;
+  currentPhase = 1;
+  currentRound = 0;
+  gameResults = null;
+
+  // Reset readiness for both players so we go back to the lobby ready flow
+  try {
+    await roomRef.update({ status: 'waiting', phase: 0, round: 0 });
+    await roomRef.child('players/player1/ready').set(false).catch(() => {});
+    await roomRef.child('players/player2/ready').set(false).catch(() => {});
+    await roomRef.child('roundSubmissions').remove().catch(() => {});
+    await roomRef.child('answers').set({
+      player1: { phase1:{}, phase2:{}, phase3:{}, phase4:{} },
+      player2: { phase1:{}, phase2:{}, phase3:{}, phase4:{} }
+    }).catch(() => {});
+  } catch (_) {}
+
+  showSection('lobbySection');
+  document.getElementById('waitingArea').style.display = 'none';
+  document.getElementById('lobbyPlayers').style.display = 'block';
+  const rb = document.getElementById('readyBtn');
+  if (rb) { rb.disabled = false; rb.textContent = 'مستعد – ابدأ التحدي'; rb.style.display = ''; }
+  showToast('جولة جديدة! اضغط مستعد للبدء');
 }
 
 // ===== أحداث لوحة المفاتيح (نفسها بالضبط) =====
 document.getElementById('playerName').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
-    const passwordModal = document.getElementById('passwordModal');
-    if (passwordModal && passwordModal.classList.contains('show')) {
-      confirmPassword();
-    } else {
-      showPasswordModal();
-    }
+    const codeField = document.getElementById('quickCode');
+    if (codeField && codeField.value.trim()) quickStart();
+    else if (codeField) codeField.focus();
   }
 });
 document.getElementById('roomCodeInput').addEventListener('keypress', (e) => {
@@ -2068,56 +2835,254 @@ document.getElementById('roomCodeInput').addEventListener('keypress', (e) => {
 document.getElementById('passwordInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') confirmPassword();
 });
+
+// ===== QUICK-START (واجهة موحدة 2026) =====
+window.__pendingPhoto = null;
+
+(function setupPhotoUpload(){
+  const input  = document.getElementById('qsPhoto');
+  const label  = document.getElementById('qsPhotoLabel');
+  const icon   = document.getElementById('qsPhotoIcon');
+  const preview= document.getElementById('qsPhotoPreview');
+  if (!input) return;
+  input.addEventListener('change', async () => {
+    const f = input.files && input.files[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) { showToast('الصورة كبيرة جداً (الحد 5 ميجا)'); return; }
+    try {
+      const dataUrl = await compressImage(f, 320, 0.82);
+      window.__pendingPhoto = dataUrl;
+      preview.src = dataUrl;
+      preview.style.display = 'block';
+      icon.style.display = 'none';
+      label.style.borderStyle = 'solid';
+      label.style.borderColor = 'rgba(168,85,247,.6)';
+    } catch (e) { showToast('تعذّر قراءة الصورة'); }
+  });
+})();
+
+function compressImage(file, maxSide, quality) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const ratio = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const w = Math.round(img.width * ratio), h = Math.round(img.height * ratio);
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = fr.result;
+    };
+    fr.onerror = reject;
+    fr.readAsDataURL(file);
+  });
+}
+
+async function quickStart() {
+  if (window.__quickStartBusy) { showToast('جاري تجهيز الغرفة...'); return; }
+  window.__quickStartBusy = true;
+  const name = (document.getElementById('playerName').value || '').trim();
+  if (!name) { window.__quickStartBusy = false; showToast('أدخل اسمك أولاً'); return; }
+
+  const codeRaw = (document.getElementById('quickCode').value || '').trim().toUpperCase();
+  if (!codeRaw) { window.__quickStartBusy = false; showToast('أدخل الكود'); return; }
+
+  // smart routing:
+  //  - exactly 6 alphanumeric chars => room code (join)
+  //  - anything else (TP-XXX, longer, with dash) => access code (create new session)
+  const isRoomCode = /^[A-Z0-9]{6}$/.test(codeRaw);
+
+  try {
+    if (isRoomCode) {
+      document.getElementById('roomCodeInput').value = codeRaw;
+      await joinRoom();
+    } else {
+      document.getElementById('passwordInput').value = codeRaw;
+      if (typeof window.confirmPassword === 'function') {
+        await window.confirmPassword();
+      }
+    }
+  } finally {
+    window.__quickStartBusy = false;
+  }
+}
+
+// After room is created or joined, push the photo (if any) to the player record
+(function patchPlayerPhoto(){
+  const trySave = () => {
+    if (!window.__pendingPhoto) return;
+    if (typeof roomRef === 'undefined' || !roomRef) return;
+    if (typeof myIndex === 'undefined' || myIndex < 0) return;
+    const pid = (myIndex === 0) ? 'player1' : 'player2';
+    roomRef.child('players/' + pid + '/photo').set(window.__pendingPhoto).catch(()=>{});
+  };
+  // Save shortly after create/join completes
+  const origCreate = window.createRoom;
+  if (origCreate) {
+    window.createRoom = async function(){
+      const r = await origCreate.apply(this, arguments);
+      setTimeout(trySave, 600);
+      return r;
+    };
+  }
+  const origJoin = window.joinRoom;
+  if (origJoin) {
+    window.joinRoom = async function(){
+      const r = await origJoin.apply(this, arguments);
+      setTimeout(trySave, 400);
+      return r;
+    };
+  }
+})();
+
+// Quick-start: Enter key on code field triggers start
+document.getElementById('quickCode').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') quickStart();
+});
+
+// Auto-prefill code from URL (?code=... or ?room=...)
+(function prefillFromURL(){
+  const p = new URLSearchParams(location.search);
+  const c = (p.get('code') || p.get('room') || '').toUpperCase();
+  if (c) {
+    const f = document.getElementById('quickCode');
+    if (f) { f.value = c; updateCodeChip(); }
+  }
+})();
+
+// ===== v36 UX upgrades: live code-type chip, smart invite, auto-ready =====
+
+// 1) Live code-type chip
+function updateCodeChip(){
+  const f = document.getElementById('quickCode');
+  const chip = document.getElementById('codeTypeChip');
+  if (!f || !chip) return;
+  const v = (f.value || '').trim().toUpperCase();
+  chip.classList.remove('is-room','is-access','is-bad');
+  if (!v) {
+    chip.innerHTML = '<span>⌨️</span><span>اكتب كودك للبدء</span>';
+    return;
+  }
+  if (/^[A-Z0-9]{6}$/.test(v)) {
+    chip.classList.add('is-room');
+    chip.innerHTML = '<span class="dot"></span><span>كود غرفة — للانضمام لصديقك</span>';
+    return;
+  }
+  if (/^TP[-_]?[A-Z0-9]{6,}$/i.test(v) || v.length >= 8) {
+    chip.classList.add('is-access');
+    chip.innerHTML = '<span class="dot"></span><span>كود تحدي — لإنشاء غرفة جديدة</span>';
+    return;
+  }
+  chip.classList.add('is-bad');
+  chip.innerHTML = '<span class="dot"></span><span>كود قصير — تحقق منه</span>';
+}
+document.getElementById('quickCode').addEventListener('input', updateCodeChip);
+updateCodeChip();
+
+// 2) Loading state on the start button
+const _origQuickStart = window.quickStart;
+window.quickStart = async function(){
+  const btn = document.getElementById('quickStartBtn');
+  if (btn) { btn.classList.add('btn-loading'); btn.disabled = true; }
+  try { return await _origQuickStart.apply(this, arguments); }
+  finally { if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; } }
+};
+
+// 3) Single smart invite (Web Share API → fallback copy)
+window.shareInviteSmart = async function(){
+  if (!window.roomCode) return showToast('لا يوجد كود غرفة بعد');
+  const url = inviteLinkFor(window.roomCode);
+  const text = 'انضم لتحدي التخاطر معي: ' + url;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Telepathy Challenge', text, url }); return; }
+    catch(e) { /* user cancelled or unsupported – fall back */ }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('تم نسخ رابط الدعوة ✅ — أرسله لصديقك');
+  } catch(e) {
+    // last-resort fallback: prompt the user with the link selectable
+    try { window.prompt('انسخ الرابط وأرسله لصديقك:', url); }
+    catch(_) { showToast('الرابط: ' + url); }
+  }
+};
+
+// 4) Auto-ready DISABLED — user prefers manual "مستعد" button.
+//    Kept as no-op so existing wrapper chain stays intact.
+(function autoReadyHook(){ /* disabled by request */ })();
+
+// 5) Photo-chip preview is handled by the existing qsPhoto change listener (compressImage flow).
+//    No extra listener needed here.
+
+// 6) QR code: render real QR for invite link whenever lobby code appears.
+function renderLobbyQr(code){
+  if (!code || !/^[A-Z0-9]{6}$/.test(code)) return;
+  const wrap = document.getElementById('lobbyQrWrap');
+  const img  = document.getElementById('lobbyQrImg');
+  if (!wrap || !img) return;
+  const url  = inviteLinkFor(code);
+  const src  = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=2&qzone=1&format=png&data=' + encodeURIComponent(url);
+  img.onload  = () => { wrap.style.display = 'block'; };
+  img.onerror = () => { wrap.style.display = 'none'; };
+  img.src = src;
+}
+window.renderLobbyQr = renderLobbyQr;
+
+// Watch lobby code element for any change → regenerate QR
+(function watchLobbyCode(){
+  const el = document.getElementById('lobbyRoomCode');
+  if (!el) return;
+  const obs = new MutationObserver(() => renderLobbyQr((el.textContent || '').trim()));
+  obs.observe(el, { childList: true, characterData: true, subtree: true });
+  // initial pass in case code was already set
+  if (el.textContent && el.textContent.trim()) renderLobbyQr(el.textContent.trim());
+})();
 </script>
 
-<!-- Pointer-tracking glow on glass panels (2026 UX) -->
+<!-- Pointer-tracking glow on glass panels: desktop-only, disabled on touch devices -->
 <script>
-document.addEventListener('pointermove', (e) => {
-  const g = e.target.closest && e.target.closest('.glass, .option-card');
-  if (!g) return;
-  const r = g.getBoundingClientRect();
-  g.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-  g.style.setProperty('--my', (e.clientY - r.top) + 'px');
-}, { passive: true });
+if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.addEventListener('pointermove', (e) => {
+    const g = e.target.closest && e.target.closest('.glass, .option-card');
+    if (!g) return;
+    const r = g.getBoundingClientRect();
+    g.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    g.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }, { passive: true });
+}
 </script>
 
 <!-- 2026 modernization layer: PWA, Audio, Voice, Gemini Nano, QR, Replay -->
-<script src="/js/codes.js" defer></script>
-<script src="/js/share-card.js" defer></script>
-<script src="/app-2026.js" defer></script>
+<script src="/js/codes.js?v=36" defer></script>
+<script src="/js/share-card.js?v=36" defer></script>
+<script src="/app-2026.js?v=36" defer></script>
 
 <!-- Share Card Modal -->
-<div id="shareCardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:500;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
-  <div style="background:linear-gradient(160deg,#1a1535,#0d0a25);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:28px;max-width:540px;width:100%;max-height:95vh;overflow-y:auto;font-family:'Tajawal',sans-serif;color:#fff">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <h3 style="font-size:1.3rem;font-weight:900">📸 بطاقة المشاركة</h3>
-      <button onclick="closeShareCard()" style="background:rgba(255,255,255,.08);border:0;color:#fff;width:34px;height:34px;border-radius:50%;font-size:1.2rem;cursor:pointer">✕</button>
+<div id="shareCardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.86);backdrop-filter:blur(14px);z-index:500;align-items:flex-start;justify-content:center;padding:10px;overflow-y:auto">
+  <div style="background:linear-gradient(160deg,#17122f,#0b0820);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:14px;max-width:700px;width:100%;max-height:calc(100vh - 20px);overflow-y:auto;font-family:'Tajawal',sans-serif;color:#fff;box-shadow:0 28px 80px rgba(0,0,0,.55)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="font-size:1.25rem;font-weight:900">بطاقة النتيجة</h3>
+      <button onclick="closeShareCard()" aria-label="إغلاق" style="background:rgba(255,255,255,.08);border:0;color:#fff;width:42px;height:42px;border-radius:50%;font-size:1.4rem;cursor:pointer;line-height:1">×</button>
     </div>
 
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
       <button class="sc-tpl" data-tpl="fun"      style="flex:1;padding:10px;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#a855f7);color:#fff;border:0;font-weight:700;cursor:pointer">⚡ شبابي</button>
       <button class="sc-tpl" data-tpl="romantic" style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.12);font-weight:700;cursor:pointer">💞 رومانسي</button>
       <button class="sc-tpl" data-tpl="luxury"   style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.12);font-weight:700;cursor:pointer">👑 فاخر</button>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-      <div>
-        <label style="font-size:.85rem;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">صورة لاعب 1 (اختياري)</label>
-        <input type="file" id="scPhoto1" accept="image/*" style="width:100%;font-size:.78rem;color:rgba(255,255,255,.7)" />
-      </div>
-      <div>
-        <label style="font-size:.85rem;color:rgba(255,255,255,.7);display:block;margin-bottom:6px">صورة لاعب 2 (اختياري)</label>
-        <input type="file" id="scPhoto2" accept="image/*" style="width:100%;font-size:.78rem;color:rgba(255,255,255,.7)" />
-      </div>
+    <div style="background:rgba(0,0,0,.32);border-radius:16px;padding:10px;margin-bottom:10px;text-align:center;border:1px solid rgba(255,255,255,.08)">
+      <canvas id="scPreview" style="max-width:100%;width:min(100%,340px);height:auto;border-radius:12px;box-shadow:0 16px 46px rgba(0,0,0,.42)"></canvas>
     </div>
 
-    <div style="background:rgba(0,0,0,.3);border-radius:14px;padding:10px;margin-bottom:14px;text-align:center">
-      <canvas id="scPreview" style="max-width:100%;height:auto;border-radius:10px"></canvas>
-    </div>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button onclick="downloadShareCard()" style="flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#ff5b93,#a855f7);color:#fff;border:0;font-weight:700;cursor:pointer;font-size:.95rem">⬇️ تنزيل</button>
-      <button onclick="shareShareCard()" style="flex:1;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:700;cursor:pointer;font-size:.95rem">📤 مشاركة</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:linear-gradient(180deg,rgba(15,10,35,.4),#0b0820 35%);padding-top:10px">
+      <button onclick="shareShareCard()" style="flex:1;min-width:140px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#ff5b93,#a855f7);color:#fff;border:0;font-weight:800;cursor:pointer;font-size:.95rem">مشاركة البطاقة</button>
+      <button onclick="downloadShareCard()" style="flex:1;min-width:120px;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:800;cursor:pointer;font-size:.95rem">تنزيل صورة</button>
+      <button onclick="printShareCardPdf()" style="flex:1;min-width:120px;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:800;cursor:pointer;font-size:.95rem">تقرير PDF</button>
     </div>
   </div>
 </div>
@@ -2127,7 +3092,10 @@ document.addEventListener('pointermove', (e) => {
   let __scCanvas = null;
 
   function openShareCard() {
-    document.getElementById('shareCardModal').style.display = 'flex';
+    const modal = document.getElementById('shareCardModal');
+    modal.style.display = 'flex';
+    modal.scrollTop = 0;
+    if (modal.firstElementChild) modal.firstElementChild.scrollTop = 0;
     renderShareCard();
   }
   function closeShareCard() {
@@ -2146,21 +3114,28 @@ document.addEventListener('pointermove', (e) => {
       renderShareCard();
     };
   });
-  ['scPhoto1','scPhoto2'].forEach(id => {
-    document.getElementById(id).addEventListener('change', renderShareCard);
-  });
-
   async function getResultData() {
-    const pct = parseInt((document.getElementById('finalPercent')||{textContent:'0'}).textContent) || 0;
-    const n1 = (window.playerNames && window.playerNames.player1) || 'لاعب 1';
-    const n2 = (window.playerNames && window.playerNames.player2) || 'لاعب 2';
-    const f1 = document.getElementById('scPhoto1').files[0];
-    const f2 = document.getElementById('scPhoto2').files[0];
-    const [p1, p2] = await Promise.all([
-      f1 ? TPCard.fileToDataURL(f1) : null,
-      f2 ? TPCard.fileToDataURL(f2) : null,
-    ]);
-    return { pct, name1: n1, name2: n2, photo1: p1, photo2: p2, template: __scTemplate, siteUrl: location.host };
+    const result = gameResults || { totalPct: 0, rating: '-', phase1:{pct:0}, phase2:{pct:0}, phase3:{pct:0}, phase4:{pct:0} };
+    const pct = Number(result.totalPct || document.getElementById('resultPctNum').textContent || 0);
+    const n1 = playerNames[0] || 'لاعب 1';
+    const n2 = playerNames[1] || 'لاعب 2';
+    return {
+      pct,
+      name1: n1,
+      name2: n2,
+      photo1: playerPhotos[0] || null,
+      photo2: playerPhotos[1] || null,
+      template: __scTemplate,
+      siteUrl: location.host,
+      rating: result.rating || '-',
+      phases: [
+        { label: 'الصور', pct: result.phase1 && result.phase1.pct || 0 },
+        { label: 'الأفكار', pct: result.phase2 && result.phase2.pct || 0 },
+        { label: 'الذهني', pct: result.phase3 && result.phase3.pct || 0 },
+        { label: 'العاطفي', pct: result.phase4 && result.phase4.pct || 0 },
+      ],
+      roomCode
+    };
   }
   async function renderShareCard() {
     if (typeof TPCard === 'undefined') return;
@@ -2181,8 +3156,202 @@ document.addEventListener('pointermove', (e) => {
     TPCard.share(__scCanvas, { text: 'نتيجتنا في تحدي التخاطر! 🧠⚡ جرّبها: ' + location.origin });
     if (window.TPCodes && TPCodes.bumpShares) TPCodes.bumpShares();
   }
+  async function ensureShareCardCanvas() {
+    if (!__scCanvas) {
+      if (typeof TPCard === 'undefined') return null;
+      const data = await getResultData();
+      __scCanvas = await TPCard.render(data);
+    }
+    return __scCanvas;
+  }
+
+  function reportEscape(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function getPdfPhaseRows(result) {
+    const phases = [
+      { key:'phase1', title:'المرحلة 1 - الصور السريعة' },
+      { key:'phase2', title:'المرحلة 2 - الأفكار' },
+      { key:'phase3', title:'المرحلة 3 - التحدي الذهني' },
+      { key:'phase4', title:'المرحلة 4 - التحدي الروحي' }
+    ];
+    return phases.map(phase => {
+      const score = result[phase.key] || { match:0, total:5, pct:0 };
+      return {
+        ...phase,
+        match: Number(score.match || 0),
+        total: Number(score.total || 5),
+        pct: Math.round(Number(score.pct || 0))
+      };
+    });
+  }
+
+  function buildPdfComparisonRows(result) {
+    const details = result && result.details;
+    if (!details || !details.player1 || !details.player2) {
+      return '<tr><td colspan="5">لا توجد تفاصيل جولات محفوظة لهذا التقرير.</td></tr>';
+    }
+    return getPdfPhaseRows(result).map(phase => {
+      const p1 = details.player1[phase.key] || [];
+      const p2 = details.player2[phase.key] || [];
+      let rows = `<tr class="phase-row"><td colspan="5">${reportEscape(phase.title)} - ${phase.match}/${phase.total} (${phase.pct}%)</td></tr>`;
+      for (let i = 0; i < 5; i++) {
+        const a1 = p1[i] || '-';
+        const a2 = p2[i] || '-';
+        const ok = a1 !== '-' && a1 === a2;
+        rows += `<tr class="${ok ? 'ok' : ''}">
+          <td>${i + 1}</td>
+          <td>${reportEscape(a1)}</td>
+          <td>${reportEscape(a2)}</td>
+          <td>${ok ? 'مطابقة' : 'اختلاف'}</td>
+          <td>${ok ? '✓' : '×'}</td>
+        </tr>`;
+      }
+      return rows;
+    }).join('');
+  }
+
+  async function printFullResultPdf() {
+    const result = gameResults;
+    if (!result) return showToast('لا توجد نتيجة جاهزة للتقرير');
+
+    const filename = 'telepathy-full-result.pdf';
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>${filename}</title><style>body{margin:0;background:#120b2e;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}div{max-width:420px}h1{font-size:24px;margin:0 0 10px}p{color:rgba(255,255,255,.7);line-height:1.8}</style></head><body><div><h1>جاري تجهيز تقرير PDF...</h1><p>لحظات فقط، سيتم فتح نافذة الحفظ تلقائياً.</p></div></body></html>`);
+      win.document.close();
+    }
+
+    const canvas = await ensureShareCardCanvas();
+    if (!canvas) {
+      if (win && !win.closed) win.close();
+      return showToast('تعذّر تجهيز التقرير');
+    }
+
+    const cardUrl = canvas.toDataURL('image/png');
+    const phases = getPdfPhaseRows(result);
+    const generatedAt = new Date().toLocaleString('ar', { dateStyle: 'medium', timeStyle: 'short' });
+    const phaseCards = phases.map(phase => `
+      <div class="phase-card">
+        <b>${reportEscape(phase.title)}</b>
+        <strong>${phase.pct}%</strong>
+        <span>${phase.match} من ${phase.total} مطابقات</span>
+      </div>`).join('');
+    const rows = buildPdfComparisonRows(result);
+    if (!win) {
+      TPCard.download(canvas, 'telepathy-result-card.png');
+      return showToast('المتصفح منع نافذة PDF. اسمح بالنوافذ المنبثقة لهذه الصفحة ثم جرّب مرة أخرى');
+    }
+    win.document.open();
+    win.document.write(`<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>${filename}</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f6f2ff; color: #171427; font-family: Tajawal, Arial, sans-serif; }
+  .report { max-width: 900px; margin: 0 auto; padding: 22px; }
+  .hero { display: grid; grid-template-columns: 260px 1fr; gap: 22px; align-items: center; background: #120b2e; color: #fff; border-radius: 22px; padding: 18px; }
+  .card-img { width: 260px; border-radius: 18px; display: block; box-shadow: 0 18px 40px rgba(0,0,0,.28); }
+  h1 { margin: 0 0 10px; font-size: 30px; }
+  .subtitle { color: rgba(255,255,255,.7); line-height: 1.8; margin: 0 0 16px; }
+  .score { display: flex; gap: 12px; flex-wrap: wrap; }
+  .pill { background: linear-gradient(135deg,#ff5b93,#a855f7); color: #fff; border-radius: 999px; padding: 10px 16px; font-weight: 900; }
+  .section { background: #fff; border: 1px solid #e8ddff; border-radius: 18px; padding: 18px; margin-top: 18px; page-break-inside: avoid; }
+  h2 { margin: 0 0 14px; font-size: 20px; color: #21133f; }
+  .meta { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .meta div, .phase-card { background: #f7f3ff; border: 1px solid #eadfff; border-radius: 14px; padding: 12px; }
+  .meta span, .phase-card span { color: #706489; font-size: 13px; display: block; margin-top: 5px; }
+  .phase-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+  .phase-card strong { display: block; font-size: 26px; margin-top: 8px; color: #a855f7; }
+  table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; font-size: 13px; }
+  th, td { border: 1px solid #eadfff; padding: 9px 8px; text-align: center; vertical-align: middle; }
+  th { background: #21133f; color: #fff; font-weight: 900; }
+  tr.ok td { background: #f0fff6; }
+  .phase-row td { background: #f3ebff; color: #4b247c; font-weight: 900; text-align: right; }
+  .footer { color: #7a708f; text-align: center; font-size: 12px; margin-top: 16px; }
+  @media print {
+    body { background: #fff; }
+    .report { max-width: none; padding: 0; }
+    .hero, .section { box-shadow: none; }
+  }
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; }
+    .card-img { width: min(100%, 320px); margin: 0 auto; }
+    .phase-grid, .meta { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+  <main class="report">
+    <section class="hero">
+      <img class="card-img" alt="بطاقة نتيجة التخاطر" src="${cardUrl}">
+      <div>
+        <h1>تقرير تحدي التخاطر الكامل</h1>
+        <p class="subtitle">تقرير يجمع بطاقة النتيجة، النسبة النهائية، نتائج المراحل، وتفاصيل كل جولة بين اللاعبين.</p>
+        <div class="score">
+          <div class="pill">${Math.round(Number(result.totalPct || 0))}%</div>
+          <div class="pill">${reportEscape(result.rating || '-')}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>بيانات التحدي</h2>
+      <div class="meta">
+        <div><b>اللاعب الأول</b><span>${reportEscape(playerNames[0] || 'لاعب 1')}</span></div>
+        <div><b>اللاعب الثاني</b><span>${reportEscape(playerNames[1] || 'لاعب 2')}</span></div>
+        <div><b>كود الغرفة</b><span>${reportEscape(roomCode || '-')}</span></div>
+        <div><b>تاريخ التقرير</b><span>${reportEscape(generatedAt)}</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>ملخص المراحل</h2>
+      <div class="phase-grid">${phaseCards}</div>
+    </section>
+
+    <section class="section">
+      <h2>تفاصيل الجولات والإجابات</h2>
+      <table>
+        <thead><tr><th>الجولة</th><th>${reportEscape(playerNames[0] || 'لاعب 1')}</th><th>${reportEscape(playerNames[1] || 'لاعب 2')}</th><th>النتيجة</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </section>
+
+    <div class="footer">Telepathy Challenge - ${reportEscape(location.host || 'teleplay.online')}</div>
+  </main>
+  <script>window.onload=function(){setTimeout(function(){window.print()},350)}<\/script>
+</body>
+</html>`);
+    win.document.close();
+    if (window.TPCodes && TPCodes.bumpShares) TPCodes.bumpShares();
+    return true;
+  }
+
+  async function printShareCardPdf() {
+    return printFullResultPdf();
+  }
+  async function exportResultPdf() {
+    if (!gameResults) return openShareCard();
+    return printFullResultPdf();
+  }
   // Expose for app-2026.js
   window.openShareCard = openShareCard;
+  window.showSavedResult = showSavedResult;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('tp_last_result')) {
+      const btn = document.getElementById('lastResultBtn');
+      if (btn) btn.classList.remove('hidden');
+    }
+    restoreFinishedRoomResult();
+  });
 </script>
 </body>
 </html>

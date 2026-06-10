@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>بطاقة كود Telepathy</title>
+<meta name="theme-color" content="#0a0820" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Tajawal',system-ui,sans-serif;background:radial-gradient(900px 520px at 50% 0%,rgba(168,85,247,.28),transparent 58%),linear-gradient(180deg,#08051a,#05030f);color:#fff;min-height:100dvh;padding:18px;display:grid;place-items:center}
+  .page{width:min(100%,460px)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+  .btn{border:0;border-radius:12px;padding:12px 16px;min-height:44px;font-family:inherit;font-weight:900;cursor:pointer;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+  .btn-primary{background:linear-gradient(135deg,#ff5b93,#a855f7);border-color:transparent;box-shadow:0 14px 36px rgba(168,85,247,.32)}
+  .card{position:relative;overflow:hidden;background:linear-gradient(155deg,#1a1040 0%,#2a1a5a 50%,#3b1668 100%);border:1px solid rgba(212,175,55,.38);border-radius:26px;padding:28px 24px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.52)}
+  .card::before{content:"";position:absolute;inset:-100px auto auto -70px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.24),transparent 65%);filter:blur(20px)}
+  .card::after{content:"";position:absolute;inset:auto -70px -100px auto;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.34),transparent 65%);filter:blur(20px)}
+  .brand,.tagline,.qr-wrap,.code,.meta,.steps,.url,.status{position:relative}
+  .brand{font-size:1.05rem;font-weight:900;letter-spacing:1.4px;color:#f4e4a3;margin-bottom:5px}
+  .tagline{color:rgba(255,255,255,.62);font-size:.82rem;margin-bottom:20px}
+  .qr-wrap{display:inline-block;background:#fff;padding:14px;border-radius:20px;margin-bottom:18px;box-shadow:0 12px 34px rgba(0,0,0,.42),0 0 0 2px rgba(212,175,55,.42)}
+  .qr-wrap img{display:block;width:210px;height:210px;border-radius:8px}
+  .code{direction:ltr;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:1.55rem;font-weight:900;letter-spacing:3px;background:rgba(0,0,0,.36);border:1px solid rgba(212,175,55,.42);border-radius:16px;padding:14px 16px;margin:14px 0;word-break:break-all;color:#fff;user-select:all}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0 16px}
+  .meta div{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:10px 8px}
+  .meta span{display:block;color:rgba(255,255,255,.55);font-size:.72rem;margin-bottom:3px}
+  .meta b{color:#f4e4a3;font-size:1rem}
+  .status{display:inline-flex;margin:2px auto 12px;padding:7px 14px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.36);color:#86efac;font-size:.8rem;font-weight:900}
+  .status.bad{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);color:#fca5a5}
+  .steps{text-align:right;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-top:12px;font-size:.88rem;line-height:1.85}
+  .steps b{display:block;color:#f4e4a3;margin-bottom:5px}
+  .steps ol{padding-inline-start:20px;color:rgba(255,255,255,.85)}
+  .url{direction:ltr;text-align:left;font-size:.72rem;color:rgba(255,255,255,.62);word-break:break-all;background:rgba(0,0,0,.25);border-radius:10px;padding:9px 10px;margin-top:12px}
+  .msg{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;text-align:center;color:rgba(255,255,255,.75);line-height:1.8}
+  @media print{body{background:#fff;padding:0}.toolbar{display:none}.card{box-shadow:none;border-color:#ddd;background:#fff;color:#111;border-radius:0}.brand,.code,.meta b,.steps b{color:#6d28d9}.tagline,.steps,.steps ol,.url,.meta span{color:#333}.meta div,.code,.steps,.url{background:#f7f7f7;border-color:#ddd}.card::before,.card::after{display:none}}
+</style>
+</head>
+<body>
+  <main class="page">
+    <div class="toolbar">
+      <button class="btn" onclick="window.print()">طباعة</button>
+      <button class="btn" onclick="copyCardLink()">نسخ البطاقة</button>
+      <button class="btn btn-primary" onclick="shareCard()">مشاركة البطاقة</button>
+    </div>
+    <section id="cardRoot" class="card"><div class="msg">جاري تحميل البطاقة...</div></section>
+  </main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="/js/codes.js?v=37"></script>
+<script>
+  TPCodes.init();
+  const db = firebase.database();
+  const params = new URLSearchParams(location.search);
+  const code = TPCodes.normalize(params.get('code') || '');
+  const root = document.getElementById('cardRoot');
+
+  function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function playLink(){return location.origin + '/play?code=' + encodeURIComponent(code);}
+  function cardLink(){return location.origin + '/card?code=' + encodeURIComponent(code);}
+  function qrUrl(text){return 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=2&qzone=1&format=png&data=' + encodeURIComponent(text);}
+  function expiryText(c){
+    if (!c.expiresAt) return '-';
+    const days = Math.ceil((c.expiresAt - Date.now()) / 86400000);
+    if (days < 0) return 'منتهي';
+    if (days === 0) return 'ينتهي اليوم';
+    return days + ' يوم';
+  }
+  async function copyText(txt, label){
+    await navigator.clipboard.writeText(txt);
+    const old = label && label.textContent;
+    if (label) { label.textContent = 'تم النسخ'; setTimeout(()=>label.textContent = old, 1200); }
+  }
+  function copyCardLink(){ copyText(cardLink(), event && event.target); }
+  async function shareCard(){
+    const text = 'بطاقة كود Telepathy\nالكود: ' + code + '\nرابط اللعب: ' + playLink() + '\nبطاقة الكود: ' + cardLink();
+    if (navigator.share) {
+      try { await navigator.share({ title:'بطاقة كود Telepathy', text, url: cardLink() }); return; } catch(_) {}
+    }
+    await navigator.clipboard.writeText(text);
+    alert('تم نسخ بيانات البطاقة. يمكنك لصقها في واتساب.');
+  }
+  async function loadCard(){
+    if (!code) { root.innerHTML = '<div class="msg">الكود غير موجود في الرابط.</div>'; return; }
+    try {
+      const snap = await db.ref('accessCodes/' + code).once('value');
+      const c = snap.val();
+      if (!c) { root.innerHTML = '<div class="msg">لم يتم العثور على هذا الكود.</div>'; return; }
+      const remaining = Math.max(0, Number(c.maxSessions||0) - Number(c.usedSessions||0));
+      const ok = (c.status || 'active') === 'active' && remaining > 0 && (!c.expiresAt || Date.now() < c.expiresAt);
+      root.innerHTML = `
+        <div class="brand">TELEPATHY ONLINE</div>
+        <div class="tagline">تحدي التخاطر الذكي • teleplay.online</div>
+        <div class="status${ok ? '' : ' bad'}">${ok ? 'جاهز للعب' : 'راجع صلاحية الكود'}</div>
+        <div class="qr-wrap"><img src="${qrUrl(playLink())}" alt="QR"></div>
+        <div class="code">${escapeHtml(code)}</div>
+        <div class="meta">
+          <div><span>الجلسات</span><b>${Number(c.maxSessions||0)}</b></div>
+          <div><span>المتبقي</span><b>${remaining}</b></div>
+          <div><span>النوع</span><b>${c.type === 'business' ? 'شركات' : 'فردي'}</b></div>
+          <div><span>الصلاحية</span><b>${escapeHtml(expiryText(c))}</b></div>
+        </div>
+        <a class="btn btn-primary" href="${playLink()}" style="width:100%;margin-top:4px">ابدأ اللعب الآن</a>
+        <div class="steps"><b>طريقة الاستخدام</b><ol><li>اضغط ابدأ اللعب أو امسح QR.</li><li>اكتب اسمك وادخل التحدي.</li><li>أرسل رابط اللعب لصديقك من داخل اللعبة.</li></ol></div>
+        <div class="url">${playLink()}</div>`;
+    } catch(e) {
+      root.innerHTML = '<div class="msg">تعذّر تحميل البطاقة. حاول مرة أخرى.</div>';
+    }
+  }
+  loadCard();
+</script>
+</body>
+</html>

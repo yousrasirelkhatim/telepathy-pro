@@ -9,6 +9,7 @@
     "rewrites": [
       { "source": "/admin", "destination": "/admin.html" },
       { "source": "/play",  "destination": "/play.html" },
+      { "source": "/card",  "destination": "/card.html" },
       { "source": "**",     "destination": "/index.html" }
     ],
     "headers": [
