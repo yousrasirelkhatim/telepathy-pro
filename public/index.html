@@ -88,21 +88,21 @@ img { max-width:100%; display:block; }
   50% { transform:translate(30px,-24px) scale(1.06); }
 }
 
-.wrap { position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:0 20px; }
+.wrap { position:relative; z-index:2; max-width:1120px; margin:0 auto; padding:0 20px; }
 
 /* Nav */
 .site-nav {
   position:sticky; top:0; z-index:100;
-  padding:12px 0 16px;
-  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  padding:10px 0 14px;
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
 }
 .nav-inner {
   display:flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:12px 18px;
-  background:var(--bg-elevated);
-  border:1px solid var(--border);
-  border-radius:18px;
-  box-shadow:0 8px 32px rgba(0,0,0,.35);
+  padding:10px 16px;
+  background:rgba(5,5,12,.82);
+  border:0; border-bottom:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 4px 24px rgba(0,0,0,.25);
 }
 .logo { display:flex; align-items:center; gap:11px; font-weight:900; font-size:1.15rem; }
 .logo-mark {
@@ -126,9 +126,9 @@ img { max-width:100%; display:block; }
 .nav-cta:hover { transform:translateY(-1px); }
 
 /* Hero */
-.hero { padding:28px 0 64px; }
+.hero { padding:40px 0 56px; }
 .hero-grid {
-  display:grid; grid-template-columns:1fr; gap:40px; align-items:center;
+  display:grid; grid-template-columns:1fr; gap:32px; align-items:center;
 }
 .hero-copy { text-align:center; }
 .eyebrow {
@@ -150,10 +150,10 @@ img { max-width:100%; display:block; }
   background:var(--grad-hero); -webkit-background-clip:text; background-clip:text; color:transparent;
 }
 .hero-lead {
-  font-size:clamp(1rem,2.4vw,1.15rem); line-height:1.75;
-  color:var(--text-muted); max-width:540px; margin:0 auto 28px;
+  font-size:clamp(.98rem,2.2vw,1.08rem); line-height:1.65;
+  color:var(--text-muted); max-width:480px; margin:0 auto 24px;
 }
-.hero-cta { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:24px; }
+.hero-cta { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:20px; }
 .btn {
   padding:16px 28px; border-radius:16px; font-size:1rem; font-weight:800;
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
@@ -169,11 +169,11 @@ img { max-width:100%; display:block; }
 .btn:active { transform:scale(.98); }
 
 .hero-pills {
-  display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:28px;
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:22px;
 }
 .hero-pill {
-  font-size:.78rem; font-weight:700; padding:8px 14px; border-radius:999px;
-  background:var(--surface); border:1px solid var(--border); color:var(--text-muted);
+  font-size:.74rem; font-weight:700; padding:7px 12px; border-radius:999px;
+  background:transparent; border:1px solid var(--border); color:var(--text-dim);
 }
 
 /* Inline code strip in hero */
@@ -202,150 +202,95 @@ img { max-width:100%; display:block; }
 .code-msg.ok { color:var(--green); }
 .code-msg.err { color:#fb7185; }
 
-/* Phone mockup */
-.hero-visual { display:flex; justify-content:center; perspective:900px; }
+/* Phone mockup — lobby teaser (not duplicate result) */
+.hero-visual { display:flex; justify-content:center; }
 .phone {
-  width:min(300px, 88vw); position:relative;
-  transform:rotateY(-8deg) rotateX(4deg);
-  animation: phoneFloat 6s ease-in-out infinite;
-}
-@keyframes phoneFloat {
-  0%,100% { transform:rotateY(-8deg) rotateX(4deg) translateY(0); }
-  50% { transform:rotateY(-6deg) rotateX(2deg) translateY(-10px); }
+  width:min(280px, 84vw); position:relative;
 }
 .phone-frame {
-  border-radius:36px; padding:10px;
+  border-radius:32px; padding:10px;
   background:linear-gradient(160deg, #2a2545, #12101f);
-  border:1px solid rgba(255,255,255,.14);
-  box-shadow:0 40px 100px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06) inset;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 32px 80px rgba(0,0,0,.5);
 }
 .phone-notch {
-  width:90px; height:24px; margin:0 auto 10px; border-radius:0 0 14px 14px;
+  width:80px; height:22px; margin:0 auto 8px; border-radius:0 0 12px 12px;
   background:#0a0818;
 }
 .phone-screen {
-  border-radius:26px; overflow:hidden;
+  border-radius:24px; overflow:hidden;
   background:linear-gradient(180deg, #120f28, #0a0818);
-  padding:22px 18px 26px; min-height:360px;
+  padding:28px 20px 24px; min-height:320px;
   border:1px solid rgba(255,255,255,.06);
+  display:flex; flex-direction:column; align-items:center;
 }
-.phone-logo { width:56px; height:56px; margin:0 auto 12px; border-radius:16px; overflow:hidden; }
+.phone-logo { width:64px; height:64px; margin-bottom:14px; border-radius:18px; overflow:hidden; box-shadow:0 8px 24px rgba(168,85,247,.35); }
 .phone-logo img { width:100%; height:100%; object-fit:cover; }
-.phone-title { text-align:center; font-size:.95rem; font-weight:800; margin-bottom:4px; }
-.phone-sub { text-align:center; font-size:.72rem; color:var(--text-dim); margin-bottom:18px; }
-.mock-ring-wrap { display:flex; justify-content:center; margin-bottom:14px; }
-.mock-ring {
-  width:120px; height:120px; border-radius:50%; display:flex;
-  align-items:baseline; justify-content:center; gap:2px;
-  background:var(--grad-ring); position:relative;
-  box-shadow:0 0 40px rgba(168,85,247,.35);
+.phone-title { text-align:center; font-size:.92rem; font-weight:800; margin-bottom:4px; }
+.phone-sub { text-align:center; font-size:.72rem; color:var(--text-dim); margin-bottom:22px; }
+.mock-avatar {
+  width:56px; height:56px; border-radius:50%; margin-bottom:12px;
+  border:2px dashed rgba(168,85,247,.45); display:grid; place-items:center;
+  font-size:1.4rem; color:rgba(255,255,255,.35); background:rgba(255,255,255,.03);
 }
-.mock-ring::before {
-  content:''; position:absolute; inset:7px; border-radius:50%;
-  background:#0c0a1e;
+.mock-name {
+  width:100%; max-width:200px; padding:12px; border-radius:12px; margin-bottom:14px;
+  text-align:center; font-size:.78rem; color:var(--text-dim);
+  background:rgba(255,255,255,.04); border:1px solid var(--border);
 }
-.mock-ring span { position:relative; font-size:38px; font-weight:900; line-height:1; }
-.mock-ring small { position:relative; font-size:16px; font-weight:800; opacity:.85; }
-.mock-rating {
-  text-align:center; font-size:.85rem; font-weight:800; margin-bottom:16px;
-  background:linear-gradient(90deg, var(--cyan), var(--pink));
-  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+.mock-start {
+  width:100%; max-width:200px; padding:13px; border-radius:14px; text-align:center;
+  font-size:.82rem; font-weight:800; color:#fff;
+  background:var(--grad-btn); box-shadow:0 8px 24px rgba(168,85,247,.35);
 }
-.mock-bars { display:flex; flex-direction:column; gap:8px; }
-.mock-bar { display:flex; align-items:center; gap:8px; font-size:.68rem; color:var(--text-muted); }
-.mock-bar span { flex:0 0 52px; }
-.mock-bar i {
-  flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,.08);
-  position:relative; overflow:hidden;
-}
-.mock-bar i::after {
-  content:''; position:absolute; inset:0; width:var(--w);
-  background:linear-gradient(90deg, var(--purple), var(--cyan)); border-radius:4px;
-}
-.phone-float-badge {
-  position:absolute; top:12%; left:-8%;
-  padding:10px 14px; border-radius:14px; font-size:.75rem; font-weight:800;
-  background:rgba(52,211,153,.15); border:1px solid rgba(52,211,153,.35);
-  color:#6ee7b7; backdrop-filter:blur(8px);
-  animation: badgeBob 4s ease-in-out infinite;
-}
-.phone-float-badge.b2 {
-  top:auto; bottom:18%; right:-6%; left:auto;
-  background:rgba(168,85,247,.18); border-color:rgba(168,85,247,.4); color:#d8b4fe;
-  animation-delay:-2s;
-}
-@keyframes badgeBob {
-  0%,100% { transform:translateY(0); }
-  50% { transform:translateY(-6px); }
-}
-
-/* Stats strip */
-.stats-strip {
-  display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;
-  margin-top:48px; padding:20px;
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-}
-.stat-item { text-align:center; }
-.stat-item b {
-  display:block; font-size:1.5rem; font-weight:900;
-  background:var(--grad-hero); -webkit-background-clip:text; background-clip:text; color:transparent;
-}
-.stat-item span { font-size:.78rem; color:var(--text-dim); font-weight:600; }
 
 /* Sections */
-.section { padding:72px 0; }
-.section-head { text-align:center; max-width:640px; margin:0 auto 44px; }
+.section { padding:64px 0; }
+.section-head { text-align:center; max-width:600px; margin:0 auto 40px; }
 .section-label {
-  display:inline-block; font-size:.75rem; font-weight:800; letter-spacing:.12em;
-  text-transform:uppercase; color:var(--purple); margin-bottom:10px;
+  display:inline-block; font-size:.72rem; font-weight:800; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--cyan); margin-bottom:10px;
 }
-.section-title { font-size:clamp(1.75rem,4vw,2.5rem); font-weight:900; margin-bottom:12px; line-height:1.2; }
-.section-sub { color:var(--text-muted); font-size:1.02rem; line-height:1.65; }
-
-/* Audience cards */
-.audience { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; }
-.aud-card {
-  padding:22px 20px; border-radius:18px; text-align:center;
-  background:var(--surface); border:1px solid var(--border);
-  transition:.25s;
+.section-title {
+  font-size:clamp(1.65rem,3.8vw,2.15rem); font-weight:900; margin-bottom:10px;
+  line-height:1.2; color:#fff;
 }
-.aud-card:hover { border-color:var(--border-glow); transform:translateY(-3px); }
-.aud-card .icon { font-size:2rem; margin-bottom:10px; }
-.aud-card h3 { font-size:1rem; font-weight:800; margin-bottom:6px; }
-.aud-card p { font-size:.85rem; color:var(--text-dim); line-height:1.55; }
+.section-sub { color:var(--text-muted); font-size:.98rem; line-height:1.6; }
 
 /* Features */
-.features { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; }
+.features {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px;
+  align-items:stretch;
+}
 .feat {
-  padding:26px 22px; border-radius:20px;
-  background:linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-  border:1px solid var(--border); position:relative; overflow:hidden;
-  transition:.25s;
+  padding:24px 20px; border-radius:18px; height:100%;
+  background:var(--surface); border:1px solid var(--border);
+  transition:border-color .22s;
 }
-.feat::before {
-  content:''; position:absolute; top:0; inset-inline:0; height:3px;
-  background:var(--grad-btn); opacity:0; transition:.25s;
-}
-.feat:hover { border-color:var(--border-glow); transform:translateY(-4px); }
-.feat:hover::before { opacity:1; }
+.feat:hover { border-color:var(--border-glow); transform:none; }
+.feat::before { display:none; }
 .feat-icon {
-  width:52px; height:52px; border-radius:14px; display:grid; place-items:center;
-  font-size:1.5rem; margin-bottom:14px;
-  background:rgba(168,85,247,.15); border:1px solid rgba(168,85,247,.25);
+  width:48px; height:48px; border-radius:50%; display:grid; place-items:center;
+  font-size:1.35rem; margin-bottom:12px;
+  background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.22);
 }
 .feat h3 { font-size:1.05rem; font-weight:800; margin-bottom:8px; }
 .feat p { font-size:.88rem; color:var(--text-dim); line-height:1.6; }
 
 /* Preview + trust */
+.section-preview {
+  padding:64px 0;
+  background:linear-gradient(180deg, transparent, rgba(124,58,237,.06) 40%, transparent);
+}
 .preview-layout {
-  display:grid; grid-template-columns:1fr; gap:32px; align-items:center;
+  display:grid; grid-template-columns:1fr; gap:28px; align-items:center;
 }
 .preview-card {
-  max-width:400px; margin:0 auto; width:100%;
-  padding:28px 24px; border-radius:24px; text-align:center; position:relative;
-  background:linear-gradient(160deg, rgba(28,22,58,.9), rgba(12,10,28,.95));
+  max-width:380px; margin:0 auto; width:100%;
+  padding:26px 22px; border-radius:22px; text-align:center; position:relative;
+  background:linear-gradient(160deg, rgba(28,22,58,.92), rgba(12,10,28,.96));
   border:1px solid var(--border-glow);
-  box-shadow:var(--shadow-glow);
+  box-shadow:0 16px 48px rgba(0,0,0,.35);
 }
 .preview-badge {
   position:absolute; top:14px; inset-inline-end:14px;
@@ -374,27 +319,34 @@ img { max-width:100%; display:block; }
   background:linear-gradient(90deg, var(--purple), var(--cyan)); border-radius:5px;
 }
 .trust-grid {
-  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+  margin-top:20px; max-width:380px; margin-inline:auto;
 }
 .trust-chip {
-  display:inline-flex; align-items:center; gap:7px;
-  font-size:.82rem; font-weight:700; padding:10px 16px; border-radius:999px;
-  background:var(--surface); border:1px solid var(--border); color:var(--text-muted);
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:.78rem; font-weight:700; padding:8px 14px; border-radius:999px;
+  background:var(--surface); border:1px solid var(--border); color:var(--text-dim);
 }
 
 /* Pricing */
-.pricing { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; align-items:stretch; }
+.pricing {
+  display:flex; flex-wrap:wrap; justify-content:center; gap:20px; align-items:stretch;
+}
 .price-card {
-  padding:32px 26px; border-radius:24px; position:relative;
+  flex:1 1 280px; max-width:340px;
+  padding:28px 24px; border-radius:22px; position:relative;
   background:var(--surface); border:1px solid var(--border);
-  display:flex; flex-direction:column; transition:.3s;
+  display:flex; flex-direction:column; transition:border-color .25s, transform .25s;
 }
-.price-card:hover { border-color:var(--border-glow); transform:translateY(-5px); }
+.price-card:hover { border-color:var(--border-glow); transform:translateY(-3px); }
 .price-card.popular {
-  border-color:rgba(255,77,141,.45);
-  background:linear-gradient(165deg, rgba(255,77,141,.08), rgba(168,85,247,.06));
-  box-shadow:0 20px 60px rgba(168,85,247,.2);
+  border-color:rgba(255,77,141,.4);
+  background:linear-gradient(165deg, rgba(255,77,141,.07), rgba(168,85,247,.05));
+  transform:scale(1.03);
+  box-shadow:0 20px 50px rgba(168,85,247,.18);
+  z-index:1;
 }
+.price-card.popular:hover { transform:scale(1.03) translateY(-3px); }
 .badge-pop {
   position:absolute; top:-13px; inset-inline-start:50%; transform:translateX(-50%);
   background:var(--grad-btn); padding:6px 16px; border-radius:999px;
@@ -404,8 +356,7 @@ img { max-width:100%; display:block; }
 .price-name { font-size:1.35rem; font-weight:900; margin-bottom:6px; }
 .price-desc { font-size:.88rem; color:var(--text-dim); line-height:1.55; margin-bottom:18px; min-height:44px; }
 .price-amount {
-  font-size:2.4rem; font-weight:900;
-  background:var(--grad-hero); -webkit-background-clip:text; background-clip:text; color:transparent;
+  font-size:2.35rem; font-weight:900; color:#fff;
 }
 .price-currency { font-size:.95rem; color:var(--text-dim); font-weight:700; }
 .price-unit { font-size:.85rem; color:var(--text-dim); margin:6px 0 20px; }
@@ -419,25 +370,41 @@ img { max-width:100%; display:block; }
 .price-card .btn { width:100%; margin-top:auto; }
 
 /* Steps timeline */
-.steps { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; }
+.steps {
+  display:grid; grid-template-columns:1fr; gap:20px;
+  max-width:880px; margin:0 auto; position:relative;
+}
+@media (min-width:768px) {
+  .steps {
+    grid-template-columns:repeat(3, 1fr); gap:16px;
+  }
+  .steps::before {
+    content:''; position:absolute; top:22px;
+    inset-inline:12%; height:2px;
+    background:linear-gradient(90deg, transparent, rgba(168,85,247,.35), transparent);
+    z-index:0;
+  }
+}
 .step {
-  padding:26px 22px 22px; border-radius:20px;
+  padding:20px 18px; border-radius:18px; text-align:center;
   background:var(--surface); border:1px solid var(--border);
-  position:relative; padding-top:36px;
+  position:relative; z-index:1;
 }
 .step-num {
-  position:absolute; top:-16px; inset-inline-start:22px;
-  width:44px; height:44px; border-radius:14px;
-  display:grid; place-items:center; font-weight:900; font-size:1.15rem;
-  background:var(--grad-btn-alt); box-shadow:0 8px 20px rgba(34,211,238,.35);
+  position:relative; top:0; inset-inline-start:0;
+  width:44px; height:44px; border-radius:50%; margin:0 auto 14px;
+  display:grid; place-items:center; font-weight:900; font-size:1.1rem;
+  background:var(--grad-btn); box-shadow:0 6px 18px rgba(168,85,247,.3);
 }
-.step h3 { font-size:1.1rem; font-weight:800; margin-bottom:8px; }
-.step p { font-size:.88rem; color:var(--text-dim); line-height:1.65; }
+.step h3 { font-size:1.02rem; font-weight:800; margin-bottom:8px; }
+.step p { font-size:.86rem; color:var(--text-dim); line-height:1.6; }
 
-/* Business */
+/* Business — full-width band */
+.section-biz { padding:0 0 64px; }
+.biz-wrap { max-width:1120px; margin:0 auto; padding:0 20px; }
 .biz {
-  padding:48px 36px; border-radius:28px; text-align:center;
-  background:linear-gradient(135deg, rgba(255,77,141,.12), rgba(168,85,247,.1), rgba(34,211,238,.08));
+  padding:44px 32px; border-radius:24px; text-align:center;
+  background:linear-gradient(135deg, rgba(255,77,141,.1), rgba(168,85,247,.08));
   border:1px solid var(--border-glow);
 }
 .biz h2 { font-size:clamp(1.4rem,3.5vw,2rem); font-weight:900; margin-bottom:12px; }
@@ -457,9 +424,10 @@ summary {
 }
 summary::-webkit-details-marker { display:none; }
 summary::after {
-  content:'+'; font-size:1.4rem; color:var(--purple); transition:.2s; font-weight:400;
+  content:'›'; font-size:1.2rem; color:var(--purple); transition:.2s; font-weight:400;
+  transform:rotate(90deg);
 }
-details[open] summary::after { transform:rotate(45deg); }
+details[open] summary::after { transform:rotate(-90deg); }
 details > p { margin:0 20px 18px; color:var(--text-muted); line-height:1.7; font-size:.92rem; }
 
 /* Footer */
@@ -512,28 +480,33 @@ details > p { margin:0 20px 18px; color:var(--text-muted); line-height:1.7; font
 
 /* Responsive */
 @media (min-width:900px) {
-  .hero-grid { grid-template-columns:1.05fr .95fr; gap:48px; }
+  .hero-grid { grid-template-columns:1.08fr .92fr; gap:40px; }
   .hero-copy { text-align:start; }
   .hero-lead { margin-inline:0; }
   .hero-cta, .hero-pills { justify-content:flex-start; }
   .code-box { margin-inline:0; }
   .code-hint, .code-msg { text-align:start; }
-  .preview-layout { grid-template-columns:1fr 1fr; gap:40px; }
-  .trust-grid { justify-content:flex-start; }
+  .preview-layout { grid-template-columns:1fr 1fr; gap:36px; }
+  .preview-layout .section-head { text-align:start; margin-inline:0; }
+  .preview-layout .section-sub { margin-inline:0; }
+  .trust-grid { justify-content:flex-start; margin-inline:0; max-width:none; }
   .footer-grid { grid-template-columns:1.4fr 1fr; align-items:start; }
+  .hero-visual { order:2; }
+  .hero-copy { order:1; }
 }
 @media (max-width:768px) {
-  .nav-inner { padding:10px 14px; }
+  .nav-inner { padding:10px 12px; }
   .nav-link.hide-mobile { display:none; }
-  .hero { padding-top:8px; }
-  .phone { transform:none; animation:none; }
-  .phone-float-badge { display:none; }
-  .stats-strip { grid-template-columns:1fr; gap:16px; }
+  .hero { padding:16px 0 48px; }
+  .hero-visual { order:-1; }
   .code-box-inner { flex-direction:column; }
   .code-box button { width:100%; }
   .btn { width:100%; max-width:340px; }
-  .section { padding:52px 0; }
-  .biz { padding:32px 22px; }
+  .section, .section-preview { padding:48px 0; }
+  .price-card.popular { transform:none; }
+  .price-card.popular:hover { transform:translateY(-3px); }
+  .biz { padding:28px 20px; }
+  .trust-grid { flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
 }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition:none!important; }
@@ -599,48 +572,19 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
 
       <div class="hero-visual">
         <div class="phone">
-          <div class="phone-float-badge" data-i18n="float_live">🔴 لعب مباشر</div>
-          <div class="phone-float-badge b2" data-i18n="float_share">📸 شارك النتيجة</div>
           <div class="phone-frame">
             <div class="phone-notch"></div>
             <div class="phone-screen">
-              <div class="phone-logo"><img src="/brand/web-app-manifest-512x512.png?v=44" alt="" width="56" height="56"></div>
+              <div class="phone-logo"><img src="/brand/web-app-manifest-512x512.png?v=44" alt="" width="64" height="64"></div>
               <div class="phone-title">Telepathy Challenge</div>
-              <div class="phone-sub" data-i18n="phone_sub">نسبة التخاطر</div>
-              <div class="mock-ring-wrap">
-                <div class="mock-ring"><span>87</span><small>%</small></div>
-              </div>
-              <div class="mock-rating" data-i18n="preview_rating">تخاطر استثنائي 🧠⚡</div>
-              <div class="mock-bars">
-                <div class="mock-bar"><span data-i18n="preview_p1">الصور</span><i style="--w:90%"></i></div>
-                <div class="mock-bar"><span data-i18n="preview_p2">الأفكار</span><i style="--w:84%"></i></div>
-                <div class="mock-bar"><span data-i18n="preview_p3">الذهني</span><i style="--w:88%"></i></div>
-                <div class="mock-bar"><span data-i18n="preview_p4">الروحي</span><i style="--w:86%"></i></div>
-              </div>
+              <div class="phone-sub" data-i18n="phone_lobby_sub">جاهز للتحدي؟</div>
+              <div class="mock-avatar" aria-hidden="true">+</div>
+              <div class="mock-name" data-i18n="phone_name_ph">اسمك</div>
+              <div class="mock-start" data-i18n="modal_code_btn">ابدأ</div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="stats-strip">
-      <div class="stat-item"><b>4</b><span data-i18n="stat_phases">مراحل تحدي</span></div>
-      <div class="stat-item"><b>20</b><span data-i18n="stat_rounds">جولة لكل جلسة</span></div>
-      <div class="stat-item"><b>5</b><span data-i18n="stat_sessions">جلسات لكل كود</span></div>
-    </div>
-  </section>
-
-  <!-- AUDIENCE -->
-  <section class="section" id="audience">
-    <div class="section-head">
-      <span class="section-label" data-i18n="aud_label">لمن هذه اللعبة؟</span>
-      <h2 class="section-title" data-i18n="aud_title">لحظات تربطكم — مو بس لعبة</h2>
-      <p class="section-sub" data-i18n="aud_sub">تجربة اجتماعية: اسمك وصورتك تظهران — العبوا وشوفوا وجه بعض</p>
-    </div>
-    <div class="audience">
-      <div class="aud-card"><div class="icon">💑</div><h3 data-i18n="aud1_h">أزواج</h3><p data-i18n="aud1_p">اكتشفوا مدى توافق تفكيركم في أمسية ممتعة</p></div>
-      <div class="aud-card"><div class="icon">👫</div><h3 data-i18n="aud2_h">أصدقاء</h3><p data-i18n="aud2_p">تحدي سريع يكسر الجمود ويولّد ضحك وذكريات</p></div>
-      <div class="aud-card"><div class="icon">☕</div><h3 data-i18n="aud3_h">مقاهي وفعاليات</h3><p data-i18n="aud3_p">كود على الفاتورة = تجربة يشاركونها مع علامتك</p></div>
     </div>
   </section>
 
@@ -660,13 +604,26 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
   </section>
 
   <!-- PREVIEW -->
-  <section class="section">
+  <section class="section-preview">
     <div class="preview-layout">
       <div>
-        <div class="section-head" style="text-align:start;margin-inline:0;margin-bottom:24px">
+        <div class="section-head" style="text-align:center;margin-bottom:24px">
           <span class="section-label" data-i18n="preview_label">النتيجة</span>
           <h2 class="section-title" data-i18n="preview_title">ماذا ستحصل عليه؟</h2>
-          <p class="section-sub" style="margin-inline:0" data-i18n="preview_sub">في نهاية التحدي: نسبة تخاطر دقيقة + بطاقة جاهزة للمشاركة</p>
+          <p class="section-sub" data-i18n="preview_sub">في نهاية التحدي: نسبة تخاطر دقيقة + بطاقة جاهزة للمشاركة</p>
+        </div>
+      </div>
+      <div>
+        <div class="preview-card">
+          <div class="preview-badge" data-i18n="preview_badge">مثال توضيحي</div>
+          <div class="preview-ring"><span>87</span><small>%</small></div>
+          <div class="preview-rating" data-i18n="preview_rating">تخاطر استثنائي 🧠⚡</div>
+          <div class="preview-bars">
+            <div class="pbar"><span data-i18n="preview_p1">الصور</span><i style="--w:90%"></i></div>
+            <div class="pbar"><span data-i18n="preview_p2">الأفكار</span><i style="--w:84%"></i></div>
+            <div class="pbar"><span data-i18n="preview_p3">الذهني</span><i style="--w:88%"></i></div>
+            <div class="pbar"><span data-i18n="preview_p4">الروحي</span><i style="--w:86%"></i></div>
+          </div>
         </div>
         <div class="trust-grid">
           <span class="trust-chip">🔒 <span data-i18n="trust1">بدون حساب</span></span>
@@ -674,17 +631,6 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
           <span class="trust-chip">💳 <span data-i18n="trust3">دفعة واحدة</span></span>
           <span class="trust-chip">👥 <span data-i18n="trust4">لاعبان</span></span>
           <span class="trust-chip">🎁 <span data-i18n="trust5">٥ جلسات</span></span>
-        </div>
-      </div>
-      <div class="preview-card">
-        <div class="preview-badge" data-i18n="preview_badge">مثال توضيحي</div>
-        <div class="preview-ring"><span>87</span><small>%</small></div>
-        <div class="preview-rating" data-i18n="preview_rating">تخاطر استثنائي 🧠⚡</div>
-        <div class="preview-bars">
-          <div class="pbar"><span data-i18n="preview_p1">الصور</span><i style="--w:90%"></i></div>
-          <div class="pbar"><span data-i18n="preview_p2">الأفكار</span><i style="--w:84%"></i></div>
-          <div class="pbar"><span data-i18n="preview_p3">الذهني</span><i style="--w:88%"></i></div>
-          <div class="pbar"><span data-i18n="preview_p4">الروحي</span><i style="--w:86%"></i></div>
         </div>
       </div>
     </div>
@@ -716,11 +662,13 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
   </section>
 
   <!-- BUSINESS -->
-  <section class="section">
-    <div class="biz">
-      <h2 data-i18n="biz_h">🏢 للأعمال — حوّل عملاءك إلى ذكريات</h2>
-      <p data-i18n="biz_p">مطعم، كافيه، أو فندق؟ كود على الفاتورة = تجربة فريدة وصورة يشاركونها مع علامتك.</p>
-      <a id="bizContactBtn" href="https://wa.me/?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D9%85%D8%B9%D8%B1%D9%81%D8%A9%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D8%B9%D9%86%20%D8%A8%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="biz_btn">تواصل معنا</a>
+  <section class="section-biz">
+    <div class="biz-wrap">
+      <div class="biz">
+        <h2 data-i18n="biz_h">🏢 للأعمال — حوّل عملاءك إلى ذكريات</h2>
+        <p data-i18n="biz_p">مطعم، كافيه، أو فندق؟ كود على الفاتورة = تجربة فريدة وصورة يشاركونها مع علامتك.</p>
+        <a id="bizContactBtn" href="https://wa.me/?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D9%85%D8%B9%D8%B1%D9%81%D8%A9%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D8%B9%D9%86%20%D8%A8%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="biz_btn">تواصل معنا</a>
+      </div>
     </div>
   </section>
 
@@ -807,14 +755,8 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       hero_tagline: 'تحدي التخاطر — لعبة شبابية تفاعلية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، ونسبة دقيقة لمدى توافق عقولكما — مع بطاقة نتيجة جاهزة للمشاركة.',
       hero_cta_buy: '🛒 احصل على كودك', hero_cta_start: 'لديّ كود — ابدأ',
       stat1: '⚡ بدء فوري', stat2: '📱 جوال + PWA', stat3: '🎁 ٥ جلسات / كود',
-      stat_phases: 'مراحل تحدي', stat_rounds: 'جولة لكل جلسة', stat_sessions: 'جلسات لكل كود',
       hero_code_hint: 'لديك كود؟ أدخله هنا — رابط واحد، بدون تعقيد',
-      float_live: '🔴 لعب مباشر', float_share: '📸 شارك النتيجة', phone_sub: 'نسبة التخاطر',
-      aud_label: 'لمن هذه اللعبة؟', aud_title: 'لحظات تربطكم — مو بس لعبة',
-      aud_sub: 'تجربة اجتماعية: اسمك وصورتك تظهران — العبوا وشوفوا وجه بعض',
-      aud1_h: 'أزواج', aud1_p: 'اكتشفوا مدى توافق تفكيركم في أمسية ممتعة',
-      aud2_h: 'أصدقاء', aud2_p: 'تحدي سريع يكسر الجمود ويولّد ضحك وذكريات',
-      aud3_h: 'مقاهي وفعاليات', aud3_p: 'كود على الفاتورة = تجربة يشاركونها مع علامتك',
+      phone_lobby_sub: 'جاهز للتحدي؟', phone_name_ph: 'اسمك',
       feat_label: 'المميزات', feat_title: 'لماذا تحدي التخاطر؟',
       feat_sub: 'تجربة مختلفة عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم',
       feat1_h: '٤ مراحل ذكية', feat1_p: 'من الأشياء البسيطة إلى الذكريات والمشاعر العميقة',
@@ -864,14 +806,8 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       hero_tagline: 'The Telepathy Challenge — an interactive youth game for couples and friends. 4 phases, 20 rounds, an accurate mind-sync score, and a shareable result card.',
       hero_cta_buy: '🛒 Get your code', hero_cta_start: 'I have a code — start',
       stat1: '⚡ Instant start', stat2: '📱 Mobile + PWA', stat3: '🎁 5 sessions / code',
-      stat_phases: 'Challenge phases', stat_rounds: 'Rounds per session', stat_sessions: 'Sessions per code',
       hero_code_hint: 'Have a code? Enter it here — one link, no confusion',
-      float_live: '🔴 Live play', float_share: '📸 Share result', phone_sub: 'Telepathy score',
-      aud_label: 'Who is it for?', aud_title: 'Moments that connect you — not just a game',
-      aud_sub: 'Social play: your name and photo show — play and see each other',
-      aud1_h: 'Couples', aud1_p: 'Discover how in sync your thinking is on a fun evening',
-      aud2_h: 'Friends', aud2_p: 'A quick challenge that breaks the ice and creates memories',
-      aud3_h: 'Cafés & events', aud3_p: 'A code on the bill = an experience they share with your brand',
+      phone_lobby_sub: 'Ready to play?', phone_name_ph: 'Your name',
       feat_label: 'Features', feat_title: 'Why Telepathy Challenge?',
       feat_sub: 'A totally different experience — reveals a new side of your relationship',
       feat1_h: '4 smart phases', feat1_p: 'From simple things to memories and deep emotions',
