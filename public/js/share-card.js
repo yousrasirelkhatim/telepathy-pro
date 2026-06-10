@@ -8,9 +8,9 @@
 
   const W = 1080, H = 1350;
   const PALETTES = {
-    romantic: { a: '#ff5b93', b: '#a855f7', c: '#ffd0e1', label: '💞 رومانسي', heading: 'تحدي القلوب' },
-    fun:      { a: '#00d4ff', b: '#a855f7', c: '#9af0ff', label: '⚡ شبابي',   heading: 'تحدي التخاطر' },
-    luxury:   { a: '#ffd700', b: '#7c3aed', c: '#fff3b0', label: '👑 فاخر',    heading: 'تحدي توافق العقول' },
+    romantic: { a: '#ff5b93', b: '#a855f7', c: '#ffd0e1', label: '💞 رومانسي', heading: 'تحدي القلوب', headingEn: 'Hearts Challenge' },
+    fun:      { a: '#00d4ff', b: '#a855f7', c: '#9af0ff', label: '⚡ شبابي',   heading: 'تحدي التخاطر', headingEn: 'Telepathy Challenge' },
+    luxury:   { a: '#ffd700', b: '#7c3aed', c: '#fff3b0', label: '👑 فاخر',    heading: 'تحدي توافق العقول', headingEn: 'Minds Match Challenge' },
   };
 
   function loadFont() {
@@ -111,11 +111,11 @@
     ctx.shadowBlur = 0;
   }
 
-  function ratingFor(pct) {
-    if (pct <= 20) return { txt: 'ضعيف', emoji: '😶' };
-    if (pct <= 45) return { txt: 'جيد', emoji: '🙂' };
-    if (pct <= 70) return { txt: 'قوي', emoji: '🔥' };
-    return { txt: 'تخاطر استثنائي', emoji: '🧠⚡' };
+  function ratingFor(pct, en) {
+    if (pct <= 20) return { txt: en ? 'Weak' : 'ضعيف', emoji: '😶' };
+    if (pct <= 45) return { txt: en ? 'Good' : 'جيد', emoji: '🙂' };
+    if (pct <= 70) return { txt: en ? 'Strong' : 'قوي', emoji: '🔥' };
+    return { txt: en ? 'Exceptional' : 'تخاطر استثنائي', emoji: '🧠⚡' };
   }
 
   function fitText(ctx, text, maxWidth, fontSize, weight, family) {
@@ -133,6 +133,7 @@
   async function render(opts) {
     await loadFont();
     const palette = PALETTES[opts.template] || PALETTES.fun;
+    const en = opts.lang === 'en';
     const canvas = document.createElement('canvas');
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
@@ -178,11 +179,11 @@
     ctx.font = '700 34px Tajawal, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255,255,255,0.62)';
-    ctx.fillText(palette.heading, W / 2, 150);
+    ctx.fillText(en ? palette.headingEn : palette.heading, W / 2, 150);
 
     ctx.font = '900 42px Tajawal, sans-serif';
     ctx.fillStyle = '#fff';
-    ctx.fillText('بطاقة نتيجة التخاطر', W / 2, 208);
+    ctx.fillText(en ? 'Telepathy Result Card' : 'بطاقة نتيجة التخاطر', W / 2, 208);
 
     // Logo / brand top-right
     if (opts.brandName) {
@@ -206,8 +207,8 @@
     ctx.shadowBlur = 0;
 
     // Names
-    const n1 = (opts.name1 || 'اللاعب 1').slice(0, 18);
-    const n2 = (opts.name2 || 'اللاعب 2').slice(0, 18);
+    const n1 = (opts.name1 || (en ? 'Player 1' : 'اللاعب 1')).slice(0, 18);
+    const n2 = (opts.name2 || (en ? 'Player 2' : 'اللاعب 2')).slice(0, 18);
     fitText(ctx, `${n1}  ✦  ${n2}`, 760, 56, 'bold');
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
@@ -226,10 +227,10 @@
 
     ctx.font = '600 38px Tajawal, sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.fillText('نسبة التخاطر', cx, cy + 90);
+    ctx.fillText(en ? 'Match rate' : 'نسبة التخاطر', cx, cy + 90);
 
     // Rating
-    const r = ratingFor(opts.pct || 0);
+    const r = ratingFor(opts.pct || 0, en);
     fitText(ctx, opts.rating || `${r.emoji}  ${r.txt}`, 680, 54, 'bold');
     const ratingGrad = gradient(ctx, 0, 0, W, 0, [[0, palette.a], [1, palette.b]]);
     ctx.fillStyle = ratingGrad;
@@ -281,7 +282,7 @@
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.textAlign = 'center';
-    ctx.fillText(opts.roomCode ? `غرفة ${opts.roomCode}  •  Telepathy Challenge` : 'Telepathy Challenge  •  تحدي التخاطر', W / 2, H - 95);
+    ctx.fillText(opts.roomCode ? (en ? `Room ${opts.roomCode}  •  Telepathy Challenge` : `غرفة ${opts.roomCode}  •  Telepathy Challenge`) : (en ? 'Telepathy Challenge' : 'Telepathy Challenge  •  تحدي التخاطر'), W / 2, H - 95);
 
     // Site / QR text
     ctx.font = 'bold 32px Tajawal, sans-serif';

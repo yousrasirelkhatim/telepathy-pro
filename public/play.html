@@ -1443,25 +1443,26 @@ body { background: var(--ink) !important; }
 <div class="orb orb-3"></div>
 
 <div class="toast" id="toast"></div>
+<button id="langToggleBtn" type="button" onclick="toggleLang()" aria-label="Switch language" style="position:fixed;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:60;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:12px;height:38px;padding:0 14px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">English</button>
 <div class="password-modal-overlay" id="passwordModal">
   <div class="password-modal">
-    <h2>كود التحدي</h2>
-    <p>أدخل الكود لإنشاء غرفة جديدة أو متابعة غرفة مفتوحة</p>
+    <h2 data-i18n="pw_title">كود التحدي</h2>
+    <p data-i18n="pw_desc">أدخل الكود لإنشاء غرفة جديدة أو متابعة غرفة مفتوحة</p>
     <div class="password-input-group">
-      <input type="text" id="passwordInput" placeholder="مثال: TP-AB12CD34" maxlength="24" style="text-align:center;letter-spacing:2px;font-weight:700;text-transform:uppercase">
+      <input type="text" id="passwordInput" placeholder="مثال: TP-AB12CD34" data-i18n-ph="pw_ph" maxlength="24" style="text-align:center;letter-spacing:2px;font-weight:700;text-transform:uppercase">
     </div>
     <div class="modal-buttons">
-      <button class="btn-modal-submit" onclick="confirmPassword()">✓ تحقق وابدأ</button>
-      <button class="btn-modal-cancel" onclick="closePasswordModal()">✕ إلغاء</button>
+      <button class="btn-modal-submit" onclick="confirmPassword()" data-i18n="pw_submit">✓ تحقق وابدأ</button>
+      <button class="btn-modal-cancel" onclick="closePasswordModal()" data-i18n="pw_cancel">✕ إلغاء</button>
     </div>
-    <p style="margin-top:14px;font-size:.82rem;color:rgba(255,255,255,.5)">لا تملك كوداً؟ <a href="/" style="color:#a855f7">احصل على كود من هنا</a></p>
+    <p style="margin-top:14px;font-size:.82rem;color:rgba(255,255,255,.5)" data-i18n-html="pw_nocode">لا تملك كوداً؟ <a href="/" style="color:#a855f7">احصل على كود من هنا</a></p>
   </div>
 </div>
 
 <div class="disconnect-overlay" id="disconnectOverlay">
   <div style="font-size:60px">😔</div>
-  <div style="font-size:20px;font-weight:700">اللاعب الآخر غادر اللعبة</div>
-  <button class="btn btn-primary" style="max-width:200px" onclick="location.reload()">العودة للرئيسية</button>
+  <div style="font-size:20px;font-weight:700" data-i18n="dc_text">اللاعب الآخر غادر اللعبة</div>
+  <button class="btn btn-primary" style="max-width:200px" onclick="location.reload()" data-i18n="dc_back">العودة للرئيسية</button>
 </div>
 <div class="countdown-overlay" id="countdownOverlay">
   <div class="countdown-number" id="countdownNumber"></div>
@@ -1472,7 +1473,7 @@ body { background: var(--ink) !important; }
   <!-- HOME (v36 redesigned: single-step focused flow) -->
   <div class="section active" id="homeSection">
     <div style="text-align:center;margin-bottom:14px">
-      <a href="/" class="tp-link" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">← الرئيسية</a>
+      <a href="/" class="tp-link" data-i18n="home_back" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">← الرئيسية</a>
     </div>
     <div class="logo-area" style="margin-bottom:22px">
       <svg class="tp-logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1501,21 +1502,21 @@ body { background: var(--ink) !important; }
         <path d="M200 188 L312 188 L312 220 L272 220 L272 316 L256 340 L240 316 L240 220 L200 220 Z" fill="url(#tpLogoSilver)" stroke="#6b7682" stroke-width="3" stroke-linejoin="round"/>
       </svg>
       <h1 class="game-title">Telepathy Challenge</h1>
-      <p class="game-subtitle">قِس مدى توافق عقولكما — في 4 مراحل ذكية</p>
+      <p class="game-subtitle" data-i18n="home_subtitle">قِس مدى توافق عقولكما — في 4 مراحل ذكية</p>
     </div>
 
     <div class="glass" style="padding:26px 22px">
 
       <!-- STEP 1: code entry, large & primary -->
       <div style="text-align:center;margin-bottom:6px">
-        <label for="quickCode" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">أدخل الكود</label>
-        <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX  أو  ABC123" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
-        <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span>اكتب كودك للبدء</span></div>
+        <label for="quickCode" data-i18n="home_enter_code" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">أدخل الكود</label>
+        <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX  أو  ABC123" data-i18n-ph="code_ph" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
+        <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span data-i18n="chip_empty">اكتب كودك للبدء</span></div>
       </div>
 
       <!-- STEP 2: name (compact) -->
       <div class="input-group" style="margin-top:18px;margin-bottom:14px">
-        <input type="text" class="input-field" id="playerName" placeholder="اسمك" maxlength="20" style="text-align:center;font-weight:600">
+        <input type="text" class="input-field" id="playerName" placeholder="اسمك" data-i18n-ph="home_name_ph" maxlength="20" style="text-align:center;font-weight:600">
       </div>
 
       <!-- STEP 3: photo as small chip (was a 100px circle) -->
@@ -1525,21 +1526,21 @@ body { background: var(--ink) !important; }
             <span id="qsPhotoIcon">+</span>
             <img id="qsPhotoPreview" alt="" style="display:none">
           </span>
-          <span>أضف صورتك (اختياري)</span>
+          <span data-i18n="home_photo">أضف صورتك (اختياري)</span>
         </label>
         <input type="file" id="qsPhoto" accept="image/*" style="display:none">
       </div>
 
       <!-- Single primary CTA -->
-      <button class="btn btn-primary" id="quickStartBtn" onclick="quickStart()">
+      <button class="btn btn-primary" id="quickStartBtn" onclick="quickStart()" data-i18n="home_start">
         ابدأ التحدي  ←
       </button>
 
-      <button class="btn btn-secondary hidden" id="lastResultBtn" onclick="showSavedResult()" style="margin-top:10px">
+      <button class="btn btn-secondary hidden" id="lastResultBtn" onclick="showSavedResult()" data-i18n="home_last_result" style="margin-top:10px">
         عرض آخر نتيجة
       </button>
 
-      <p class="muted-sub" style="margin-top:14px">
+      <p class="muted-sub" style="margin-top:14px" data-i18n-html="home_no_code">
         لا تملك كوداً؟ <a href="/" class="tp-link"><strong>احصل على واحد</strong></a>
       </p>
     </div>
@@ -1549,18 +1550,18 @@ body { background: var(--ink) !important; }
   <div class="section" id="joinSection">
     <div class="logo-area">
       <div class="brain-icon" style="font-size:50px">🔗</div>
-      <h2 class="game-title" style="font-size:22px">الانضمام لغرفة</h2>
+      <h2 class="game-title" style="font-size:22px" data-i18n="join_title">الانضمام لغرفة</h2>
     </div>
     <div class="glass" style="padding:32px">
       <div class="input-group">
-        <label>كود الغرفة</label>
-        <input type="text" class="input-field" id="roomCodeInput" placeholder="أدخل كود الغرفة" maxlength="6"
+        <label data-i18n="join_label">كود الغرفة</label>
+        <input type="text" class="input-field" id="roomCodeInput" placeholder="أدخل كود الغرفة" data-i18n-ph="join_ph" maxlength="6"
                style="letter-spacing:8px;font-size:24px;text-transform:uppercase">
       </div>
-      <button class="btn btn-primary" onclick="joinRoom()" style="margin-bottom:12px">
+      <button class="btn btn-primary" onclick="joinRoom()" data-i18n="join_btn" style="margin-bottom:12px">
         🚀 انضمام
       </button>
-      <button class="btn btn-secondary" onclick="showSection('homeSection')">
+      <button class="btn btn-secondary" onclick="showSection('homeSection')" data-i18n="back_btn">
         ← رجوع
       </button>
     </div>
@@ -1570,21 +1571,21 @@ body { background: var(--ink) !important; }
   <div class="section" id="codeCreatedSection">
     <div class="logo-area">
       <div class="brain-icon" style="font-size:50px">🎫</div>
-      <h2 class="game-title" style="font-size:22px">تم إنشاء الكود!</h2>
+      <h2 class="game-title" style="font-size:22px" data-i18n="created_title">تم إنشاء الكود!</h2>
     </div>
     <div class="glass" style="padding:32px">
       <div style="text-align:center; margin-bottom:24px;">
-        <p style="color:rgba(255,255,255,0.6); margin-bottom:16px;">شارك هذا الكود مع صديقك</p>
+        <p style="color:rgba(255,255,255,0.6); margin-bottom:16px;" data-i18n="created_share">شارك هذا الكود مع صديقك</p>
         <div class="room-code-value" id="createdCode" style="font-size:48px; letter-spacing:12px;">------</div>
-        <button class="copy-btn" onclick="copyCreatedCode()" style="margin-top:16px; width:100%; padding:12px;">📋 نسخ الكود</button>
+        <button class="copy-btn" onclick="copyCreatedCode()" data-i18n="created_copy" style="margin-top:16px; width:100%; padding:12px;">📋 نسخ الكود</button>
       </div>
-      <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:20px;">
+      <div style="text-align:center; color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:20px;" data-i18n-html="created_valid">
         الكود صالح لـ <span style="color:var(--neon-green); font-weight:700;">5 استخدامات</span>
       </div>
-      <button class="btn btn-primary" onclick="showSection('homeSection')" style="margin-bottom:12px">
+      <button class="btn btn-primary" onclick="showSection('homeSection')" data-i18n="created_again" style="margin-bottom:12px">
         إنشاء كود آخر
       </button>
-      <button class="btn btn-secondary" onclick="prepareJoinWithCode(document.getElementById('createdCode').textContent)">
+      <button class="btn btn-secondary" onclick="prepareJoinWithCode(document.getElementById('createdCode').textContent)" data-i18n="created_join_this">
         انضمام بهذا الكود
       </button>
     </div>
@@ -1594,33 +1595,33 @@ body { background: var(--ink) !important; }
   <div class="section" id="lobbySection">
     <div class="logo-area">
       <div class="brain-icon" style="font-size:50px">✨</div>
-      <h2 class="game-title" style="font-size:22px">غرفة التخاطر</h2>
+      <h2 class="game-title" style="font-size:22px" data-i18n="lobby_title">غرفة التخاطر</h2>
     </div>
     <div class="glass" style="padding:32px">
       <div class="room-code-display">
-        <div class="room-code-label">كود الغرفة – شاركه مع صديقك</div>
+        <div class="room-code-label" data-i18n="lobby_code_label">كود الغرفة – شاركه مع صديقك</div>
         <div class="room-code-value" id="lobbyRoomCode"></div>
         <div id="usesRemainingWrap" style="margin-top:12px; text-align:center; color:rgba(255,255,255,0.55); font-size:12.5px; line-height:1.7;">
-          متاح في كودك:
+          <span data-i18n="lobby_avail">متاح في كودك:</span>
           <span id="usesRemaining" style="color:var(--neon-green); font-weight:800; font-size:14px; transition:all 0.4s">5</span>
-          <span style="opacity:0.6">/ <span id="usesMax">5</span> جلسات</span>
-          <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px">سيُحسم 1 عند بدء التحدي فقط</div>
+          <span style="opacity:0.6">/ <span id="usesMax">5</span> <span data-i18n="lobby_sessions">جلسات</span></span>
+          <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px" data-i18n="lobby_deduct">سيُحسم 1 عند بدء التحدي فقط</div>
         </div>
         <button class="invite-btn-xl" onclick="shareInviteSmart()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          ادعُ صديقك للانضمام
+          <span data-i18n="lobby_invite">ادعُ صديقك للانضمام</span>
         </button>
         <div style="display:flex;gap:8px;margin-top:8px;justify-content:center;flex-wrap:wrap">
-          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyInviteLink()">📋 نسخ الرابط</button>
-          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyCode()">🔢 نسخ الكود</button>
+          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyInviteLink()" data-i18n="lobby_copy_link">📋 نسخ الرابط</button>
+          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyCode()" data-i18n="lobby_copy_code">🔢 نسخ الكود</button>
         </div>
         <div id="lobbyQrWrap" style="margin-top:18px;text-align:center;display:none">
           <div style="display:inline-block;padding:10px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.45),0 0 0 1px rgba(212,175,55,0.4)">
             <img id="lobbyQrImg" alt="QR" width="170" height="170" style="display:block;border-radius:6px">
           </div>
-          <div style="margin-top:8px;font-size:11.5px;color:rgba(255,255,255,0.5)">امسح الرمز بكاميرا صديقك للانضمام</div>
+          <div style="margin-top:8px;font-size:11.5px;color:rgba(255,255,255,0.5)" data-i18n="lobby_scan">امسح الرمز بكاميرا صديقك للانضمام</div>
         </div>
-        <p class="muted-sub" style="margin-top:8px">سيُنسخ الرابط تلقائياً إذا لم تتوفّر المشاركة</p>
+        <p class="muted-sub" style="margin-top:8px" data-i18n="lobby_autocopy">سيُنسخ الرابط تلقائياً إذا لم تتوفّر المشاركة</p>
         <div id="lobbyExtraButtons" aria-hidden="true">
           <button class="copy-btn" onclick="copyCode()">نسخ الكود</button>
           <button class="copy-btn" onclick="copyInviteLink()">نسخ الرابط</button>
@@ -1628,7 +1629,7 @@ body { background: var(--ink) !important; }
         </div>
       </div>
       <div class="waiting-area" id="waitingArea">
-        <p style="font-size:15px;color:rgba(255,255,255,0.65)">في انتظار اللاعب الثاني...</p>
+        <p style="font-size:15px;color:rgba(255,255,255,0.65)" data-i18n="lobby_waiting">في انتظار اللاعب الثاني...</p>
         <div class="waiting-dots"><span></span><span></span><span></span></div>
       </div>
       <div id="lobbyPlayers" style="display:none">
@@ -1645,9 +1646,9 @@ body { background: var(--ink) !important; }
         </div>
         <div class="lobby-ready-state" id="autoReadyState">
           <span class="pulse-dot"></span>
-          تم الاتصال — التحدي يبدأ خلال لحظات...
+          <span data-i18n="lobby_connected">تم الاتصال — التحدي يبدأ خلال لحظات...</span>
         </div>
-        <button class="btn btn-primary" id="readyBtn" onclick="playerReady()">
+        <button class="btn btn-primary" id="readyBtn" onclick="playerReady()" data-i18n="lobby_ready">
           مستعد – ابدأ التحدي
         </button>
       </div>
@@ -1691,7 +1692,7 @@ body { background: var(--ink) !important; }
           <div class="sync-dot" id="syncDot1"></div>
           <span id="syncName1">-</span>
         </div>
-        <span style="color:rgba(255,255,255,0.3);font-size:12px">المزامنة</span>
+        <span style="color:rgba(255,255,255,0.3);font-size:12px" data-i18n="sync_label">المزامنة</span>
         <div class="sync-player">
           <span id="syncName2">-</span>
           <div class="sync-dot" id="syncDot2"></div>
@@ -1744,22 +1745,22 @@ body { background: var(--ink) !important; }
 
         <div class="phase-breakdown">
           <div class="breakdown-item">
-            <div class="breakdown-label">المرحلة 1 – الصور (25%)</div>
+            <div class="breakdown-label" data-i18n="bd1">المرحلة 1 – الصور (25%)</div>
             <div class="breakdown-bar"><div class="breakdown-fill" id="bd1"></div></div>
             <div class="breakdown-value" id="bv1">0%</div>
           </div>
           <div class="breakdown-item">
-            <div class="breakdown-label">المرحلة 2 – الأفكار (25%)</div>
+            <div class="breakdown-label" data-i18n="bd2">المرحلة 2 – الأفكار (25%)</div>
             <div class="breakdown-bar"><div class="breakdown-fill" id="bd2"></div></div>
             <div class="breakdown-value" id="bv2">0%</div>
           </div>
           <div class="breakdown-item">
-            <div class="breakdown-label">المرحلة 3 – الذهني (25%)</div>
+            <div class="breakdown-label" data-i18n="bd3">المرحلة 3 – الذهني (25%)</div>
             <div class="breakdown-bar"><div class="breakdown-fill" id="bd3"></div></div>
             <div class="breakdown-value" id="bv3">0%</div>
           </div>
           <div class="breakdown-item">
-            <div class="breakdown-label">المرحلة 4 – الروحي (25%)</div>
+            <div class="breakdown-label" data-i18n="bd4">المرحلة 4 – الروحي (25%)</div>
             <div class="breakdown-bar"><div class="breakdown-fill" id="bd4"></div></div>
             <div class="breakdown-value" id="bv4">0%</div>
           </div>
@@ -1773,7 +1774,7 @@ body { background: var(--ink) !important; }
           <button class="btn btn-primary" onclick="openShareCard()">
             <span style="display:inline-flex;align-items:center;gap:10px;justify-content:center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
-              بطاقة + PDF للمشاركة
+              <span data-i18n="res_share_card">بطاقة + PDF للمشاركة</span>
             </span>
           </button>
 
@@ -1783,8 +1784,8 @@ body { background: var(--ink) !important; }
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
               </span>
               <span class="action-text">
-                <strong>جولة جديدة</strong>
-                <small>مع نفس الصديق</small>
+                <strong data-i18n="res_new_round">جولة جديدة</strong>
+                <small data-i18n="res_new_round_sub">مع نفس الصديق</small>
               </span>
             </button>
             <button class="action-card" onclick="newChallenge()" type="button">
@@ -1792,8 +1793,8 @@ body { background: var(--ink) !important; }
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               </span>
               <span class="action-text">
-                <strong>تحدي جديد</strong>
-                <small>غادر الغرفة وابدأ من جديد</small>
+                <strong data-i18n="res_new_challenge">تحدي جديد</strong>
+                <small data-i18n="res_new_challenge_sub">غادر الغرفة وابدأ من جديد</small>
               </span>
             </button>
           </div>
@@ -1822,8 +1823,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// نفس بيانات اللعبة من السيرفر بالضبط
-const gameData = {
+// نفس بيانات اللعبة من السيرفر بالضبط — نسخة عربية + نسخة إنجليزية
+// ملاحظة: ترتيب الخيارات (index) متطابق بين اللغتين حتى يبقى حساب التطابق صحيحاً.
+const gameDataAr = {
   phase1: [
     { id: 1, options: ['🔥','💧','🌿','⚡','❄️','🌙'] },
     { id: 2, options: ['🦁','🐺','🦅','🐉','🦋','🐬'] },
@@ -1854,6 +1856,34 @@ const gameData = {
   ]
 };
 
+const gameDataEn = {
+  phase1: gameDataAr.phase1,
+  phase2: [
+    { id: 1, category: 'A feeling', options: ['Happiness','Nostalgia','Mystery','Excitement','Serenity','Wonder'] },
+    { id: 2, category: 'A place', options: ['Space','The forest','The ocean','A mountain peak','An ancient city','A deserted island'] },
+    { id: 3, category: 'A time', options: ['The distant past','The present','The future','Sunset moment','Midnight','Dawn'] },
+    { id: 4, category: 'An element', options: ['Fire','Water','Air','Earth','Light','Darkness'] },
+    { id: 5, category: 'A superpower', options: ['Mind reading','Time control','Invisibility','Flight','Telekinesis','Healing'] },
+  ],
+  phase3: [
+    { id: 1, category: 'Spirit animal', options: ['Wolf','Eagle','Lion','Snake','Dolphin','Phoenix'] },
+    { id: 2, category: 'Energy color', options: ['Cosmic blue','Purple','Gold','Emerald green','Fiery red','Radiant white'] },
+    { id: 3, category: 'Destiny number', options: ['3','7','9','11','13','21'] },
+    { id: 4, category: 'Geometric shape', options: ['Triangle','Circle','Square','Hexagon','Star','Spiral'] },
+    { id: 5, category: 'Mental path', options: ['Climbing the peak','Diving the depths','Crossing the bridge','Entering the maze','Flying above the clouds','Walking in the light'] },
+  ],
+  phase4: [
+    { id: 1, category: 'Strong harmony', options: ['Effortless comfort','Spontaneous laughter','Reassuring silence','Understanding by a glance','Harmony in the details','A feeling of being embraced'] },
+    { id: 2, category: 'A hidden signal', options: ['Thinking at the same moment','A message arrives when needed','A synced call','An unplanned meeting','The same reaction','The same feeling suddenly'] },
+    { id: 3, category: 'Strongest bond', options: ['Deep trust','Honest support','Mutual respect','Sharing dreams','Total honesty','Acceptance without judgment'] },
+    { id: 4, category: 'Feeling of the matched', options: ['A sense of intimacy','Inner peace','Comfortable energy','Closeness without tension','Unexplained warmth','Instant harmony'] },
+    { id: 5, category: 'Telepathy proof', options: ['You predict their words','You understand their silence','You feel their mood shift','You miss them at the same moment','You communicate easily','You sense them despite distance'] },
+  ]
+};
+
+// المرجع النشط (يتبدّل حسب اللغة عبر setLang). نفس المنطق تماماً.
+let gameData = gameDataAr;
+
 const CORRECT_PASSWORD = ''; // legacy – verification moved to hashed check in app-2026.js
 
 // State (var so app-2026.js can read/write via window.*)
@@ -1872,18 +1902,198 @@ var gameStarted = false;
 var myPlayerId = 'p_' + Math.random().toString(36).substr(2,9) + Date.now().toString(36);
 var playerPhotos = ['', ''];
 
-// Phase info - نفس المعلومات بالضبط
-const phaseInfo = {
+// Phase info - نسختان (عربي/إنجليزي)
+const phaseInfoAr = {
   1: { badge:'🌟 المرحلة 1', title:'تحدي الصور السريعة ✨', desc:'اختر الرمز الأقرب لذهنك – فكّر بسرعة!', weight:'25%' },
   2: { badge:'المرحلة 2', title:'تحدي الأفكار 💭', desc:'اختر أقرب فكرة تخطر في بالك', weight:'25%' },
   3: { badge:'المرحلة 3', title:'التحدي الذهني الكبير 🧠', desc:'تحديات مركبة – هنا الوزن الأكبر!', weight:'25%' },
   4: { badge:'المرحلة 4', title:'التخاطر العاطفي الحقيقي 💫', desc:'مرحلة الانسجام القوي – قياس التواصل الحقيقي بينكما!', weight:'25%' },
 };
+const phaseInfoEn = {
+  1: { badge:'🌟 Phase 1', title:'Quick Image Challenge ✨', desc:'Pick the symbol closest to your mind – think fast!', weight:'25%' },
+  2: { badge:'Phase 2', title:'Thoughts Challenge 💭', desc:'Pick the closest idea that comes to mind', weight:'25%' },
+  3: { badge:'Phase 3', title:'The Big Mind Challenge 🧠', desc:'Complex challenges – the biggest weight is here!', weight:'25%' },
+  4: { badge:'Phase 4', title:'Real Emotional Telepathy 💫', desc:'The deep-harmony phase – measuring your true connection!', weight:'25%' },
+};
+// المرجع النشط (يتبدّل حسب اللغة عبر setLang).
+let phaseInfo = phaseInfoAr;
+
+/* ===== i18n: طبقة الترجمة (عربي/إنجليزي) — لا تمسّ منطق اللعبة ===== */
+const I18N = {
+  ar: {
+    home_back: '← الرئيسية',
+    home_subtitle: 'قِس مدى توافق عقولكما — في 4 مراحل ذكية',
+    home_enter_code: 'أدخل الكود',
+    home_name_ph: 'اسمك',
+    home_photo: 'أضف صورتك (اختياري)',
+    home_start: 'ابدأ التحدي  ←',
+    home_last_result: 'عرض آخر نتيجة',
+    home_no_code: 'لا تملك كوداً؟ <a href="/" class="tp-link"><strong>احصل على واحد</strong></a>',
+    code_ph: 'TP-XXXXXXXX  أو  ABC123',
+    chip_empty: 'اكتب كودك للبدء',
+    chip_room: 'كود غرفة — للانضمام لصديقك',
+    chip_access: 'كود تحدي — لإنشاء غرفة جديدة',
+    chip_short: 'كود قصير — تحقق منه',
+    pw_title: 'كود التحدي',
+    pw_desc: 'أدخل الكود لإنشاء غرفة جديدة أو متابعة غرفة مفتوحة',
+    pw_ph: 'مثال: TP-AB12CD34',
+    pw_submit: '✓ تحقق وابدأ',
+    pw_cancel: '✕ إلغاء',
+    pw_nocode: 'لا تملك كوداً؟ <a href="/" style="color:#a855f7">احصل على كود من هنا</a>',
+    dc_text: 'اللاعب الآخر غادر اللعبة',
+    dc_back: 'العودة للرئيسية',
+    join_title: 'الانضمام لغرفة',
+    join_label: 'كود الغرفة',
+    join_ph: 'أدخل كود الغرفة',
+    join_btn: '🚀 انضمام',
+    back_btn: '← رجوع',
+    created_title: 'تم إنشاء الكود!',
+    created_share: 'شارك هذا الكود مع صديقك',
+    created_copy: '📋 نسخ الكود',
+    created_valid: 'الكود صالح لـ <span style="color:var(--neon-green); font-weight:700;">5 استخدامات</span>',
+    created_again: 'إنشاء كود آخر',
+    created_join_this: 'انضمام بهذا الكود',
+    lobby_title: 'غرفة التخاطر',
+    lobby_code_label: 'كود الغرفة – شاركه مع صديقك',
+    lobby_avail: 'متاح في كودك:',
+    lobby_sessions: 'جلسات',
+    lobby_deduct: 'سيُحسم 1 عند بدء التحدي فقط',
+    lobby_invite: 'ادعُ صديقك للانضمام',
+    lobby_copy_link: '📋 نسخ الرابط',
+    lobby_copy_code: '🔢 نسخ الكود',
+    lobby_scan: 'امسح الرمز بكاميرا صديقك للانضمام',
+    lobby_autocopy: 'سيُنسخ الرابط تلقائياً إذا لم تتوفّر المشاركة',
+    lobby_waiting: 'في انتظار اللاعب الثاني...',
+    lobby_connected: 'تم الاتصال — التحدي يبدأ خلال لحظات...',
+    lobby_ready: 'مستعد – ابدأ التحدي',
+    sync_label: 'المزامنة',
+    bd1: 'المرحلة 1 – الصور (25%)',
+    bd2: 'المرحلة 2 – الأفكار (25%)',
+    bd3: 'المرحلة 3 – الذهني (25%)',
+    bd4: 'المرحلة 4 – الروحي (25%)',
+    res_share_card: 'بطاقة + PDF للمشاركة',
+    res_new_round: 'جولة جديدة',
+    res_new_round_sub: 'مع نفس الصديق',
+    res_new_challenge: 'تحدي جديد',
+    res_new_challenge_sub: 'غادر الغرفة وابدأ من جديد',
+    cmp_phase1: 'المرحلة 1 – الصور السريعة',
+    cmp_phase2: 'المرحلة 2 – الأفكار',
+    cmp_phase3: 'المرحلة 3 – التحدي الذهني',
+    cmp_phase4: 'المرحلة 4 – التحدي الروحي',
+    card_p_images: 'الصور', card_p_thoughts: 'الأفكار', card_p_mind: 'الذهني', card_p_emotional: 'العاطفي',
+  },
+  en: {
+    home_back: '← Home',
+    home_subtitle: 'Measure how in-sync your minds are — across 4 smart phases',
+    home_enter_code: 'Enter your code',
+    home_name_ph: 'Your name',
+    home_photo: 'Add your photo (optional)',
+    home_start: 'Start the challenge  →',
+    home_last_result: 'View last result',
+    home_no_code: "Don't have a code? <a href=\"/\" class=\"tp-link\"><strong>Get one</strong></a>",
+    code_ph: 'TP-XXXXXXXX  or  ABC123',
+    chip_empty: 'Type your code to start',
+    chip_room: 'Room code — to join your friend',
+    chip_access: 'Challenge code — to create a new room',
+    chip_short: 'Code looks short — check it',
+    pw_title: 'Challenge code',
+    pw_desc: 'Enter the code to create a new room or continue an open one',
+    pw_ph: 'e.g. TP-AB12CD34',
+    pw_submit: '✓ Verify & start',
+    pw_cancel: '✕ Cancel',
+    pw_nocode: "Don't have a code? <a href=\"/\" style=\"color:#a855f7\">Get one here</a>",
+    dc_text: 'The other player left the game',
+    dc_back: 'Back to home',
+    join_title: 'Join a room',
+    join_label: 'Room code',
+    join_ph: 'Enter the room code',
+    join_btn: '🚀 Join',
+    back_btn: '← Back',
+    created_title: 'Code created!',
+    created_share: 'Share this code with your friend',
+    created_copy: '📋 Copy code',
+    created_valid: 'The code is valid for <span style="color:var(--neon-green); font-weight:700;">5 uses</span>',
+    created_again: 'Create another code',
+    created_join_this: 'Join with this code',
+    lobby_title: 'Telepathy Room',
+    lobby_code_label: 'Room code – share it with your friend',
+    lobby_avail: 'Available in your code:',
+    lobby_sessions: 'sessions',
+    lobby_deduct: '1 is deducted only when the challenge starts',
+    lobby_invite: 'Invite your friend to join',
+    lobby_copy_link: '📋 Copy link',
+    lobby_copy_code: '🔢 Copy code',
+    lobby_scan: "Scan the code with your friend's camera to join",
+    lobby_autocopy: 'The link is copied automatically if sharing is unavailable',
+    lobby_waiting: 'Waiting for the second player...',
+    lobby_connected: 'Connected — the challenge starts in a moment...',
+    lobby_ready: 'Ready – start the challenge',
+    sync_label: 'Sync',
+    bd1: 'Phase 1 – Images (25%)',
+    bd2: 'Phase 2 – Thoughts (25%)',
+    bd3: 'Phase 3 – Mind (25%)',
+    bd4: 'Phase 4 – Spiritual (25%)',
+    res_share_card: 'Card + PDF to share',
+    res_new_round: 'New round',
+    res_new_round_sub: 'With the same friend',
+    res_new_challenge: 'New challenge',
+    res_new_challenge_sub: 'Leave the room and start over',
+    cmp_phase1: 'Phase 1 – Quick images',
+    cmp_phase2: 'Phase 2 – Thoughts',
+    cmp_phase3: 'Phase 3 – Mind challenge',
+    cmp_phase4: 'Phase 4 – Spiritual challenge',
+    card_p_images: 'Images', card_p_thoughts: 'Thoughts', card_p_mind: 'Mind', card_p_emotional: 'Emotional',
+  }
+};
+
+let lang = 'ar';
+function t(k){ return (I18N[lang] && I18N[lang][k] != null) ? I18N[lang][k] : (I18N.ar[k] != null ? I18N.ar[k] : k); }
+function ratingText(pct){
+  if (pct <= 20) return lang === 'en' ? 'Weak 😶' : 'ضعيف 😶';
+  if (pct <= 45) return lang === 'en' ? 'Good 🙂' : 'جيد 🙂';
+  if (pct <= 70) return lang === 'en' ? 'Strong 🔥' : 'قوي 🔥';
+  return lang === 'en' ? 'Exceptional telepathy 🧠⚡' : 'تخاطر استثنائي 🧠⚡';
+}
+function applyI18n(){
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'en') ? 'ltr' : 'rtl';
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+  const tg = document.getElementById('langToggleBtn');
+  if (tg) tg.textContent = (lang === 'en') ? 'العربية' : 'English';
+}
+function setLang(l){
+  lang = (l === 'en') ? 'en' : 'ar';
+  try { localStorage.setItem('tp_lang', lang); } catch(_) {}
+  gameData = (lang === 'en') ? gameDataEn : gameDataAr;
+  phaseInfo = (lang === 'en') ? phaseInfoEn : phaseInfoAr;
+  applyI18n();
+  if (typeof updateCodeChip === 'function') updateCodeChip();
+  const gs = document.getElementById('gameSection');
+  if (gs && gs.classList.contains('active') && typeof updatePhaseHeader === 'function') { try { updatePhaseHeader(); } catch(_) {} }
+}
+function toggleLang(){ setLang(lang === 'en' ? 'ar' : 'en'); }
+window.setLang = setLang; window.toggleLang = toggleLang;
+(function initLang(){
+  let initial = 'ar';
+  try {
+    const p = new URLSearchParams(location.search);
+    const urlLang = (p.get('lang') || '').toLowerCase();
+    const stored = localStorage.getItem('tp_lang');
+    if (urlLang === 'en' || urlLang === 'ar') initial = urlLang;
+    else if (stored === 'en' || stored === 'ar') initial = stored;
+  } catch(_) {}
+  setLang(initial);
+})();
 
 // ===== الدوال المساعدة (نفسها بالضبط) =====
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // اللغة تُقفل بمجرد دخول غرفة (لوبي/لعبة/نتيجة) حتى لا يحدث عدم تطابق بين اللاعبين
+  const tg = document.getElementById('langToggleBtn');
+  if (tg) tg.style.display = (id === 'homeSection' || id === 'joinSection' || id === 'codeCreatedSection') ? '' : 'none';
 }
 
 function showToast(msg) {
@@ -1923,7 +2133,9 @@ function inviteLinkFor(code) {
   // Always invite to the EXACT room (?room=CODE) so the second player joins
   // player 1's existing room directly via joinRoom — never the access-code
   // flow that could spawn a new room/session and cause room overlap.
-  return `${location.origin}/play?room=${encodeURIComponent(code)}`;
+  // نمرّر اللغة (lang) حتى ينضم اللاعب الثاني بنفس لغة منشئ الغرفة فيبقى التطابق صحيحاً.
+  const l = (typeof lang !== 'undefined' && lang === 'en') ? 'en' : 'ar';
+  return `${location.origin}/play?room=${encodeURIComponent(code)}&lang=${l}`;
 }
 
 function accessRoomRef(accessCode) {
@@ -2388,11 +2600,7 @@ async function calculateAndShowResults() {
   const pct1=(m1/5)*100, pct2=(m2/5)*100, pct3=(m3/5)*100, pct4=(m4/5)*100;
   const totalPct = Math.round(pct1*0.25 + pct2*0.25 + pct3*0.25 + pct4*0.25);
 
-  let rating;
-  if(totalPct<=20) rating='ضعيف 😶';
-  else if(totalPct<=45) rating='جيد 🙂';
-  else if(totalPct<=70) rating='قوي 🔥';
-  else rating='تخاطر استثنائي 🧠⚡';
+  const rating = ratingText(totalPct);
 
   const results = {
     phase1: { match: m1, total: 5, pct: pct1 },
@@ -2712,10 +2920,10 @@ function buildComparison(results) {
   container.innerHTML = '';
 
   const phases = [
-    { key:'phase1', label:'المرحلة 1 – الصور السريعة' },
-    { key:'phase2', label:'المرحلة 2 – الأفكار' },
-    { key:'phase3', label:'المرحلة 3 – التحدي الذهني' },
-    { key:'phase4', label:'المرحلة 4 – التحدي الروحي' }
+    { key:'phase1', label:t('cmp_phase1') },
+    { key:'phase2', label:t('cmp_phase2') },
+    { key:'phase3', label:t('cmp_phase3') },
+    { key:'phase4', label:t('cmp_phase4') }
   ];
 
   phases.forEach(phase => {
@@ -2976,21 +3184,21 @@ function updateCodeChip(){
   const v = (f.value || '').trim().toUpperCase();
   chip.classList.remove('is-room','is-access','is-bad');
   if (!v) {
-    chip.innerHTML = '<span>⌨️</span><span>اكتب كودك للبدء</span>';
+    chip.innerHTML = '<span>⌨️</span><span>' + t('chip_empty') + '</span>';
     return;
   }
   if (/^[A-Z0-9]{6}$/.test(v)) {
     chip.classList.add('is-room');
-    chip.innerHTML = '<span class="dot"></span><span>كود غرفة — للانضمام لصديقك</span>';
+    chip.innerHTML = '<span class="dot"></span><span>' + t('chip_room') + '</span>';
     return;
   }
   if (/^TP[-_]?[A-Z0-9]{6,}$/i.test(v) || v.length >= 8) {
     chip.classList.add('is-access');
-    chip.innerHTML = '<span class="dot"></span><span>كود تحدي — لإنشاء غرفة جديدة</span>';
+    chip.innerHTML = '<span class="dot"></span><span>' + t('chip_access') + '</span>';
     return;
   }
   chip.classList.add('is-bad');
-  chip.innerHTML = '<span class="dot"></span><span>كود قصير — تحقق منه</span>';
+  chip.innerHTML = '<span class="dot"></span><span>' + t('chip_short') + '</span>';
 }
 document.getElementById('quickCode').addEventListener('input', updateCodeChip);
 updateCodeChip();
@@ -3070,7 +3278,7 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
 
 <!-- 2026 modernization layer: PWA, Audio, Voice, Gemini Nano, QR, Replay -->
 <script src="/js/codes.js?v=36" defer></script>
-<script src="/js/share-card.js?v=36" defer></script>
+<script src="/js/share-card.js?v=39" defer></script>
 <script src="/app-2026.js?v=36" defer></script>
 
 <!-- Share Card Modal -->
@@ -3129,10 +3337,11 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
   async function getResultData() {
     const result = gameResults || { totalPct: 0, rating: '-', phase1:{pct:0}, phase2:{pct:0}, phase3:{pct:0}, phase4:{pct:0} };
     const pct = Number(result.totalPct || document.getElementById('resultPctNum').textContent || 0);
-    const n1 = playerNames[0] || 'لاعب 1';
-    const n2 = playerNames[1] || 'لاعب 2';
+    const n1 = playerNames[0] || (lang === 'en' ? 'Player 1' : 'لاعب 1');
+    const n2 = playerNames[1] || (lang === 'en' ? 'Player 2' : 'لاعب 2');
     return {
       pct,
+      lang,
       name1: n1,
       name2: n2,
       photo1: playerPhotos[0] || null,
@@ -3141,10 +3350,10 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
       siteUrl: location.host,
       rating: result.rating || '-',
       phases: [
-        { label: 'الصور', pct: result.phase1 && result.phase1.pct || 0 },
-        { label: 'الأفكار', pct: result.phase2 && result.phase2.pct || 0 },
-        { label: 'الذهني', pct: result.phase3 && result.phase3.pct || 0 },
-        { label: 'العاطفي', pct: result.phase4 && result.phase4.pct || 0 },
+        { label: t('card_p_images'), pct: result.phase1 && result.phase1.pct || 0 },
+        { label: t('card_p_thoughts'), pct: result.phase2 && result.phase2.pct || 0 },
+        { label: t('card_p_mind'), pct: result.phase3 && result.phase3.pct || 0 },
+        { label: t('card_p_emotional'), pct: result.phase4 && result.phase4.pct || 0 },
       ],
       roomCode
     };
@@ -3165,7 +3374,7 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
   }
   function shareShareCard() {
     if (!__scCanvas) return;
-    TPCard.share(__scCanvas, { text: 'نتيجتنا في تحدي التخاطر! 🧠⚡ جرّبها: ' + location.origin });
+    TPCard.share(__scCanvas, { text: (lang === 'en' ? 'Our Telepathy Challenge result! 🧠⚡ Try it: ' : 'نتيجتنا في تحدي التخاطر! 🧠⚡ جرّبها: ') + location.origin });
     if (window.TPCodes && TPCodes.bumpShares) TPCodes.bumpShares();
   }
   async function ensureShareCardCanvas() {

@@ -212,85 +212,88 @@
 
   <nav>
     <div class="logo"><div class="logo-icon"><img src="/icon.svg?v=38" alt="Telepathy" width="38" height="38"></div><span>Telepathy</span></div>
-    <a href="#pricing" class="nav-link">الأسعار</a>
+    <div style="display:flex;gap:10px;align-items:center">
+      <a href="#pricing" class="nav-link" data-i18n="nav_pricing">الأسعار</a>
+      <button type="button" class="nav-link" id="langToggleBtn" onclick="toggleLang()">English</button>
+    </div>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
-      <div class="hero-badge" id="heroBadge">✨ الإصدار الجديد 2026</div>
-      <h1 id="heroTitle">هل تفكران بنفس الطريقة؟</h1>
-      <p id="heroTagline">تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.</p>
+      <div class="hero-badge" id="heroBadge" data-i18n="hero_badge">✨ الإصدار الجديد 2026</div>
+      <h1 id="heroTitle" data-i18n="hero_title">هل تفكران بنفس الطريقة؟</h1>
+      <p id="heroTagline" data-i18n="hero_tagline">تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.</p>
 
       <div class="hero-cta">
-        <a href="#pricing" class="btn btn-primary">🛒 احصل على كودك</a>
-        <a href="/play" class="btn btn-secondary btn-start" id="enterCodeBtn">لديّ كود — ابدأ التحدي</a>
+        <a href="#pricing" class="btn btn-primary" data-i18n="hero_cta_buy">🛒 احصل على كودك</a>
+        <a href="/play" class="btn btn-secondary btn-start" id="enterCodeBtn" data-i18n="hero_cta_start">لديّ كود — ابدأ التحدي</a>
       </div>
 
       <div class="hero-stats" id="heroStats">
-        <span>⚡ بدء فوري</span>
-        <span>📱 يعمل على الجوال</span>
-        <span>🎁 5 تحديات لكل كود</span>
+        <span data-i18n="stat1">⚡ بدء فوري</span>
+        <span data-i18n="stat2">📱 يعمل على الجوال</span>
+        <span data-i18n="stat3">🎁 5 تحديات لكل كود</span>
       </div>
     </div>
   </section>
 
   <!-- FEATURES -->
   <section class="section">
-    <h2 class="section-title">لماذا تحدي التخاطر؟</h2>
-    <p class="section-sub">تجربة مختلفة كلياً عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم</p>
+    <h2 class="section-title" data-i18n="feat_title">لماذا تحدي التخاطر؟</h2>
+    <p class="section-sub" data-i18n="feat_sub">تجربة مختلفة كلياً عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم</p>
     <div class="features">
-      <div class="feat"><div class="feat-icon">🧠</div><h3>٤ مراحل ذكية</h3><p>من الأشياء البسيطة إلى الذكريات والمشاعر العميقة</p></div>
-      <div class="feat"><div class="feat-icon">⚡</div><h3>نتيجة فورية</h3><p>اعرفا نسبة توافقكم بمعادلة تحليل لغوي ذكية</p></div>
-      <div class="feat"><div class="feat-icon">🎨</div><h3>بطاقة قابلة للمشاركة</h3><p>صورة جميلة احترافية جاهزة لـ Instagram وWhatsApp</p></div>
-      <div class="feat"><div class="feat-icon">🌐</div><h3>يعمل أونلاين</h3><p>كل واحد على جواله — تتزامن الإجابات تلقائياً</p></div>
+      <div class="feat"><div class="feat-icon">🧠</div><h3 data-i18n="feat1_h">٤ مراحل ذكية</h3><p data-i18n="feat1_p">من الأشياء البسيطة إلى الذكريات والمشاعر العميقة</p></div>
+      <div class="feat"><div class="feat-icon">⚡</div><h3 data-i18n="feat2_h">نتيجة فورية</h3><p data-i18n="feat2_p">اعرفا نسبة توافقكم بمعادلة تحليل لغوي ذكية</p></div>
+      <div class="feat"><div class="feat-icon">🎨</div><h3 data-i18n="feat3_h">بطاقة قابلة للمشاركة</h3><p data-i18n="feat3_p">صورة جميلة احترافية جاهزة لـ Instagram وWhatsApp</p></div>
+      <div class="feat"><div class="feat-icon">🌐</div><h3 data-i18n="feat4_h">يعمل أونلاين</h3><p data-i18n="feat4_p">كل واحد على جواله — تتزامن الإجابات تلقائياً</p></div>
     </div>
   </section>
 
   <!-- PRICING -->
   <section class="section" id="pricing">
-    <h2 class="section-title">اختر الباقة المناسبة</h2>
-    <p class="section-sub">دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.</p>
+    <h2 class="section-title" data-i18n="pricing_title">اختر الباقة المناسبة</h2>
+    <p class="section-sub" data-i18n="pricing_sub">دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.</p>
 
     <div class="pricing" id="pricingGrid">
-      <div class="empty-pricing" style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.4)">⏳ جاري تحميل الباقات...</div>
+      <div class="empty-pricing" style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.4)" data-i18n="pkg_loading">⏳ جاري تحميل الباقات...</div>
     </div>
   </section>
 
   <!-- HOW IT WORKS -->
   <section class="section">
-    <h2 class="section-title">كيف يعمل؟</h2>
+    <h2 class="section-title" data-i18n="how_title">كيف يعمل؟</h2>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><h3>اشترِ كودك</h3><p>اختر الباقة المناسبة وادفع آمناً. يصلك الكود فوراً على واتساب.</p></div>
-      <div class="step"><div class="step-num">2</div><h3>أدخلوا الكود</h3><p>اضغط "ابدأ التحدي"، أدخل الكود، شارك رمز الغرفة مع شريكك.</p></div>
-      <div class="step"><div class="step-num">3</div><h3>العبوا واستمتعوا</h3><p>٢٠ جولة من التخاطر، نتيجة فورية، وبطاقة جميلة لمشاركتها.</p></div>
+      <div class="step"><div class="step-num">1</div><h3 data-i18n="step1_h">اشترِ كودك</h3><p data-i18n="step1_p">اختر الباقة المناسبة وادفع آمناً. يصلك الكود فوراً على واتساب.</p></div>
+      <div class="step"><div class="step-num">2</div><h3 data-i18n="step2_h">أدخلوا الكود</h3><p data-i18n="step2_p">اضغط "ابدأ التحدي"، أدخل الكود، شارك رمز الغرفة مع شريكك.</p></div>
+      <div class="step"><div class="step-num">3</div><h3 data-i18n="step3_h">العبوا واستمتعوا</h3><p data-i18n="step3_p">٢٠ جولة من التخاطر، نتيجة فورية، وبطاقة جميلة لمشاركتها.</p></div>
     </div>
   </section>
 
   <!-- BUSINESS -->
   <section class="section">
     <div class="biz">
-      <h2>🏢 للأعمال — حوّل عملاءك إلى ذكريات</h2>
-      <p>هل تملك مطعماً، كافيه، أو فندقاً؟ قدّم لعملائك تجربة فريدة. كود على فاتورتهم = ذكرى لن ينسوها وصورة يشاركونها مع علامتك التجارية.</p>
-      <a id="bizContactBtn" href="https://wa.me/?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D9%85%D8%B9%D8%B1%D9%81%D8%A9%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D8%B9%D9%86%20%D8%A8%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84" target="_blank" rel="noopener" class="btn btn-primary">تواصل معنا الآن</a>
+      <h2 data-i18n="biz_h">🏢 للأعمال — حوّل عملاءك إلى ذكريات</h2>
+      <p data-i18n="biz_p">هل تملك مطعماً، كافيه، أو فندقاً؟ قدّم لعملائك تجربة فريدة. كود على فاتورتهم = ذكرى لن ينسوها وصورة يشاركونها مع علامتك التجارية.</p>
+      <a id="bizContactBtn" href="https://wa.me/?text=%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D9%85%D8%B9%D8%B1%D9%81%D8%A9%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D8%B9%D9%86%20%D8%A8%D8%A7%D9%82%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="biz_btn">تواصل معنا الآن</a>
     </div>
   </section>
 
   <!-- FAQ -->
   <section class="section">
-    <h2 class="section-title">أسئلة شائعة</h2>
+    <h2 class="section-title" data-i18n="faq_title">أسئلة شائعة</h2>
     <div class="faq">
-      <details><summary>هل يلزم تنزيل تطبيق؟</summary><p>لا. تعمل اللعبة من المتصفح مباشرة على الجوال والكمبيوتر، ويمكنك "تثبيتها" كتطبيق إذا أحببت.</p></details>
-      <details><summary>كم مدة كل جلسة؟</summary><p>حوالي 10-15 دقيقة. ٤ مراحل × ٥ جولات بمؤقت 15 ثانية للجولة.</p></details>
-      <details><summary>كم شخصاً يمكنه اللعب؟</summary><p>لاعبان فقط في كل غرفة — هذا يجعل التجربة عميقة وشخصية.</p></details>
-      <details><summary>هل يمكنني استخدام كودي على عدة أجهزة؟</summary><p>نعم! الكود يعطيك 5 جلسات منفصلة، يمكنك استخدامها متى شئت.</p></details>
-      <details><summary>كيف أحصل على باقة الشركات؟</summary><p>تواصل معنا عبر WhatsApp وسنرسل لك جميع الأكواد دفعة واحدة مع لوحة إدارة خاصة.</p></details>
+      <details><summary data-i18n="faq1_q">هل يلزم تنزيل تطبيق؟</summary><p data-i18n="faq1_a">لا. تعمل اللعبة من المتصفح مباشرة على الجوال والكمبيوتر، ويمكنك "تثبيتها" كتطبيق إذا أحببت.</p></details>
+      <details><summary data-i18n="faq2_q">كم مدة كل جلسة؟</summary><p data-i18n="faq2_a">حوالي 10-15 دقيقة. ٤ مراحل × ٥ جولات بمؤقت 15 ثانية للجولة.</p></details>
+      <details><summary data-i18n="faq3_q">كم شخصاً يمكنه اللعب؟</summary><p data-i18n="faq3_a">لاعبان فقط في كل غرفة — هذا يجعل التجربة عميقة وشخصية.</p></details>
+      <details><summary data-i18n="faq4_q">هل يمكنني استخدام كودي على عدة أجهزة؟</summary><p data-i18n="faq4_a">نعم! الكود يعطيك 5 جلسات منفصلة، يمكنك استخدامها متى شئت.</p></details>
+      <details><summary data-i18n="faq5_q">كيف أحصل على باقة الشركات؟</summary><p data-i18n="faq5_a">تواصل معنا عبر WhatsApp وسنرسل لك جميع الأكواد دفعة واحدة مع لوحة إدارة خاصة.</p></details>
     </div>
   </section>
 
   <footer>
-    <p>© 2026 Telepathy Challenge — جميع الحقوق محفوظة</p>
-    <p style="margin-top:8px"><a href="/admin">لوحة التحكم</a></p>
+    <p data-i18n="footer_rights">© 2026 Telepathy Challenge — جميع الحقوق محفوظة</p>
+    <p style="margin-top:8px"><a href="/admin" data-i18n="footer_admin">لوحة التحكم</a></p>
   </footer>
 </div>
 
@@ -298,11 +301,11 @@
 <div class="modal" id="codeModal">
   <div class="modal-box" style="position:relative">
     <button class="close-x" onclick="closeCodeModal()">✕</button>
-    <h3>🔑 أدخل كود التحدي</h3>
-    <p>أدخل الكود الذي حصلت عليه لبدء التحدي</p>
+    <h3 data-i18n="modal_code_h">🔑 أدخل كود التحدي</h3>
+    <p data-i18n="modal_code_p">أدخل الكود الذي حصلت عليه لبدء التحدي</p>
     <div class="code-strip">
-      <input id="codeInput" maxlength="20" placeholder="مثال: TP-AB12CD34" autocomplete="off" />
-      <button onclick="submitCode()">ابدأ</button>
+      <input id="codeInput" maxlength="20" placeholder="مثال: TP-AB12CD34" data-i18n-ph="code_ph" autocomplete="off" />
+      <button onclick="submitCode()" data-i18n="modal_code_btn">ابدأ</button>
     </div>
     <div class="code-msg" id="codeMsg"></div>
   </div>
@@ -312,18 +315,18 @@
 <div class="modal" id="buyModal">
   <div class="modal-box" style="position:relative">
     <button class="close-x" onclick="closeBuyModal()">✕</button>
-    <h3>🛒 شراء كود</h3>
-    <p id="buyDesc">املأ بياناتك وسيظهر طلبك فوراً في لوحة الإدارة. سنرسل لك الكود بعد تأكيد الدفع.</p>
+    <h3 data-i18n="buy_h">🛒 شراء كود</h3>
+    <p id="buyDesc" data-i18n="buy_desc">املأ بياناتك وسيظهر طلبك فوراً في لوحة الإدارة. سنرسل لك الكود بعد تأكيد الدفع.</p>
     <div style="display:grid;gap:10px;text-align:right;margin:16px 0">
-      <input id="buyerName" type="text" placeholder="الاسم" autocomplete="name" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
-      <input id="buyerPhone" type="tel" placeholder="رقم واتساب — مثال 2010xxxxxxx" autocomplete="tel" inputmode="tel" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
-      <input id="buyerEmail" type="email" placeholder="البريد الإلكتروني (اختياري)" autocomplete="email" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
-      <textarea id="buyerNotes" rows="3" placeholder="ملاحظات للطلب (اختياري)" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit;resize:vertical"></textarea>
+      <input id="buyerName" type="text" placeholder="الاسم" data-i18n-ph="buyer_name" autocomplete="name" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
+      <input id="buyerPhone" type="tel" placeholder="رقم واتساب — مثال 2010xxxxxxx" data-i18n-ph="buyer_phone" autocomplete="tel" inputmode="tel" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
+      <input id="buyerEmail" type="email" placeholder="البريد الإلكتروني (اختياري)" data-i18n-ph="buyer_email" autocomplete="email" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit" />
+      <textarea id="buyerNotes" rows="3" placeholder="ملاحظات للطلب (اختياري)" data-i18n-ph="buyer_notes" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit;resize:vertical"></textarea>
     </div>
-    <button id="placeOrderBtn" onclick="placeOrder()" class="btn btn-primary" style="width:100%;justify-content:center">تسجيل الطلب الآن</button>
-    <a id="waLink" href="#" target="_blank" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:10px;display:none">📱 متابعة عبر WhatsApp</a>
+    <button id="placeOrderBtn" onclick="placeOrder()" class="btn btn-primary" style="width:100%;justify-content:center" data-i18n="order_btn">تسجيل الطلب الآن</button>
+    <a id="waLink" href="#" target="_blank" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:10px;display:none" data-i18n="wa_follow">📱 متابعة عبر WhatsApp</a>
     <div class="code-msg" id="orderMsg" style="margin-top:12px"></div>
-    <p style="margin-top:18px;font-size:.85rem;color:rgba(255,255,255,.5)">الطلبات تظهر مباشرة في لوحة التحكم لتسليم كود غير مباع مسبقاً.</p>
+    <p style="margin-top:18px;font-size:.85rem;color:rgba(255,255,255,.5)" data-i18n="buy_foot">الطلبات تظهر مباشرة في لوحة التحكم لتسليم كود غير مباع مسبقاً.</p>
   </div>
 </div>
 
@@ -333,10 +336,143 @@
 <script>
   TPCodes.init();
 
-  // Auto-detect ?code= or ?room= and forward to /play
+  /* ===== i18n: صفحة الهبوط (عربي/إنجليزي) ===== */
+  const I18N = {
+    ar: {
+      nav_pricing: 'الأسعار',
+      hero_badge: '✨ الإصدار الجديد 2026',
+      hero_title: 'هل تفكران بنفس الطريقة؟',
+      hero_tagline: 'تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء. ٤ مراحل، ٢٠ جولة، نتيجة دقيقة عن مدى توافق عقولكما. اللعب أونلاين، النتيجة بطاقة جميلة جاهزة للمشاركة.',
+      hero_cta_buy: '🛒 احصل على كودك',
+      hero_cta_start: 'لديّ كود — ابدأ التحدي',
+      stat1: '⚡ بدء فوري', stat2: '📱 يعمل على الجوال', stat3: '🎁 5 تحديات لكل كود',
+      feat_title: 'لماذا تحدي التخاطر؟',
+      feat_sub: 'تجربة مختلفة كلياً عن الألعاب التقليدية — تكشف جانباً جديداً من علاقتكم',
+      feat1_h: '٤ مراحل ذكية', feat1_p: 'من الأشياء البسيطة إلى الذكريات والمشاعر العميقة',
+      feat2_h: 'نتيجة فورية', feat2_p: 'اعرفا نسبة توافقكم بمعادلة تحليل لغوي ذكية',
+      feat3_h: 'بطاقة قابلة للمشاركة', feat3_p: 'صورة جميلة احترافية جاهزة لـ Instagram وWhatsApp',
+      feat4_h: 'يعمل أونلاين', feat4_p: 'كل واحد على جواله — تتزامن الإجابات تلقائياً',
+      pricing_title: 'اختر الباقة المناسبة',
+      pricing_sub: 'دفعة واحدة. بدون اشتراكات. الكود يصلك فوراً.',
+      pkg_loading: '⏳ جاري تحميل الباقات...',
+      pkg_empty: 'لا توجد باقات معروضة حالياً.',
+      order_default: 'اطلب الآن',
+      how_title: 'كيف يعمل؟',
+      step1_h: 'اشترِ كودك', step1_p: 'اختر الباقة المناسبة وادفع آمناً. يصلك الكود فوراً على واتساب.',
+      step2_h: 'أدخلوا الكود', step2_p: 'اضغط "ابدأ التحدي"، أدخل الكود، شارك رمز الغرفة مع شريكك.',
+      step3_h: 'العبوا واستمتعوا', step3_p: '٢٠ جولة من التخاطر، نتيجة فورية، وبطاقة جميلة لمشاركتها.',
+      biz_h: '🏢 للأعمال — حوّل عملاءك إلى ذكريات',
+      biz_p: 'هل تملك مطعماً، كافيه، أو فندقاً؟ قدّم لعملائك تجربة فريدة. كود على فاتورتهم = ذكرى لن ينسوها وصورة يشاركونها مع علامتك التجارية.',
+      biz_btn: 'تواصل معنا الآن',
+      faq_title: 'أسئلة شائعة',
+      faq1_q: 'هل يلزم تنزيل تطبيق؟', faq1_a: 'لا. تعمل اللعبة من المتصفح مباشرة على الجوال والكمبيوتر، ويمكنك "تثبيتها" كتطبيق إذا أحببت.',
+      faq2_q: 'كم مدة كل جلسة؟', faq2_a: 'حوالي 10-15 دقيقة. ٤ مراحل × ٥ جولات بمؤقت 15 ثانية للجولة.',
+      faq3_q: 'كم شخصاً يمكنه اللعب؟', faq3_a: 'لاعبان فقط في كل غرفة — هذا يجعل التجربة عميقة وشخصية.',
+      faq4_q: 'هل يمكنني استخدام كودي على عدة أجهزة؟', faq4_a: 'نعم! الكود يعطيك 5 جلسات منفصلة، يمكنك استخدامها متى شئت.',
+      faq5_q: 'كيف أحصل على باقة الشركات؟', faq5_a: 'تواصل معنا عبر WhatsApp وسنرسل لك جميع الأكواد دفعة واحدة مع لوحة إدارة خاصة.',
+      footer_rights: '© 2026 Telepathy Challenge — جميع الحقوق محفوظة',
+      footer_admin: 'لوحة التحكم',
+      modal_code_h: '🔑 أدخل كود التحدي', modal_code_p: 'أدخل الكود الذي حصلت عليه لبدء التحدي', modal_code_btn: 'ابدأ',
+      code_ph: 'مثال: TP-AB12CD34',
+      buy_h: '🛒 شراء كود',
+      buy_desc: 'املأ بياناتك وسيظهر طلبك فوراً في لوحة الإدارة. سنرسل لك الكود بعد تأكيد الدفع.',
+      buyer_name: 'الاسم', buyer_phone: 'رقم واتساب — مثال 2010xxxxxxx', buyer_email: 'البريد الإلكتروني (اختياري)', buyer_notes: 'ملاحظات للطلب (اختياري)',
+      order_btn: 'تسجيل الطلب الآن', wa_follow: '📱 متابعة عبر WhatsApp',
+      buy_foot: 'الطلبات تظهر مباشرة في لوحة التحكم لتسليم كود غير مباع مسبقاً.',
+      m_choose_pkg: 'اختر باقة أولاً', m_need_info: 'أدخل الاسم ورقم واتساب حتى نرسل لك الكود',
+      m_saving: 'جاري تسجيل الطلب...', m_wait: '⏳ لحظة واحدة...',
+      m_order_fail: '✕ تعذّر تسجيل الطلب. جرّب مرة أخرى أو تواصل عبر واتساب.',
+      m_enter_code: 'أدخل الكود أولاً', m_checking: '⏳ جاري التحقق...',
+      m_invalid: 'الكود غير صالح', m_conn_err: '✕ خطأ في الاتصال. حاول مرة أخرى.',
+    },
+    en: {
+      nav_pricing: 'Pricing',
+      hero_badge: '✨ New 2026 edition',
+      hero_title: 'Do you think alike?',
+      hero_tagline: 'The Telepathy Challenge — a smart game for couples and friends. 4 phases, 20 rounds, an accurate score of how in-sync your minds are. Play online and get a beautiful, shareable result card.',
+      hero_cta_buy: '🛒 Get your code',
+      hero_cta_start: 'I have a code — start',
+      stat1: '⚡ Instant start', stat2: '📱 Works on mobile', stat3: '🎁 5 challenges per code',
+      feat_title: 'Why the Telepathy Challenge?',
+      feat_sub: 'A totally different experience from traditional games — it reveals a new side of your relationship',
+      feat1_h: '4 smart phases', feat1_p: 'From simple things to memories and deep emotions',
+      feat2_h: 'Instant result', feat2_p: 'See your match rate with a smart linguistic-analysis formula',
+      feat3_h: 'Shareable card', feat3_p: 'A beautiful, professional image ready for Instagram and WhatsApp',
+      feat4_h: 'Works online', feat4_p: 'Each on their own phone — answers sync automatically',
+      pricing_title: 'Choose the right package',
+      pricing_sub: 'One payment. No subscriptions. Your code arrives instantly.',
+      pkg_loading: '⏳ Loading packages...',
+      pkg_empty: 'No packages available right now.',
+      order_default: 'Order now',
+      how_title: 'How it works?',
+      step1_h: 'Buy your code', step1_p: 'Pick the right package and pay securely. Your code arrives instantly on WhatsApp.',
+      step2_h: 'Enter the code', step2_p: 'Tap "Start", enter the code, and share the room code with your partner.',
+      step3_h: 'Play & enjoy', step3_p: '20 rounds of telepathy, an instant result, and a beautiful card to share.',
+      biz_h: '🏢 For business — turn customers into memories',
+      biz_p: 'Own a restaurant, café, or hotel? Give your customers a unique experience. A code on their bill = an unforgettable memory and an image they share with your brand.',
+      biz_btn: 'Contact us now',
+      faq_title: 'FAQ',
+      faq1_q: 'Do I need to install an app?', faq1_a: 'No. The game runs right in the browser on mobile and desktop, and you can "install" it as an app if you like.',
+      faq2_q: 'How long is each session?', faq2_a: 'About 10–15 minutes. 4 phases × 5 rounds with a 15-second timer per round.',
+      faq3_q: 'How many people can play?', faq3_a: 'Two players per room only — this keeps the experience deep and personal.',
+      faq4_q: 'Can I use my code on multiple devices?', faq4_a: 'Yes! The code gives you 5 separate sessions you can use whenever you like.',
+      faq5_q: 'How do I get a business package?', faq5_a: 'Contact us on WhatsApp and we will send you all the codes at once with a dedicated admin dashboard.',
+      footer_rights: '© 2026 Telepathy Challenge — All rights reserved',
+      footer_admin: 'Dashboard',
+      modal_code_h: '🔑 Enter your code', modal_code_p: 'Enter the code you received to start the challenge', modal_code_btn: 'Start',
+      code_ph: 'e.g. TP-AB12CD34',
+      buy_h: '🛒 Buy a code',
+      buy_desc: "Fill in your details and your order appears instantly in the dashboard. We'll send your code after payment is confirmed.",
+      buyer_name: 'Name', buyer_phone: 'WhatsApp number — e.g. 2010xxxxxxx', buyer_email: 'Email (optional)', buyer_notes: 'Order notes (optional)',
+      order_btn: 'Place order now', wa_follow: '📱 Continue on WhatsApp',
+      buy_foot: 'Orders appear directly in the dashboard for delivery of an unsold code.',
+      m_choose_pkg: 'Choose a package first', m_need_info: 'Enter your name and WhatsApp number so we can send your code',
+      m_saving: 'Placing your order...', m_wait: '⏳ One moment...',
+      m_order_fail: '✕ Could not place the order. Try again or reach us on WhatsApp.',
+      m_enter_code: 'Enter your code first', m_checking: '⏳ Verifying...',
+      m_invalid: 'The code is invalid', m_conn_err: '✕ Connection error. Please try again.',
+    }
+  };
+  let lang = 'ar';
+  let LANDING_SETTINGS = null;
+  function t(k){ return (I18N[lang] && I18N[lang][k] != null) ? I18N[lang][k] : (I18N.ar[k] != null ? I18N.ar[k] : k); }
+  function applyI18n(){
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === 'en') ? 'ltr' : 'rtl';
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+    const tg = document.getElementById('langToggleBtn');
+    if (tg) tg.textContent = (lang === 'en') ? 'العربية' : 'English';
+    const enterBtn = document.getElementById('enterCodeBtn');
+    if (enterBtn) enterBtn.href = '/play?lang=' + lang;
+    // في العربية فقط: طبّق نصوص الـ hero القادمة من الإعدادات (لوحة التحكم)
+    if (lang === 'ar' && LANDING_SETTINGS) applyLandingSettings(LANDING_SETTINGS);
+  }
+  function setLang(l){
+    lang = (l === 'en') ? 'en' : 'ar';
+    try { localStorage.setItem('tp_lang', lang); } catch(_) {}
+    applyI18n();
+  }
+  function toggleLang(){ setLang(lang === 'en' ? 'ar' : 'en'); }
+  window.setLang = setLang; window.toggleLang = toggleLang;
+  (function initLang(){
+    let initial = 'ar';
+    try {
+      const p = new URLSearchParams(location.search);
+      const urlLang = (p.get('lang') || '').toLowerCase();
+      const stored = localStorage.getItem('tp_lang');
+      if (urlLang === 'en' || urlLang === 'ar') initial = urlLang;
+      else if (stored === 'en' || stored === 'ar') initial = stored;
+    } catch(_) {}
+    setLang(initial);
+  })();
+
+  // Auto-detect ?code= or ?room= and forward to /play (preserve language)
   const params = new URLSearchParams(location.search);
-  if (params.get('room')) location.replace('/play?room=' + encodeURIComponent(params.get('room')));
-  if (params.get('code')) location.replace('/play?code=' + encodeURIComponent(params.get('code')));
+  const langQS = '&lang=' + lang;
+  if (params.get('room')) location.replace('/play?room=' + encodeURIComponent(params.get('room')) + langQS);
+  if (params.get('code')) location.replace('/play?code=' + encodeURIComponent(params.get('code')) + langQS);
 
   function openCodeModal() { document.getElementById('codeModal').classList.add('open'); document.getElementById('codeInput').focus(); }
   function closeCodeModal() { document.getElementById('codeModal').classList.remove('open'); }
@@ -362,7 +498,7 @@
     if (!grid) return;
     const visible = PACKAGES.filter(p => p.visible !== false);
     if (!visible.length) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5)">لا توجد باقات معروضة حالياً.</div>';
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5)">' + t('pkg_empty') + '</div>';
       return;
     }
     grid.innerHTML = visible.map(p => {
@@ -383,7 +519,7 @@
           <div class="pkg-metric"><span>جلسات/كود</span><b>${Number(p.sessionsPerCode)||5}</b></div>
         </div>
         <ul class="price-features">${features}</ul>
-        <button class="btn ${btnClass}" data-buy="${escapeHtml(p.id)}">${escapeHtml(p.buttonText || 'اطلب الآن')}</button>
+        <button class="btn ${btnClass}" data-buy="${escapeHtml(p.id)}">${escapeHtml(p.buttonText || t('order_default'))}</button>
       </div>`;
     }).join('');
 
@@ -409,20 +545,20 @@
   async function placeOrder() {
     const msg = document.getElementById('orderMsg');
     const btn = document.getElementById('placeOrderBtn');
-    if (!CURRENT_PACKAGE) { msg.className = 'code-msg err'; msg.textContent = 'اختر باقة أولاً'; return; }
+    if (!CURRENT_PACKAGE) { msg.className = 'code-msg err'; msg.textContent = t('m_choose_pkg'); return; }
     const buyerName = document.getElementById('buyerName').value.trim();
     const buyerPhone = document.getElementById('buyerPhone').value.trim();
     const buyerEmail = document.getElementById('buyerEmail').value.trim();
     const notes = document.getElementById('buyerNotes').value.trim();
     if (!buyerName || !buyerPhone) {
       msg.className = 'code-msg err';
-      msg.textContent = 'أدخل الاسم ورقم واتساب حتى نرسل لك الكود';
+      msg.textContent = t('m_need_info');
       return;
     }
     btn.disabled = true;
-    btn.textContent = 'جاري تسجيل الطلب...';
+    btn.textContent = t('m_saving');
     msg.className = 'code-msg';
-    msg.textContent = '⏳ لحظة واحدة...';
+    msg.textContent = t('m_wait');
     try {
       const pkg = CURRENT_PACKAGE;
       const order = await TPCodes.createOrder({
@@ -448,10 +584,10 @@
       window.open(wa, '_blank');
     } catch (e) {
       msg.className = 'code-msg err';
-      msg.textContent = '✕ تعذّر تسجيل الطلب. جرّب مرة أخرى أو تواصل عبر واتساب.';
+      msg.textContent = t('m_order_fail');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'تسجيل الطلب الآن';
+      btn.textContent = t('order_btn');
     }
   }
 
@@ -481,7 +617,9 @@
       ]);
       SETTINGS = settings || { ...TPCodes.DEFAULT_SETTINGS };
       PACKAGES = (packages && packages.length) ? packages : TPCodes.DEFAULT_PACKAGES.slice();
-      applyLandingSettings(SETTINGS);
+      LANDING_SETTINGS = SETTINGS;
+      // نصوص الـ hero من لوحة التحكم بالعربية؛ نطبّقها في الوضع العربي فقط حتى لا تُلغي الترجمة الإنجليزية
+      if (lang === 'ar') applyLandingSettings(SETTINGS);
       renderPackages();
     } catch (e) {
       console.warn('Falling back to defaults:', e);
@@ -495,16 +633,19 @@
   async function submitCode() {
     const msg = document.getElementById('codeMsg');
     const code = TPCodes.normalize(document.getElementById('codeInput').value);
-    if (!code) { msg.className = 'code-msg err'; msg.textContent = 'أدخل الكود أولاً'; return; }
-    msg.className = 'code-msg'; msg.textContent = '⏳ جاري التحقق...';
+    if (!code) { msg.className = 'code-msg err'; msg.textContent = t('m_enter_code'); return; }
+    msg.className = 'code-msg'; msg.textContent = t('m_checking');
     try {
       const res = await TPCodes.validate(code);
-      if (!res.ok) { msg.className = 'code-msg err'; msg.textContent = '✕ ' + (res.message || 'الكود غير صالح'); return; }
-      msg.className = 'code-msg ok'; msg.textContent = `✓ كود صالح — متبقي ${res.remaining} جلسة. جاري التحويل...`;
+      if (!res.ok) { msg.className = 'code-msg err'; msg.textContent = '✕ ' + (res.message || t('m_invalid')); return; }
+      msg.className = 'code-msg ok';
+      msg.textContent = (lang === 'en')
+        ? `✓ Valid code — ${res.remaining} session(s) left. Redirecting...`
+        : `✓ كود صالح — متبقي ${res.remaining} جلسة. جاري التحويل...`;
       sessionStorage.setItem('tp_access_code', code);
-      setTimeout(() => location.href = '/play?code=' + encodeURIComponent(code), 700);
+      setTimeout(() => location.href = '/play?code=' + encodeURIComponent(code) + '&lang=' + lang, 700);
     } catch (e) {
-      msg.className = 'code-msg err'; msg.textContent = '✕ خطأ في الاتصال. حاول مرة أخرى.';
+      msg.className = 'code-msg err'; msg.textContent = t('m_conn_err');
     }
   }
 
