@@ -238,7 +238,7 @@
       <button class="tab" data-tab="list">📋 قائمة الأكواد</button>
       <button class="tab admin-only hidden" data-tab="resellers">🤝 الوكلاء</button>
       <button class="tab admin-only hidden" data-tab="pricing">💵 تسعير الأكواد</button>
-      <button class="tab admin-only hidden" data-tab="packages">📦 باقات الرئيسية</button>
+      <button class="tab admin-only hidden" data-tab="packages">⚙️ الإعدادات والباقات</button>
       <button class="tab reseller-only hidden" data-tab="wallet">💼 محفظتي</button>
     </div>
 
@@ -292,6 +292,7 @@
               <option value="fulfilled">تم التسليم</option>
               <option value="cancelled">ملغاة</option>
             </select>
+            <input type="text" id="orderSearch" placeholder="🔎 اسم / هاتف / رقم الطلب..." oninput="renderOrders()" style="width:auto" />
             <button class="btn btn-ghost btn-sm" onclick="loadOrders()">🔄 تحديث</button>
           </div>
         </div>
@@ -534,7 +535,7 @@
     <div id="tab-list" class="hidden">
       <div class="panel">
         <div class="panel-h">
-          <h2>الأكواد <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400">(آخر 500)</span></h2>
+          <h2>الأكواد <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400">(<span id="listTotalCount">0</span>)</span></h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <select id="fStatus" onchange="syncStatusChips();renderList()" style="display:none">
               <option value="">كل الحالات</option>
@@ -555,7 +556,9 @@
               <option value="lowremaining">الأقل متبقي</option>
               <option value="expiry">قرب الانتهاء</option>
             </select>
-            <input type="text" id="fSearch" placeholder="🔎 كود أو وسم..." oninput="renderList()" style="width:auto" />
+            <input type="text" id="fSearch" placeholder="🔎 كود / وسم / اسم / هاتف..." oninput="renderList()" style="width:auto" />
+            <input type="date" id="fFrom" onchange="renderList()" title="من تاريخ" style="width:auto" />
+            <input type="date" id="fTo" onchange="renderList()" title="إلى تاريخ" style="width:auto" />
             <span class="filter-chip" id="chipRemaining" onclick="toggleChip('chipRemaining')">⚡ مع رصيد متبقي</span>
             <span class="filter-chip" id="chipUnsold" onclick="toggleSoldChip('unsold')">متاح للبيع</span>
             <span class="filter-chip" id="chipSold" onclick="toggleSoldChip('sold')">تم بيعه</span>
@@ -603,6 +606,9 @@
   let myReseller = null;    // when role === 'reseller'
   let pricingCache = null;
   let soldFilter = '';
+  let listRenderLimit = 100;   // how many codes to paint (UI perf); summaries use full set
+  let listFilterSig = '';      // detects filter changes to reset the render limit
+  const LIST_PAGE = 100;
 
   function toast(msg, isErr) {
     const el = document.createElement('div');
@@ -1002,6 +1008,7 @@
   async function loadList() {
     const out = document.getElementById('listOut');
     if (!out) return;
+    restoreListFilters();
     out.innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
     try {
       allCodes = role === 'reseller'
@@ -1013,6 +1020,29 @@
     }
   }
 
+  function loadMoreList() { listRenderLimit += LIST_PAGE; renderList(); }
+
+  function saveListFilters() {
+    try {
+      const f = {
+        type: (document.getElementById('fType')||{}).value || '',
+        sort: (document.getElementById('fSort')||{}).value || 'newest',
+        q:    (document.getElementById('fSearch')||{}).value || '',
+        from: (document.getElementById('fFrom')||{}).value || '',
+        to:   (document.getElementById('fTo')||{}).value || '',
+      };
+      localStorage.setItem('tp_admin_list_filters', JSON.stringify(f));
+    } catch(_) {}
+  }
+  function restoreListFilters() {
+    try {
+      const f = JSON.parse(localStorage.getItem('tp_admin_list_filters') || '{}');
+      if (!f || typeof f !== 'object') return;
+      const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+      set('fType', f.type); set('fSort', f.sort); set('fSearch', f.q); set('fFrom', f.from); set('fTo', f.to);
+    } catch(_) {}
+  }
+
   function renderList() {
     const status = document.getElementById('fStatus').value;
     const type = (document.getElementById('fType')||{}).value || '';
@@ -1021,15 +1051,31 @@
     const q = document.getElementById('fSearch').value.toLowerCase().trim();
     const soldMode = soldFilter;
 
-    // Counts for status chips (respect type/search/remaining, ignore current status pick)
+    // Date range (optional)
+    const fromV = (document.getElementById('fFrom')||{}).value || '';
+    const toV   = (document.getElementById('fTo')||{}).value || '';
+    const fromTs = fromV ? new Date(fromV + 'T00:00:00').getTime() : 0;
+    const toTs   = toV ? new Date(toV + 'T23:59:59').getTime() : Infinity;
+
+    saveListFilters();
+
+    // Reset paint limit only when the filter set actually changes (not on "load more")
+    const sig = [status, type, sort, onlyRem, q, soldMode, fromV, toV].join('|');
+    if (sig !== listFilterSig) { listFilterSig = sig; listRenderLimit = LIST_PAGE; }
+
+    // Counts for status chips (respect type/search/remaining/date, ignore current status pick)
     const baseArr = allCodes.filter(c => {
       if (type && (c.type||'individual') !== type) return false;
       if (onlyRem && Math.max(0,(c.maxSessions||0)-(c.usedSessions||0)) <= 0) return false;
       if (soldMode === 'sold' && !c.sold) return false;
       if (soldMode === 'unsold' && c.sold) return false;
-      if (q && !((c.code + ' ' + (c.label||'')).toLowerCase().includes(q))) return false;
+      const created = c.createdAt || 0;
+      if (created < fromTs || created > toTs) return false;
+      if (q && !((c.code + ' ' + (c.label||'') + ' ' + (c.soldToName||'') + ' ' + (c.soldToPhone||'')).toLowerCase().includes(q))) return false;
       return true;
     });
+    const totalEl = document.getElementById('listTotalCount');
+    if (totalEl) totalEl.textContent = allCodes.length;
     renderStatusChips(baseArr, status);
 
     let arr = baseArr.slice();
@@ -1058,7 +1104,7 @@
     }, {total:0, remaining:0, used:0, sold:0});
     const sumEl = document.getElementById('listSummary');
     if (sumEl) sumEl.innerHTML = ''
-      + `<div class="sum"><span>المعروض</span><b>${sums.total}</b></div>`
+      + `<div class="sum"><span>المطابق</span><b>${sums.total}</b></div>`
       + `<div class="sum good"><span>نشط</span><b>${sums.active||0}</b></div>`
       + `<div class="sum"><span>مستهلك</span><b>${sums.used||0}</b></div>`
       + `<div class="sum warn"><span>تم بيعه</span><b>${sums.sold||0}</b></div>`
@@ -1072,16 +1118,21 @@
     }
 
     const mode = (window.__listView || 'cards');
+    const shown = arr.slice(0, listRenderLimit);
+    const hasMore = arr.length > shown.length;
+    const moreHtml = hasMore
+      ? `<div style="text-align:center;margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="loadMoreList()">⬇️ عرض المزيد (${shown.length}/${arr.length})</button></div>`
+      : '';
     let html = '';
     if (mode === 'cards') {
-      html = renderCodeCards(arr, true);
+      html = renderCodeCards(shown, true);
     } else {
       html = `<table class="tbl">
         <thead><tr>
           <th><input type="checkbox" id="thAll" onclick="bulkToggleAll(this.checked)"></th>
           <th>الكود</th><th>النوع</th><th>الحالة</th><th>الاستخدام</th><th>المتبقي</th><th>الصلاحية</th><th>الوسم</th><th>تاريخ</th><th></th>
         </tr></thead><tbody>`;
-      arr.forEach(c => {
+      shown.forEach(c => {
         const remaining = remOf(c);
         const checked = bulkSel.has(c.code) ? 'checked' : '';
         html += `<tr>
@@ -1111,7 +1162,7 @@
       });
       html += '</tbody></table>';
     }
-    document.getElementById('listOut').innerHTML = html;
+    document.getElementById('listOut').innerHTML = html + moreHtml;
     updateBulkBar();
   }
   function labelStatus(s){return {active:'نشط',used:'مستهلك',disabled:'معطّل',expired:'منتهي'}[s]||s;}
@@ -1271,17 +1322,24 @@
     const out = document.getElementById('ordersOut');
     const count = document.getElementById('ordersCount');
     const summary = document.getElementById('ordersSummary');
-    if (count) count.textContent = '(' + allOrders.length + ')';
     const sums = allOrders.reduce((a,o)=>{ a[o.status || 'pending'] = (a[o.status || 'pending'] || 0) + 1; return a; }, {});
     if (summary) summary.innerHTML = ''
       + `<div class="sum warn"><span>تنتظر</span><b>${sums.pending||0}</b></div>`
       + `<div class="sum good"><span>تم التسليم</span><b>${sums.fulfilled||0}</b></div>`
       + `<div class="sum bad"><span>ملغاة</span><b>${sums.cancelled||0}</b></div>`;
-    if (!allOrders.length) {
+    // Client-side search across name / phone / order id / package
+    const q = ((document.getElementById('orderSearch') || {}).value || '').toLowerCase().trim();
+    const view = q
+      ? allOrders.filter(o => (
+          (o.id || '') + ' ' + (o.buyerName || '') + ' ' + (o.buyerPhone || '') + ' ' + (o.packageName || '')
+        ).toLowerCase().includes(q))
+      : allOrders;
+    if (count) count.textContent = q ? `(${view.length}/${allOrders.length})` : `(${allOrders.length})`;
+    if (!view.length) {
       out.innerHTML = '<div class="empty">لا توجد طلبات مطابقة</div>';
       return;
     }
-    out.innerHTML = '<div class="cards-grid">' + allOrders.map(order => {
+    out.innerHTML = '<div class="cards-grid">' + view.map(order => {
       const codes = Array.isArray(order.codes) ? order.codes : (order.code ? [order.code] : []);
       const codesHtml = codes.length ? `<div class="link-line" style="direction:ltr;text-align:left">${codes.map(escapeHtml).join(' • ')}</div>` : '<div class="link-line">لم يتم تسليم كود بعد</div>';
       const pending = (order.status || 'pending') === 'pending';
