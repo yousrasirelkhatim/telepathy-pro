@@ -14,19 +14,19 @@
   "categories": ["games", "social", "entertainment"],
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/brand/favicon.svg?v=40",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/brand/web-app-manifest-192x192.png?v=40",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/brand/web-app-manifest-512x512.png?v=40",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -37,7 +37,7 @@
       "name": "تحدي جديد",
       "short_name": "تحدي",
       "url": "/?action=new",
-      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/brand/web-app-manifest-192x192.png?v=40", "sizes": "192x192" }]
     }
   ]
 }

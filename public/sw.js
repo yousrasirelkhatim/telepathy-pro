@@ -1,10 +1,12 @@
 ﻿// Telepathy Challenge – Service Worker (2026)
-const CACHE_VERSION = 'telepathy-v39';
+const CACHE_VERSION = 'telepathy-v40';
 // NOTE: Do NOT precache HTML files — they must always be network-fresh.
 // Otherwise users get stuck on a broken old version after a deploy.
 const STATIC_ASSETS = [
   '/manifest.json',
-  '/icon.svg',
+  '/brand/favicon-96x96.png?v=40',
+  '/brand/web-app-manifest-192x192.png?v=40',
+  '/brand/web-app-manifest-512x512.png?v=40',
   'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap',
   'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js',

@@ -14,14 +14,16 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Telepathy Challenge – تحدي التخاطر">
 <meta property="og:description" content="هل تفكران بنفس الطريقة؟ جرّب تحدي التخاطر الذهني الآن.">
-<meta property="og:image" content="/icon.svg">
+<meta property="og:image" content="/brand/web-app-manifest-512x512.png?v=40">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Telepathy Challenge">
 <meta name="twitter:description" content="تحدي التخاطر الذهني بين شخصين">
+<meta name="twitter:image" content="/brand/web-app-manifest-512x512.png?v=40">
 
 <link rel="manifest" href="/manifest.json">
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="icon" type="image/png" href="/brand/favicon-96x96.png?v=40" sizes="96x96">
+<link rel="shortcut icon" href="/brand/favicon.ico?v=40">
+<link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png?v=40">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1213,12 +1215,12 @@ body { background: var(--ink) !important; }
 
 /* Logo SVG block (replaces brain emoji) */
 .tp-logo {
-  width: 92px; height: 92px; margin: 0 auto 12px;
-  filter: drop-shadow(0 8px 24px rgba(147,51,234,0.45)) drop-shadow(0 0 36px rgba(212,175,55,0.18));
+  width: 104px; height: 104px; margin: 0 auto 12px;
+  object-fit: contain; border-radius: 22px; display: block;
+  filter: drop-shadow(0 8px 24px rgba(147,51,234,0.45)) drop-shadow(0 0 36px rgba(0,212,255,0.22));
 }
-.tp-logo circle, .tp-logo path { transition: stroke 0.3s; }
 @media (max-width: 600px) {
-  .tp-logo { width: 72px; height: 72px; }
+  .tp-logo { width: 84px; height: 84px; }
 }
 
 /* Refined input - bigger, more focused */
@@ -1476,31 +1478,7 @@ body { background: var(--ink) !important; }
       <a href="/" class="tp-link" data-i18n="home_back" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:30px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">← الرئيسية</a>
     </div>
     <div class="logo-area" style="margin-bottom:22px">
-      <svg class="tp-logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="tpLogoNeon" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#7df9ef"/>
-            <stop offset="50%" stop-color="#2fd6e6"/>
-            <stop offset="100%" stop-color="#19b6d8"/>
-          </linearGradient>
-          <linearGradient id="tpLogoSilver" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="42%" stop-color="#cfd4da"/>
-            <stop offset="62%" stop-color="#f4f5f7"/>
-            <stop offset="100%" stop-color="#a7adb6"/>
-          </linearGradient>
-          <filter id="tpLogoGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="6" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M224 458 C200 428 165 412 160 378 C156 356 168 344 156 326 C146 312 158 300 146 286 C132 274 110 270 112 246 C113 212 138 178 152 166 C168 150 168 122 196 110 C218 101 242 116 256 152 C270 116 294 101 316 110 C344 122 344 150 360 166 C374 178 399 212 400 246 C402 270 380 274 366 286 C354 300 366 312 356 326 C344 344 356 356 352 378 C347 412 312 428 288 458" stroke="url(#tpLogoNeon)" stroke-width="16" filter="url(#tpLogoGlow)" opacity="0.85"/>
-          <path d="M224 458 C200 428 165 412 160 378 C156 356 168 344 156 326 C146 312 158 300 146 286 C132 274 110 270 112 246 C113 212 138 178 152 166 C168 150 168 122 196 110 C218 101 242 116 256 152 C270 116 294 101 316 110 C344 122 344 150 360 166 C374 178 399 212 400 246 C402 270 380 274 366 286 C354 300 366 312 356 326 C344 344 356 356 352 378 C347 412 312 428 288 458" stroke="url(#tpLogoNeon)" stroke-width="9"/>
-          <path d="M224 458 C200 428 165 412 160 378 C156 356 168 344 156 326 C146 312 158 300 146 286 C132 274 110 270 112 246 C113 212 138 178 152 166 C168 150 168 122 196 110 C218 101 242 116 256 152 C270 116 294 101 316 110 C344 122 344 150 360 166 C374 178 399 212 400 246 C402 270 380 274 366 286 C354 300 366 312 356 326 C344 344 356 356 352 378 C347 412 312 428 288 458" stroke="#eafffb" stroke-width="3.2" opacity="0.95"/>
-        </g>
-        <path d="M200 188 L312 188 L312 220 L272 220 L272 316 L256 340 L240 316 L240 220 L200 220 Z" fill="url(#tpLogoSilver)" stroke="#6b7682" stroke-width="3" stroke-linejoin="round"/>
-      </svg>
+      <img class="tp-logo" src="/brand/web-app-manifest-512x512.png?v=40" alt="Telepathy" width="104" height="104">
       <h1 class="game-title">Telepathy Challenge</h1>
       <p class="game-subtitle" data-i18n="home_subtitle">قِس مدى توافق عقولكما — في 4 مراحل ذكية</p>
     </div>
