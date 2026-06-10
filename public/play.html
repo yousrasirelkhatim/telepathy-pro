@@ -33,6 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+.hidden { display: none !important; }
 
 :root {
   --neon-blue: #00d4ff;
@@ -1522,6 +1523,38 @@ html[lang="en"] body { letter-spacing: 0.1px; }
 }
 .howto-link:hover { background:rgba(0,212,255,0.16); transform:translateY(-1px); }
 
+/* Smart entry: buyer / friend modes (one code, less maze) */
+.buyer-ready {
+  text-align:center; margin-bottom:18px; padding:18px 16px;
+  border-radius:18px; background:rgba(0,255,136,0.08);
+  border:1px solid rgba(0,255,136,0.28);
+}
+.buyer-ready.friend-ready {
+  background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.35);
+}
+.buyer-ready-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:14px; font-weight:800; color:#86efac; margin-bottom:10px;
+}
+.buyer-ready.friend-ready .buyer-ready-badge { color:#d8b4fe; }
+.buyer-ready-code {
+  font-size:22px; font-weight:900; letter-spacing:3px;
+  direction:ltr; color:#fff; margin:6px 0 10px;
+  word-break:break-all;
+}
+.buyer-ready-hint {
+  font-size:13px; line-height:1.7; color:rgba(255,255,255,0.72); margin:0;
+}
+.photo-social-hint {
+  font-size:12px; color:rgba(255,255,255,0.55); margin-top:8px; text-align:center;
+}
+body.buyer-mode #homeNoCodeLine,
+body.buyer-mode #codeEntryBlock,
+body.friend-mode #homeNoCodeLine,
+body.friend-mode #codeEntryBlock { display:none !important; }
+body.buyer-mode .photo-social-hint,
+body.friend-mode .photo-social-hint { color:rgba(255,255,255,0.78); font-weight:600; }
+
 /* P1.1 — Onboarding / How-to-play modal */
 .howto-overlay {
   position:fixed; inset:0; z-index:1200; display:none;
@@ -1698,14 +1731,29 @@ html[lang="en"] body { letter-spacing: 0.1px; }
 
     <div class="glass" style="padding:26px 22px">
 
-      <!-- STEP 1: code entry, large & primary -->
-      <div style="text-align:center;margin-bottom:6px">
-        <label for="quickCode" data-i18n="home_enter_code" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">أدخل الكود</label>
-        <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX  أو  ABC123" data-i18n-ph="code_ph" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
-        <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span data-i18n="chip_empty">اكتب كودك للبدء</span></div>
-        <div class="code-help" data-i18n-html="code_help">
-          <b>كود التحدي</b> (مثل TP-…) لإنشاء غرفة جديدة • <b>كود الغرفة</b> (٦ خانات) للانضمام لصديقك
+      <!-- STEP 1: code entry OR buyer-ready (smart mode) -->
+      <div id="codeEntryBlock">
+        <div style="text-align:center;margin-bottom:6px">
+          <label for="quickCode" data-i18n="home_enter_code" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">أدخل الكود</label>
+          <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX  أو  ABC123" data-i18n-ph="code_ph" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
+          <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span data-i18n="chip_empty">اكتب كودك للبدء</span></div>
+          <div class="code-help" id="codeHelpBlock" data-i18n-html="code_help">
+            <b>كود التحدي</b> (مثل TP-…) لإنشاء غرفة جديدة • <b>كود الغرفة</b> (٦ خانات) للانضمام لصديقك
+          </div>
         </div>
+      </div>
+
+      <!-- Buyer mode: code pre-filled from WhatsApp link — one code, 5 sessions -->
+      <div id="buyerReadyBlock" class="buyer-ready hidden">
+        <div class="buyer-ready-badge">✓ <span data-i18n="buyer_ready">كودك جاهز</span></div>
+        <div class="buyer-ready-code" id="buyerReadyCode">TP-XXXXXXXX</div>
+        <p class="buyer-ready-hint" data-i18n="buyer_hint">اكتب اسمك، أضف صورتك، وابدأ — نفس الكود يعمل 5 مرات</p>
+      </div>
+
+      <!-- Friend mode: joined via room invite link -->
+      <div id="friendReadyBlock" class="buyer-ready friend-ready hidden">
+        <div class="buyer-ready-badge friend">🤝 <span data-i18n="friend_ready">صديقك ينتظرك!</span></div>
+        <p class="buyer-ready-hint" data-i18n="friend_hint">اكتب اسمك وأضف صورتك وانضم للتحدي</p>
       </div>
 
       <!-- STEP 2: name (compact) -->
@@ -1723,6 +1771,7 @@ html[lang="en"] body { letter-spacing: 0.1px; }
           <span data-i18n="home_photo">أضف صورتك (اختياري)</span>
         </label>
         <input type="file" id="qsPhoto" accept="image/*" style="display:none">
+        <p class="photo-social-hint" id="photoSocialHint" data-i18n="home_photo_social">صورتك تظهر لصديقك — العب وشوفوا وجه بعض 💜</p>
       </div>
 
       <!-- Single primary CTA -->
@@ -1734,7 +1783,7 @@ html[lang="en"] body { letter-spacing: 0.1px; }
         عرض آخر نتيجة
       </button>
 
-      <p class="muted-sub" style="margin-top:14px" data-i18n-html="home_no_code">
+      <p class="muted-sub" style="margin-top:14px" id="homeNoCodeLine" data-i18n-html="home_no_code">
         لا تملك كوداً؟ <a href="/" class="tp-link"><strong>احصل على واحد</strong></a>
       </p>
 
@@ -2203,6 +2252,12 @@ const I18N = {
     howto_s4_t: 'النتيجة والمشاركة',
     howto_s4_d: 'في النهاية ترون نسبة التخاطر وتفاصيل كل مرحلة، ويمكنكم مشاركة بطاقة النتيجة.',
     howto_got_it: 'فهمت، لنبدأ!',
+    buyer_ready: 'كودك جاهز',
+    buyer_hint: 'اكتب اسمك، أضف صورتك، وابدأ — نفس الكود يعمل 5 مرات',
+    friend_ready: 'صديقك ينتظرك!',
+    friend_hint: 'اكتب اسمك وأضف صورتك وانضم للتحدي',
+    home_photo_social: 'صورتك تظهر لصديقك — العب وشوفوا وجه بعض 💜',
+    need_photo: 'أضف صورتك — العب مع صديقك وشوفوا وجه بعض 💜',
   },
   en: {
     home_back: '← Home',
@@ -2280,6 +2335,12 @@ const I18N = {
     howto_s4_t: 'Result & sharing',
     howto_s4_d: 'At the end you see your telepathy score and each phase breakdown, and can share a result card.',
     howto_got_it: "Got it, let's start!",
+    buyer_ready: 'Your code is ready',
+    buyer_hint: 'Enter your name, add your photo, and start — same code works 5 times',
+    friend_ready: 'Your friend is waiting!',
+    friend_hint: 'Enter your name, add your photo, and join the challenge',
+    home_photo_social: 'Your photo shows to your friend — play face to face 💜',
+    need_photo: 'Add your photo — play with your friend and see each other 💜',
   }
 };
 
@@ -3377,6 +3438,15 @@ async function quickStart() {
   const name = (document.getElementById('playerName').value || '').trim();
   if (!name) { window.__quickStartBusy = false; showToast('أدخل اسمك أولاً'); return; }
 
+  // Social game: photo required in smart entry modes (buyer / friend from link)
+  if ((window.__buyerMode || window.__friendMode) && !window.__pendingPhoto) {
+    window.__quickStartBusy = false;
+    showToast(t('need_photo'));
+    const ph = document.getElementById('qsPhotoLabel');
+    if (ph) { ph.scrollIntoView({ behavior: 'smooth', block: 'center' }); ph.style.boxShadow = '0 0 0 3px rgba(168,85,247,0.6)'; setTimeout(() => ph.style.boxShadow = '', 2000); }
+    return;
+  }
+
   const codeRaw = (document.getElementById('quickCode').value || '').trim().toUpperCase();
   if (!codeRaw) { window.__quickStartBusy = false; showToast('أدخل الكود'); return; }
 
@@ -3433,15 +3503,73 @@ document.getElementById('quickCode').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') quickStart();
 });
 
-// Auto-prefill code from URL (?code=... or ?room=...)
-(function prefillFromURL(){
-  const p = new URLSearchParams(location.search);
-  const c = (p.get('code') || p.get('room') || '').toUpperCase();
-  if (c) {
+// Auto-prefill code from URL (?code=... or ?room=...) + smart buyer/friend modes
+(function smartEntryFromURL(){
+  function isRoomCode(v) { return /^[A-Z0-9]{6}$/.test(v); }
+
+  function enterBuyerMode(code) {
+    window.__buyerMode = true;
+    document.body.classList.add('buyer-mode');
+    const entry = document.getElementById('codeEntryBlock');
+    const ready = document.getElementById('buyerReadyBlock');
+    const codeEl = document.getElementById('buyerReadyCode');
     const f = document.getElementById('quickCode');
-    if (f) { f.value = c; updateCodeChip(); }
+    if (entry) entry.classList.add('hidden');
+    if (ready) ready.classList.remove('hidden');
+    if (codeEl) codeEl.textContent = code;
+    if (f) f.value = code;
+    updateCodeChip();
+    // Restore saved name if any
+    try {
+      const saved = localStorage.getItem('tp_player_name');
+      const nameF = document.getElementById('playerName');
+      if (saved && nameF && !nameF.value) nameF.value = saved;
+    } catch(_) {}
+    setTimeout(() => {
+      const nameF = document.getElementById('playerName');
+      if (nameF) nameF.focus();
+    }, 400);
+  }
+
+  function enterFriendMode(code) {
+    window.__friendMode = true;
+    document.body.classList.add('friend-mode');
+    const entry = document.getElementById('codeEntryBlock');
+    const ready = document.getElementById('friendReadyBlock');
+    const f = document.getElementById('quickCode');
+    if (entry) entry.classList.add('hidden');
+    if (ready) ready.classList.remove('hidden');
+    if (f) f.value = code;
+    updateCodeChip();
+    try {
+      const saved = localStorage.getItem('tp_player_name');
+      const nameF = document.getElementById('playerName');
+      if (saved && nameF && !nameF.value) nameF.value = saved;
+    } catch(_) {}
+    setTimeout(() => {
+      const nameF = document.getElementById('playerName');
+      if (nameF) nameF.focus();
+    }, 400);
+  }
+
+  const p = new URLSearchParams(location.search);
+  const room = (p.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const code = (p.get('code') || '').toUpperCase();
+  if (room && isRoomCode(room)) {
+    enterFriendMode(room);
+  } else if (code) {
+    const f = document.getElementById('quickCode');
+    if (f) { f.value = code; updateCodeChip(); }
+    if (isRoomCode(code)) enterFriendMode(code);
+    else enterBuyerMode(code);
   }
 })();
+
+// Save player name for next visit
+document.getElementById('playerName').addEventListener('blur', function(){
+  const v = (this.value || '').trim();
+  if (v) try { localStorage.setItem('tp_player_name', v); } catch(_) {}
+});
 
 // ===== v36 UX upgrades: live code-type chip, smart invite, auto-ready =====
 

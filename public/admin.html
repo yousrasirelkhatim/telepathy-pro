@@ -247,18 +247,20 @@
       <div class="dash-grid">
         <div class="panel">
           <div class="panel-h">
-            <h2>📊 مركز التشغيل</h2>
+            <h2>📊 مركز البيع</h2>
             <button class="btn btn-ghost btn-sm" onclick="loadDashboardOverview()">🔄 تحديث</button>
           </div>
+        <div id="salesAlertBar" style="display:none;margin-bottom:14px;padding:12px 16px;border-radius:12px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);font-size:.88rem;line-height:1.6"></div>
+        <div id="ordersQuickAction" style="display:none;margin-bottom:14px"></div>
           <div class="overview-cards" id="overviewCards">
             <div class="empty" style="grid-column:1/-1">جاري تحميل المؤشرات...</div>
           </div>
           <div class="quick-actions">
-            <button class="btn btn-primary" onclick="activateTab('generate')">⚡ توليد أكواد</button>
-            <button class="btn btn-ghost" onclick="activateTab('list')">📋 إدارة الأكواد</button>
-            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('orders')">🛒 طلبات الشراء</button>
-            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('packages')">📦 إدارة الباقات</button>
-            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('resellers')">🤝 إدارة الوكلاء</button>
+            <button class="btn btn-primary admin-only hidden" id="btnQuickFulfill" onclick="activateTab('orders')" style="display:none">🛒 تسليم طلب منتظر</button>
+            <button class="btn btn-primary" onclick="activateTab('list');setTimeout(()=>pickStatus('forsale'),300)">🟢 أكواد للبيع</button>
+            <button class="btn btn-ghost" onclick="activateTab('generate')">⚡ توليد أكواد</button>
+            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('orders')">🛒 الطلبات</button>
+            <button class="btn btn-ghost admin-only hidden" onclick="activateTab('packages')">⚙️ الإعدادات</button>
           </div>
         </div>
 
@@ -888,22 +890,51 @@
       const used = codes.filter(c => c.status === 'used').length;
       const disabled = codes.filter(c => c.status === 'disabled').length;
       const expired = codes.filter(c => c.status === 'expired').length;
+      const inv = inventoryCounts(codes);
       const sessions = totals.sessionsPlayed || codes.reduce((n,c) => n + Number(c.usedSessions || 0), 0);
       const visiblePackages = packagesList.filter(p => p.visible !== false).length;
       const activeResellers = resellers.filter(r => r.active).length;
-      const pendingOrders = orders.filter(o => o.status === 'pending').length;
+      const pendingOrders = orders.filter(o => o.status === 'pending');
+      const pendingCount = pendingOrders.length;
+      const oldestPending = pendingOrders.slice().sort((a,b) => (a.createdAt||0) - (b.createdAt||0))[0];
       const noWhatsApp = !String(settings.whatsappNumber || '').trim();
+      const LOW_STOCK = 10;
 
-      cards.innerHTML = metricCard('أكواد نشطة', active, 'جاهزة للاستخدام', active ? 'good' : 'warn')
-        + metricCard('جلسات لعب', sessions, 'إجمالي الجلسات المسجلة', '')
-        + metricCard('طلبات تنتظر', pendingOrders, 'تحتاج تسليم كود', pendingOrders ? 'warn' : 'good')
-        + metricCard('وكلاء نشطون', activeResellers + '/' + resellers.length, 'شبكة البيع الحالية', activeResellers ? 'good' : '');
-      ops.innerHTML = opsItem(visiblePackages > 0, 'باقات الصفحة الرئيسية', visiblePackages > 0 ? 'هناك باقات ظاهرة للعملاء' : 'لا توجد باقات ظاهرة حالياً')
-        + opsItem(!noWhatsApp, 'رقم واتساب الطلبات', noWhatsApp ? 'أضف الرقم من تبويب الباقات' : 'زر الطلب يذهب للرقم المحدد')
-        + opsItem(pendingOrders === 0, 'طلبات الشراء', pendingOrders ? pendingOrders + ' طلب ينتظر التسليم' : 'لا توجد طلبات معلقة')
-        + opsItem(active > 0, 'مخزون الأكواد', active > 0 ? active + ' كود نشط' : 'ولّد أكواد جديدة قبل التسويق')
-        + opsItem(disabled + expired === 0, 'أكواد متوقفة/منتهية', (disabled + expired) ? (disabled + expired) + ' تحتاج مراجعة' : 'لا توجد مشاكل ظاهرة')
-        + opsItem(used >= 0, 'الأداء', used + ' كود اكتمل استخدامه');
+      cards.innerHTML = metricCard('🟢 للبيع', inv.forsale, 'جاهزة للتسليم', inv.forsale ? 'good' : 'warn')
+        + metricCard('🟡 مباع', inv.sold, 'لم يُلعب بعد', '')
+        + metricCard('🔵 قيد الاستخدام', inv.inuse, 'العميل يلعب', '')
+        + metricCard('⚫ منتهي/مستهلك', inv.expired + inv.depleted, 'لا تُباع', inv.expired + inv.depleted ? '' : 'good')
+        + metricCard('🛒 طلبات تنتظر', pendingCount, 'تحتاج تسليم', pendingCount ? 'warn' : 'good')
+        + metricCard('🎮 جلسات لعب', sessions, 'إجمالي مسجّل', '');
+
+      // Alerts + quick fulfill
+      const alertBar = document.getElementById('salesAlertBar');
+      const quickAct = document.getElementById('ordersQuickAction');
+      const alerts = [];
+      if (inv.forsale < LOW_STOCK) alerts.push('⚠️ مخزون منخفض: متبقي <b>' + inv.forsale + '</b> كود للبيع — ولّد أكواد جديدة قبل التسويق.');
+      if (pendingCount > 0) {
+        const oldH = oldestPending && oldestPending.createdAt ? Math.floor((Date.now() - oldestPending.createdAt) / 3600000) : 0;
+        if (oldH >= 24) alerts.push('⏰ <b>' + pendingCount + '</b> طلب ينتظر — أقدمها منذ ' + oldH + ' ساعة.');
+      }
+      if (alertBar) {
+        alertBar.style.display = alerts.length ? 'block' : 'none';
+        alertBar.innerHTML = alerts.join('<br>');
+      }
+      if (quickAct && oldestPending) {
+        quickAct.style.display = 'block';
+        quickAct.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:14px;background:rgba(124,58,237,0.15);border:1px solid rgba(168,85,247,0.35)">'
+          + '<div><b>📦 طلب جاهز للتسليم</b><br><span style="font-size:.85rem;color:rgba(255,255,255,.65)">' + escapeHtml(oldestPending.buyerName || '') + ' — ' + escapeHtml(oldestPending.packageName || '') + '</span></div>'
+          + '<button class="btn btn-primary btn-sm" onclick="fulfillOrder(\'' + oldestPending.id + '\')">✅ تسليم وفتح واتساب</button></div>';
+      } else if (quickAct) quickAct.style.display = 'none';
+
+      const btnQf = document.getElementById('btnQuickFulfill');
+      if (btnQf) btnQf.style.display = pendingCount ? '' : 'none';
+
+      ops.innerHTML = opsItem(inv.forsale >= LOW_STOCK, 'مخزون للبيع', inv.forsale + ' كود جاهز' + (inv.forsale < LOW_STOCK ? ' — منخفض!' : ''))
+        + opsItem(pendingCount === 0, 'طلبات واتساب', pendingCount ? pendingCount + ' طلب ينتظر التسليم' : 'لا طلبات معلقة ✓')
+        + opsItem(!noWhatsApp, 'رقم واتساب', noWhatsApp ? 'أضف الرقم من الإعدادات' : 'جاهز لاستقبال الطلبات')
+        + opsItem(visiblePackages > 0, 'باقات الموقع', visiblePackages + ' باقة ظاهرة')
+        + opsItem(activeResellers >= 0, 'الوكلاء', activeResellers + ' نشط');
     } catch(e) {
       cards.innerHTML = '<div class="empty" style="grid-column:1/-1">تعذّر تحميل المؤشرات: ' + escapeHtml(e.message || e.code || e) + '</div>';
       ops.innerHTML = '<div class="empty">تعذّر الفحص</div>';
@@ -1081,6 +1112,10 @@
     let arr = baseArr.slice();
     if (status === 'forsale') {
       arr = arr.filter(c => c.status === 'active' && !c.sold && Math.max(0,(c.maxSessions||0)-(c.usedSessions||0)) > 0 && !(c.expiresAt && c.expiresAt < Date.now()));
+    } else if (status === 'sold_pending') {
+      arr = arr.filter(c => saleCategory(c).key === 'sold');
+    } else if (status === 'inuse') {
+      arr = arr.filter(c => saleCategory(c).key === 'inuse');
     } else if (status) {
       arr = arr.filter(c => c.status === status);
     }
@@ -1100,16 +1135,20 @@
       acc.remaining += remOf(c);
       acc.used += Number(c.usedSessions||0);
       if (c.sold) acc.sold++;
+      const cat = saleCategory(c);
+      if (cat.key === 'forsale') acc.forsale++;
+      if (cat.key === 'sold') acc.soldPending++;
+      if (cat.key === 'inuse') acc.inuse++;
       return acc;
-    }, {total:0, remaining:0, used:0, sold:0});
+    }, {total:0, remaining:0, used:0, sold:0, forsale:0, soldPending:0, inuse:0});
     const sumEl = document.getElementById('listSummary');
     if (sumEl) sumEl.innerHTML = ''
       + `<div class="sum"><span>المطابق</span><b>${sums.total}</b></div>`
-      + `<div class="sum good"><span>نشط</span><b>${sums.active||0}</b></div>`
-      + `<div class="sum"><span>مستهلك</span><b>${sums.used||0}</b></div>`
-      + `<div class="sum warn"><span>تم بيعه</span><b>${sums.sold||0}</b></div>`
-      + `<div class="sum bad"><span>معطّل/منتهي</span><b>${(sums.disabled||0)+(sums.expired||0)}</b></div>`
-      + `<div class="sum good"><span>إجمالي جلسات متبقية</span><b>${sums.remaining}</b></div>`;
+      + `<div class="sum good"><span>🟢 للبيع</span><b>${sums.forsale||0}</b></div>`
+      + `<div class="sum warn"><span>🟡 مباع</span><b>${sums.soldPending||0}</b></div>`
+      + `<div class="sum"><span>🔵 قيد الاستخدام</span><b>${sums.inuse||0}</b></div>`
+      + `<div class="sum bad"><span>⚫ منتهي/مستهلك</span><b>${(sums.disabled||0)+(sums.expired||0)+(sums.used||0)}</b></div>`
+      + `<div class="sum good"><span>جلسات متبقية</span><b>${sums.remaining}</b></div>`;
 
     if (!arr.length) {
       document.getElementById('listOut').innerHTML = '<div class="empty">لا توجد أكواد مطابقة</div>';
@@ -1171,16 +1210,18 @@
     const bar = document.getElementById('statusChipsBar');
     if (!bar) return;
     const counts = baseArr.reduce((a,c)=>{ a[c.status]=(a[c.status]||0)+1; return a; }, {});
+    const inv = inventoryCounts(baseArr);
     const items = [
       { v:'',         lbl:'الكل',     cnt: baseArr.length },
+      { v:'forsale',   lbl:'🟢 للبيع', cnt: inv.forsale },
+      { v:'sold_pending', lbl:'🟡 مباع', cnt: inv.sold },
+      { v:'inuse',     lbl:'🔵 قيد الاستخدام', cnt: inv.inuse },
       { v:'active',   lbl:'نشط',      cnt: counts.active   || 0 },
       { v:'used',     lbl:'مستهلك',   cnt: counts.used     || 0 },
       { v:'disabled', lbl:'موقوف',    cnt: counts.disabled || 0 },
       { v:'expired',  lbl:'منتهي',    cnt: counts.expired  || 0 },
     ];
-    // زر فلترة الأكواد المتاحة للبيع فقط
-    bar.innerHTML = `<span class="status-chip${current==='forsale'?' on':''}" data-st="forsale" onclick="pickStatus('forsale')">المتاحة للبيع فقط<span class="cnt">${baseArr.filter(c=>c.status==='active'&&!c.sold&&Math.max(0,(c.maxSessions||0)-(c.usedSessions||0))>0&&!(c.expiresAt&&c.expiresAt<Date.now())).length}</span></span>`
-      + items.map(it =>
+    bar.innerHTML = items.map(it =>
       `<span class="status-chip${it.v === current ? ' on' : ''}" data-st="${it.v||'all'}" onclick="pickStatus('${it.v}')">${it.lbl}<span class="cnt">${it.cnt}</span></span>`
     ).join('');
   }
@@ -1198,13 +1239,13 @@
     renderList();
   }
   function saleBadge(c) {
-    const remaining = Math.max(0, (c.maxSessions || 0) - (c.usedSessions || 0));
-    const expired = c.status === 'expired' || (c.expiresAt && c.expiresAt < Date.now());
-    if (c.sold) return '<span class="pill used">تم بيعه</span>';
-    if (c.status === 'used') return '<span class="pill used">مستهلك</span>';
-    if (c.status === 'expired' || expired) return '<span class="pill expired">منتهي</span>';
-    if (c.status === 'disabled') return '<span class="pill disabled">موقوف</span>';
-    if (c.status === 'active' && !c.sold && remaining > 0 && !expired) return '<span class="pill active">متاح للبيع</span>';
+    const cat = saleCategory(c);
+    if (cat.key === 'forsale') return '<span class="pill active">متاح للبيع</span>';
+    if (cat.key === 'sold') return '<span class="pill used">مباع — لم يُلعب</span>';
+    if (cat.key === 'inuse') return '<span class="pill active">قيد الاستخدام</span>';
+    if (cat.key === 'expired') return '<span class="pill expired">منتهي</span>';
+    if (cat.key === 'depleted') return '<span class="pill used">مستهلك</span>';
+    if (cat.key === 'disabled') return '<span class="pill disabled">موقوف</span>';
     return '';
   }
   function syncStatusChips() {
@@ -1271,8 +1312,43 @@
   function copyOne(code) {
     navigator.clipboard.writeText(code).then(() => toast('✓ تم نسخ ' + code));
   }
+  function saleCategory(c) {
+    const remaining = Math.max(0, (c.maxSessions || 0) - (c.usedSessions || 0));
+    const expired = c.status === 'expired' || (c.expiresAt && c.expiresAt < Date.now());
+    if (c.status === 'disabled') return { key: 'disabled', label: 'موقوف', cls: 'disabled' };
+    if (expired) return { key: 'expired', label: 'منتهي', cls: 'expired' };
+    if (c.status === 'used' || remaining === 0) return { key: 'depleted', label: 'مستهلك', cls: 'used' };
+    if (c.sold) {
+      if ((c.usedSessions || 0) > 0) return { key: 'inuse', label: 'قيد الاستخدام', cls: 'active' };
+      return { key: 'sold', label: 'مباع', cls: 'used' };
+    }
+    if (c.status === 'active' && remaining > 0) return { key: 'forsale', label: 'للبيع', cls: 'active' };
+    return { key: 'other', label: '—', cls: '' };
+  }
+  function inventoryCounts(codes) {
+    const o = { forsale: 0, sold: 0, inuse: 0, expired: 0, depleted: 0, disabled: 0 };
+    codes.forEach(c => { const cat = saleCategory(c); if (o[cat.key] != null) o[cat.key]++; });
+    return o;
+  }
+
+  /** One clear WhatsApp message — single play link (no card link maze) */
+  function customerDeliveryMessage(opts) {
+    opts = opts || {};
+    const name = opts.name || '';
+    const link = opts.link || '';
+    const sessions = opts.sessions || 5;
+    const greeting = name ? ('مرحباً ' + name + ' 👋') : 'مرحباً 👋';
+    return greeting + '\n\n'
+      + '🎮 *تحدي التخاطر* جاهز لك!\n\n'
+      + '👇 *اضغط وابدأ:*\n' + link + '\n\n'
+      + '✨ اكتب اسمك وأضف صورتك\n'
+      + '🤝 ادعُ صديقك من داخل اللعبة\n'
+      + '🔄 نفس الكود يعمل ' + sessions + ' مرات\n\n'
+      + 'استمتع! 💜';
+  }
+
   function playLink(code) {
-    return location.origin + '/play?code=' + encodeURIComponent(code);
+    return location.origin + '/play?code=' + encodeURIComponent(code) + '&lang=ar';
   }
   function cardLink(code) {
     return location.origin + '/card?code=' + encodeURIComponent(code);
@@ -1281,7 +1357,13 @@
     navigator.clipboard.writeText(playLink(code)).then(() => toast('✓ تم نسخ رابط اللعب'));
   }
   function sendWhatsApp(code) {
-    const txt = 'كود تحدي التخاطر جاهز 🎮\n' + playLink(code);
+    const link = playLink(code);
+    const item = allCodes.find(x => x.code === code);
+    const txt = customerDeliveryMessage({
+      name: (item && item.soldToName) || '',
+      link,
+      sessions: (item && item.maxSessions) || 5
+    });
     window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
   }
   async function deleteCode(code) {
@@ -1329,11 +1411,17 @@
       + `<div class="sum bad"><span>ملغاة</span><b>${sums.cancelled||0}</b></div>`;
     // Client-side search across name / phone / order id / package
     const q = ((document.getElementById('orderSearch') || {}).value || '').toLowerCase().trim();
-    const view = q
+    const view = (q
       ? allOrders.filter(o => (
           (o.id || '') + ' ' + (o.buyerName || '') + ' ' + (o.buyerPhone || '') + ' ' + (o.packageName || '')
         ).toLowerCase().includes(q))
-      : allOrders;
+      : allOrders.slice()
+    ).sort((a, b) => {
+      const pa = (a.status || 'pending') === 'pending' ? 0 : 1;
+      const pb = (b.status || 'pending') === 'pending' ? 0 : 1;
+      if (pa !== pb) return pa - pb;
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    });
     if (count) count.textContent = q ? `(${view.length}/${allOrders.length})` : `(${allOrders.length})`;
     if (!view.length) {
       out.innerHTML = '<div class="empty">لا توجد طلبات مطابقة</div>';
@@ -1365,7 +1453,7 @@
           ${pending ? `<button class="btn btn-primary btn-sm" onclick="fulfillOrder('${order.id}')">✅ تسليم وفتح واتساب</button>` : ''}
           ${!pending && codes.length ? `<button class="btn btn-primary btn-sm" onclick="openCustomerCard('${codes[0]}')">🪪 بطاقة العميل</button>` : ''}
           <button class="btn btn-ghost btn-sm" onclick="copyOrderMessage('${order.id}')">📋 رسالة العميل</button>
-          <button class="btn btn-ghost btn-sm" onclick="openOrderWhatsApp('${order.id}')">إرسال البطاقة</button>
+          <button class="btn btn-ghost btn-sm" onclick="openOrderWhatsApp('${order.id}')">📱 واتساب</button>
           ${pending ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder('${order.id}')">إلغاء</button>` : ''}
         </div>
       </div>`;
@@ -1375,11 +1463,21 @@
   function orderById(id) { return allOrders.find(o => o.id === id); }
   function orderCustomerMessage(order) {
     const codes = Array.isArray(order.codes) ? order.codes : (order.code ? [order.code] : []);
-    const links = codes.map(code => playLink(code)).join('\n');
-    const cards = codes.map(code => cardLink(code)).join('\n');
-    return codes.length
-      ? `مرحباً ${order.buyerName || ''}\nتم تجهيز طلبك ${order.id}\n\nبطاقة الكود:\n${cards}\n\nكود اللعب:\n${codes.join('\n')}\n\nرابط اللعب المباشر:\n${links}\n\nافتح بطاقة الكود أو رابط اللعب، واكتب اسمك ثم ابدأ التحدي. استمتع بالتجربة.`
-      : `مرحباً ${order.buyerName || ''}\nوصلنا طلبك ${order.id} لباقة ${order.packageName || ''}. سنرسل لك الكود بعد التأكيد.`;
+    const sessions = Number(order.sessionsPerCode) || 5;
+    if (codes.length === 1) {
+      return customerDeliveryMessage({
+        name: order.buyerName || '',
+        link: playLink(codes[0]),
+        sessions
+      });
+    }
+    if (codes.length > 1) {
+      const greeting = order.buyerName ? ('مرحباً ' + order.buyerName + ' 👋') : 'مرحباً 👋';
+      const links = codes.map((c, i) => (i + 1) + '. ' + playLink(c)).join('\n');
+      return greeting + '\n\n🎮 *تحدي التخاطر* — أكوادك جاهزة!\n\n👇 *اضغط وابدأ:*\n' + links
+        + '\n\n✨ اكتب اسمك وأضف صورتك\n🤝 ادعُ صديقك من داخل اللعبة\n🔄 كل كود يعمل ' + sessions + ' مرات\n\nاستمتع! 💜';
+    }
+    return 'مرحباً ' + (order.buyerName || '') + '\nوصلنا طلبك ' + order.id + ' لباقة ' + (order.packageName || '') + '. سنرسل لك الرابط بعد تأكيد الدفع.';
   }
   function copyOrderMessage(id) {
     const order = orderById(id); if (!order) return;
