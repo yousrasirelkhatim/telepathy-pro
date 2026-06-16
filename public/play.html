@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -1337,6 +1337,14 @@ body { background: var(--ink) !important; }
   transform: translateY(-2px);
   box-shadow: 0 14px 30px -10px rgba(212,175,55,0.3);
 }
+.lobby-invite-warn {
+  font-size: 12.5px; line-height: 1.65; text-align: center;
+  padding: 10px 12px; margin-bottom: 12px; border-radius: 12px;
+  background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.35);
+  color: rgba(255,255,255,0.82);
+}
+.lobby-invite-warn b { color: #fde68a; }
+.lobby-code-hidden { display: none !important; }
 
 /* Lobby code chip – premium */
 #lobbyRoomCode, #createdCode {
@@ -1734,11 +1742,11 @@ body.friend-mode .photo-social-hint { color:rgba(255,255,255,0.78); font-weight:
       <!-- STEP 1: code entry OR buyer-ready (smart mode) -->
       <div id="codeEntryBlock">
         <div style="text-align:center;margin-bottom:6px">
-          <label for="quickCode" data-i18n="home_enter_code" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">أدخل الكود</label>
-          <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX  أو  ABC123" data-i18n-ph="code_ph" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
-          <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span data-i18n="chip_empty">اكتب كودك للبدء</span></div>
+          <label for="quickCode" data-i18n="home_enter_code" style="display:block;font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600">كود التفعيل أو رابط الدعوة</label>
+          <input type="text" class="input-field input-xl" id="quickCode" placeholder="TP-XXXXXXXX" data-i18n-ph="code_ph" maxlength="24" autocomplete="off" autocapitalize="characters" inputmode="text">
+          <div id="codeTypeChip" class="code-chip"><span>⌨️</span><span data-i18n="chip_empty">اكتب كود التفعيل TP أو رابط الدعوة</span></div>
           <div class="code-help" id="codeHelpBlock" data-i18n-html="code_help">
-            <b>كود التحدي</b> (مثل TP-…) لإنشاء غرفة جديدة • <b>كود الغرفة</b> (٦ خانات) للانضمام لصديقك
+            <b>كود التفعيل TP</b> — لك وحدك (٥ جلسات) • <b>رابط الدعوة</b> — يرسله صديقك لك (٦ أحرف)
           </div>
         </div>
       </div>
@@ -1747,13 +1755,14 @@ body.friend-mode .photo-social-hint { color:rgba(255,255,255,0.78); font-weight:
       <div id="buyerReadyBlock" class="buyer-ready hidden">
         <div class="buyer-ready-badge">✓ <span data-i18n="buyer_ready">كودك جاهز</span></div>
         <div class="buyer-ready-code" id="buyerReadyCode">TP-XXXXXXXX</div>
-        <p class="buyer-ready-hint" data-i18n="buyer_hint">اكتب اسمك، أضف صورتك، وابدأ — نفس الكود يعمل 5 مرات</p>
+        <p class="buyer-ready-hint" data-i18n="buyer_hint">اكتب اسمك وأضف صورتك — ثم ادعُ صديقك برابط الدعوة (لا ترسل له كود TP)</p>
       </div>
 
       <!-- Friend mode: joined via room invite link -->
       <div id="friendReadyBlock" class="buyer-ready friend-ready hidden">
         <div class="buyer-ready-badge friend">🤝 <span data-i18n="friend_ready">صديقك ينتظرك!</span></div>
-        <p class="buyer-ready-hint" data-i18n="friend_hint">اكتب اسمك وأضف صورتك وانضم للتحدي</p>
+        <div class="buyer-ready-code" id="friendReadyRoom" style="font-size:1.4rem;letter-spacing:6px;margin:8px 0">------</div>
+        <p class="buyer-ready-hint" data-i18n="friend_hint">اكتب اسمك وأضف صورتك واضغط «انضم للتحدي»</p>
       </div>
 
       <!-- STEP 2: name (compact) -->
@@ -1847,30 +1856,24 @@ body.friend-mode .photo-social-hint { color:rgba(255,255,255,0.78); font-weight:
       <h2 class="game-title" style="font-size:22px" data-i18n="lobby_title">غرفة التخاطر</h2>
     </div>
     <div class="glass" style="padding:32px">
-      <div class="room-code-display">
-        <div class="room-code-label" data-i18n="lobby_code_label">كود الغرفة – شاركه مع صديقك</div>
-        <div class="room-code-value" id="lobbyRoomCode"></div>
+      <div class="room-code-display" id="inviteSection">
+        <div class="lobby-invite-warn" id="lobbyInviteWarn" data-i18n-html="lobby_invite_warn">⚠️ شارك <b>رابط الدعوة</b> فقط — لا ترسل كود TP لصديقك</div>
+        <div class="room-code-label" data-i18n="lobby_code_label">ادعُ صديقك برابط الدعوة</div>
+        <div class="room-code-value lobby-code-hidden" id="lobbyRoomCode" aria-hidden="true"></div>
         <div id="usesRemainingWrap" style="margin-top:12px; text-align:center; color:rgba(255,255,255,0.55); font-size:12.5px; line-height:1.7;">
-          <span data-i18n="lobby_avail">متاح في كودك:</span>
+          <span data-i18n="lobby_avail">جلسات متبقية في كودك:</span>
           <span id="usesRemaining" style="color:var(--neon-green); font-weight:800; font-size:14px; transition:all 0.4s">5</span>
-          <span style="opacity:0.6">/ <span id="usesMax">5</span> <span data-i18n="lobby_sessions">جلسات</span></span>
-          <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px" data-i18n="lobby_deduct">سيُحسم 1 عند بدء التحدي فقط</div>
+          <span style="opacity:0.6">/ <span id="usesMax">5</span></span>
+          <div style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px" data-i18n="lobby_deduct">تُخصم جلسة واحدة عند بدء التحدي فقط</div>
         </div>
         <button class="invite-btn-xl" onclick="shareInviteSmart()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          <span data-i18n="lobby_invite">ادعُ صديقك للانضمام</span>
+          <span data-i18n="lobby_invite">إرسال رابط الدعوة لصديقك</span>
         </button>
         <div style="display:flex;gap:8px;margin-top:8px;justify-content:center;flex-wrap:wrap">
-          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyInviteLink()" data-i18n="lobby_copy_link">📋 نسخ الرابط</button>
-          <button type="button" class="copy-btn" style="flex:1;min-width:130px;max-width:200px" onclick="copyCode()" data-i18n="lobby_copy_code">🔢 نسخ الكود</button>
+          <button type="button" class="copy-btn" style="flex:1;min-width:160px;max-width:280px" onclick="copyInviteLink()" data-i18n="lobby_copy_link">📋 نسخ رابط الدعوة</button>
         </div>
-        <div id="lobbyQrWrap" style="margin-top:18px;text-align:center;display:none">
-          <div style="display:inline-block;padding:10px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.45),0 0 0 1px rgba(212,175,55,0.4)">
-            <img id="lobbyQrImg" alt="QR" width="170" height="170" style="display:block;border-radius:6px">
-          </div>
-          <div style="margin-top:8px;font-size:11.5px;color:rgba(255,255,255,0.5)" data-i18n="lobby_scan">امسح الرمز بكاميرا صديقك للانضمام</div>
-        </div>
-        <p class="muted-sub" style="margin-top:8px" data-i18n="lobby_autocopy">سيُنسخ الرابط تلقائياً إذا لم تتوفّر المشاركة</p>
+        <p class="muted-sub" style="margin-top:8px">أرسل الرابط فقط — البطاقات وQR مكانها صفحة العميل والطباعة</p>
         <div id="lobbyExtraButtons" aria-hidden="true">
           <button class="copy-btn" onclick="copyCode()">نسخ الكود</button>
           <button class="copy-btn" onclick="copyInviteLink()">نسخ الرابط</button>
@@ -2063,6 +2066,7 @@ body.friend-mode .photo-social-hint { color:rgba(255,255,255,0.78); font-weight:
 
 <!-- Firebase SDK بدلاً من Socket.IO -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 
 <script>
@@ -2078,6 +2082,24 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+window.__playerAuthUid = null;
+window.__playAuthReady = (async () => {
+  if (window.__playerAuthUid) return window.__playerAuthUid;
+  try {
+    if (typeof firebase.auth !== 'function') return null;
+    const auth = firebase.auth();
+    if (!auth.currentUser) await auth.signInAnonymously();
+    window.__playerAuthUid = auth.currentUser.uid;
+    return window.__playerAuthUid;
+  } catch (e) {
+    console.warn('[play] anonymous auth optional skip', e);
+    return null;
+  }
+})();
+async function ensurePlayAuth() {
+  try { return await window.__playAuthReady; }
+  catch (_) { return null; }
+}
 
 // نفس بيانات اللعبة من السيرفر بالضبط — نسخة عربية + نسخة إنجليزية
 // ملاحظة: ترتيب الخيارات (index) متطابق بين اللغتين حتى يبقى حساب التطابق صحيحاً.
@@ -2179,17 +2201,17 @@ const I18N = {
   ar: {
     home_back: '← الرئيسية',
     home_subtitle: 'قِس مدى توافق عقولكما — في 4 مراحل ذكية',
-    home_enter_code: 'أدخل الكود',
+    home_enter_code: 'كود التفعيل أو رابط الدعوة',
     home_name_ph: 'اسمك',
-    home_photo: 'أضف صورتك (اختياري)',
+    home_photo: 'أضف صورتك (مطلوب للتحدي)',
     home_start: 'ابدأ التحدي  ←',
     home_last_result: 'عرض آخر نتيجة',
     home_no_code: 'لا تملك كوداً؟ <a href="/" class="tp-link"><strong>احصل على واحد</strong></a>',
-    code_ph: 'TP-XXXXXXXX  أو  ABC123',
-    chip_empty: 'اكتب كودك للبدء',
-    chip_room: 'كود غرفة — للانضمام لصديقك',
-    chip_access: 'كود تحدي — لإنشاء غرفة جديدة',
-    chip_short: 'كود قصير — تحقق منه',
+    code_ph: 'TP-XXXXXXXX',
+    chip_empty: 'كود TP للتفعيل أو رابط دعوة من صديق',
+    chip_room: 'رابط دعوة — للانضمام لصديقك',
+    chip_access: 'كود تفعيل — ٥ جلسات (لك وحدك)',
+    chip_short: 'صيغة غير مكتملة',
     pw_title: 'كود التحدي',
     pw_desc: 'أدخل الكود لإنشاء غرفة جديدة أو متابعة غرفة مفتوحة',
     pw_ph: 'مثال: TP-AB12CD34',
@@ -2210,15 +2232,14 @@ const I18N = {
     created_again: 'إنشاء كود آخر',
     created_join_this: 'انضمام بهذا الكود',
     lobby_title: 'غرفة التخاطر',
-    lobby_code_label: 'كود الغرفة – شاركه مع صديقك',
-    lobby_avail: 'متاح في كودك:',
+    lobby_invite_warn: '⚠️ شارك <b>رابط الدعوة</b> فقط — لا ترسل كود TP لصديقك',
+    lobby_code_label: 'ادعُ صديقك برابط الدعوة',
+    lobby_avail: 'جلسات متبقية في كودك:',
     lobby_sessions: 'جلسات',
-    lobby_deduct: 'سيُحسم 1 عند بدء التحدي فقط',
-    lobby_invite: 'ادعُ صديقك للانضمام',
-    lobby_copy_link: '📋 نسخ الرابط',
-    lobby_copy_code: '🔢 نسخ الكود',
-    lobby_scan: 'امسح الرمز بكاميرا صديقك للانضمام',
-    lobby_autocopy: 'سيُنسخ الرابط تلقائياً إذا لم تتوفّر المشاركة',
+    lobby_deduct: 'تُخصم جلسة واحدة عند بدء التحدي فقط',
+    lobby_invite: 'إرسال رابط الدعوة لصديقك',
+    lobby_copy_link: '📋 نسخ رابط الدعوة',
+    invite_share_text: 'انضم لتحدي التخاطر معي (رابط الدعوة): ',
     lobby_waiting: 'في انتظار اللاعب الثاني...',
     lobby_connected: 'تم الاتصال — التحدي يبدأ خلال لحظات...',
     lobby_ready: 'مستعد – ابدأ التحدي',
@@ -2238,7 +2259,7 @@ const I18N = {
     cmp_phase4: 'المرحلة 4 – التحدي الروحي',
     card_p_images: 'الصور', card_p_thoughts: 'الأفكار', card_p_mind: 'الذهني', card_p_emotional: 'العاطفي',
     timer_unit: 'ث',
-    code_help: '<b>كود التحدي</b> (مثل TP-…) لإنشاء غرفة جديدة • <b>كود الغرفة</b> (٦ خانات) للانضمام لصديقك',
+    code_help: '<b>كود التفعيل TP</b> — لك وحدك (٥ جلسات) • <b>رابط الدعوة</b> — من صديقك (٦ أحرف)',
     res_details: 'تفاصيل المراحل والمقارنة',
     howto_open: 'كيف تلعب؟',
     howto_title: 'كيف تلعب؟',
@@ -2253,7 +2274,7 @@ const I18N = {
     howto_s4_d: 'في النهاية ترون نسبة التخاطر وتفاصيل كل مرحلة، ويمكنكم مشاركة بطاقة النتيجة.',
     howto_got_it: 'فهمت، لنبدأ!',
     buyer_ready: 'كودك جاهز',
-    buyer_hint: 'اكتب اسمك، أضف صورتك، وابدأ — نفس الكود يعمل 5 مرات',
+    buyer_hint: 'اكتب اسمك وأضف صورتك — ثم ادعُ صديقك برابط الدعوة (لا ترسل له كود TP)',
     friend_ready: 'صديقك ينتظرك!',
     friend_hint: 'اكتب اسمك وأضف صورتك وانضم للتحدي',
     home_photo_social: 'صورتك تظهر لصديقك — العب وشوفوا وجه بعض 💜',
@@ -2262,17 +2283,17 @@ const I18N = {
   en: {
     home_back: '← Home',
     home_subtitle: 'Measure how in-sync your minds are — across 4 smart phases',
-    home_enter_code: 'Enter your code',
+    home_enter_code: 'Activation code or invite link',
     home_name_ph: 'Your name',
-    home_photo: 'Add your photo (optional)',
+    home_photo: 'Add your photo (required for play)',
     home_start: 'Start the challenge  →',
     home_last_result: 'View last result',
     home_no_code: "Don't have a code? <a href=\"/\" class=\"tp-link\"><strong>Get one</strong></a>",
-    code_ph: 'TP-XXXXXXXX  or  ABC123',
-    chip_empty: 'Type your code to start',
-    chip_room: 'Room code — to join your friend',
-    chip_access: 'Challenge code — to create a new room',
-    chip_short: 'Code looks short — check it',
+    code_ph: 'TP-XXXXXXXX',
+    chip_empty: 'TP code or friend invite link',
+    chip_room: 'Invite link — join your friend',
+    chip_access: 'Activation code — 5 sessions (yours only)',
+    chip_short: 'Incomplete format',
     pw_title: 'Challenge code',
     pw_desc: 'Enter the code to create a new room or continue an open one',
     pw_ph: 'e.g. TP-AB12CD34',
@@ -2293,15 +2314,14 @@ const I18N = {
     created_again: 'Create another code',
     created_join_this: 'Join with this code',
     lobby_title: 'Telepathy Room',
-    lobby_code_label: 'Room code – share it with your friend',
-    lobby_avail: 'Available in your code:',
+    lobby_invite_warn: '⚠️ Share the <b>invite link</b> only — do not send your TP code to your friend',
+    lobby_code_label: 'Invite your friend with the link',
+    lobby_avail: 'Sessions left on your code:',
     lobby_sessions: 'sessions',
-    lobby_deduct: '1 is deducted only when the challenge starts',
-    lobby_invite: 'Invite your friend to join',
-    lobby_copy_link: '📋 Copy link',
-    lobby_copy_code: '🔢 Copy code',
-    lobby_scan: "Scan the code with your friend's camera to join",
-    lobby_autocopy: 'The link is copied automatically if sharing is unavailable',
+    lobby_deduct: '1 session is used only when the challenge starts',
+    lobby_invite: 'Send invite link to your friend',
+    lobby_copy_link: '📋 Copy invite link',
+    invite_share_text: 'Join my Telepathy Challenge (invite link): ',
     lobby_waiting: 'Waiting for the second player...',
     lobby_connected: 'Connected — the challenge starts in a moment...',
     lobby_ready: 'Ready – start the challenge',
@@ -2321,7 +2341,7 @@ const I18N = {
     cmp_phase4: 'Phase 4 – Spiritual challenge',
     card_p_images: 'Images', card_p_thoughts: 'Thoughts', card_p_mind: 'Mind', card_p_emotional: 'Emotional',
     timer_unit: 's',
-    code_help: '<b>Challenge code</b> (like TP-…) creates a new room • <b>Room code</b> (6 chars) joins your friend',
+    code_help: '<b>TP activation code</b> — yours only (5 sessions) • <b>Invite link</b> — from your friend (6 chars)',
     res_details: 'Phase details & comparison',
     howto_open: 'How to play?',
     howto_title: 'How to play?',
@@ -2336,7 +2356,7 @@ const I18N = {
     howto_s4_d: 'At the end you see your telepathy score and each phase breakdown, and can share a result card.',
     howto_got_it: "Got it, let's start!",
     buyer_ready: 'Your code is ready',
-    buyer_hint: 'Enter your name, add your photo, and start — same code works 5 times',
+    buyer_hint: 'Enter your name and photo — then invite your friend via link (do not send them your TP code)',
     friend_ready: 'Your friend is waiting!',
     friend_hint: 'Enter your name, add your photo, and join the challenge',
     home_photo_social: 'Your photo shows to your friend — play face to face 💜',
@@ -2459,9 +2479,52 @@ function inviteLinkFor(code) {
   return `${location.origin}/play?room=${encodeURIComponent(code)}&lang=${l}`;
 }
 
+function sessionOwnerStorageKey(sessionCode) {
+  const norm = (typeof TPCodes !== 'undefined' && TPCodes.normalize)
+    ? TPCodes.normalize(sessionCode) : String(sessionCode || '').toUpperCase().trim();
+  return 'tp_owned_session_' + norm;
+}
+function markLocalSessionOwner(sessionCode, roomId) {
+  try {
+    if (sessionCode && roomId) localStorage.setItem(sessionOwnerStorageKey(sessionCode), roomId);
+  } catch (_) {}
+}
+function isLocalSessionOwner(sessionCode, roomId) {
+  try {
+    return localStorage.getItem(sessionOwnerStorageKey(sessionCode)) === roomId;
+  } catch (_) { return false; }
+}
+function clearLocalSessionOwner(sessionCode) {
+  try { localStorage.removeItem(sessionOwnerStorageKey(sessionCode)); } catch (_) {}
+}
+
 function accessRoomRef(accessCode) {
   const key = TPCodes.normalize(accessCode);
   return db.ref('accessRooms/' + key);
+}
+
+async function resolveSessionRoomCode(sessionCode) {
+  const code = TPCodes.normalize(sessionCode);
+  if (!/^JS-/i.test(code)) return '';
+  try {
+    const idxSnap = await db.ref('sessionIndex/' + code).once('value');
+    const idx = idxSnap.val();
+    if (idx && /^[A-Z0-9]{6}$/.test(idx.roomId || '')) {
+      const roomSnap = await db.ref('rooms/' + idx.roomId).once('value');
+      const room = roomSnap.val();
+      if (room && !room.expired && room.accessCode === code) return idx.roomId;
+    }
+  } catch (_) {}
+  try {
+    const markerSnap = await accessRoomRef(code).once('value');
+    const marker = markerSnap.val();
+    if (marker && /^[A-Z0-9]{6}$/.test(marker.roomId || '')) {
+      const roomSnap = await db.ref('rooms/' + marker.roomId).once('value');
+      const room = roomSnap.val();
+      if (room && !room.expired && room.accessCode === code) return marker.roomId;
+    }
+  } catch (_) {}
+  return '';
 }
 
 async function inspectAccessRoom(accessCode) {
@@ -2486,9 +2549,10 @@ async function inspectAccessRoom(accessCode) {
   if (room.status === 'playing') return { state: 'busy', roomId: marker.roomId };
 
   if (room.status === 'waiting') {
-    // Pre-game lobby: both players present, session not consumed yet
+    // Pre-game lobby: both players present
     if (hasP1 && hasP2 && totalUses === 0) return { state: 'busy', roomId: marker.roomId };
-    // Post-game or abandoned lobby — allow a fresh session (same TP code, new room)
+    // Solo lobby — buyer waiting for friend: rejoin same room (don't spawn duplicate)
+    if (hasP1 && !hasP2 && totalUses === 0) return { state: 'rejoin', roomId: marker.roomId };
     return { state: 'stale', roomId: marker.roomId };
   }
 
@@ -2497,6 +2561,7 @@ async function inspectAccessRoom(accessCode) {
 
 async function enterWithAccessCode(accessCode, validation) {
   if (roomRef && roomCode) return showToast('أنت داخل غرفة بالفعل');
+  await ensurePlayAuth();
   const code = TPCodes.normalize(accessCode);
   if (!code) return showToast('أدخل الكود');
 
@@ -2512,6 +2577,11 @@ async function enterWithAccessCode(accessCode, validation) {
     const existing = await inspectAccessRoom(code);
     if (existing.state === 'busy') {
       showToast('الجلسة الحالية لا تزال نشطة. انتظر انتهاءها أو اضغط «تحدي جديد»');
+      return;
+    }
+    if (existing.state === 'rejoin' && existing.roomId) {
+      window.__activeAccessCode = code;
+      await reconnectToRoom(existing.roomId);
       return;
     }
     if (existing.state === 'stale') {
@@ -2563,12 +2633,15 @@ function confirmPassword() {
 async function createRoom(roomCodeOverride) {
   const name = getName();
   if (!name) return showToast('أدخل اسمك أولاً');
+  await ensurePlayAuth();
+  const authUid = window.__playerAuthUid;
 
   const code = roomCodeOverride || generateRoomCode();
   roomCode = code;
   roomRef = db.ref('rooms/' + code);
   myIndex = 0;
   const player = { name: name, id: myPlayerId, ready: false };
+  if (authUid) player.authUid = authUid;
   if (window.__pendingPhoto) player.photo = window.__pendingPhoto;
   const maxUses = Number(window.__codeMaxSessions || 5);
   const totalUses = Number(window.__codeUsedSessions || 0);
@@ -2599,8 +2672,13 @@ async function createRoom(roomCodeOverride) {
   usesRemainingCount = maxUses - totalUses;
   document.getElementById('usesRemaining').textContent = usesRemainingCount;
   const _maxEl = document.getElementById('usesMax'); if (_maxEl) _maxEl.textContent = maxUses;
-  showToast('✅ تم إنشاء الغرفة. شارك الرابط مع اللاعب الثاني');
+  showToast('✅ تم إنشاء الغرفة. أرسل رابط الدعوة لصديقك');
+  if (window.__activeAccessCode && /^JS-/i.test(window.__activeAccessCode)) {
+    markLocalSessionOwner(window.__activeAccessCode, code);
+    if (window.TPAccount) TPAccount.markSessionActive(window.__activeAccessCode, code).catch(() => {});
+  }
   showSection('lobbySection');
+  updateLobbyInviteUI();
   attachRoomListeners();
 }
 
@@ -2616,28 +2694,111 @@ function prepareJoinWithCode(code) {
   showSection('joinSection');
 }
 
+function roomUsesMsg(maxUses) {
+  const n = Number(maxUses) || 5;
+  return 'انتهت صلاحية كود الغرفة — تم استخدامه ' + n + ' ' + (n === 1 ? 'مرة' : 'مرات') + ' بالفعل';
+}
+
+/** Reconnect host (buyer) or returning player to an existing lobby room. */
+async function reconnectToRoom(code) {
+  const name = getName();
+  if (!name) return showToast('أدخل اسمك أولاً');
+  await ensurePlayAuth();
+  const authUid = window.__playerAuthUid;
+  const ref = db.ref('rooms/' + code);
+  const snap = await ref.once('value');
+  const room = snap.val();
+  if (!room || room.expired) return showToast('الغرفة غير موجودة أو انتهت');
+  if (room.totalUses >= room.maxUses) {
+    return showToast(roomUsesMsg(room.maxUses));
+  }
+
+  roomCode = code;
+  roomRef = ref;
+  const players = room.players || {};
+  const p1 = players.player1;
+  const p2 = players.player2;
+
+  if (authUid && p1 && p1.authUid === authUid) {
+    myIndex = 0;
+  } else if (authUid && p2 && p2.authUid === authUid) {
+    myIndex = 1;
+  } else if (window.__friendMode && p1 && !p2) {
+    myIndex = 1;
+  } else if (window.__buyerMode && p1 && !p2 && room.accessCode && isLocalSessionOwner(room.accessCode, code)) {
+    myIndex = 0;
+  } else if (p1 && !p2) {
+    myIndex = 1;
+  } else if (!p1) {
+    myIndex = 0;
+  } else {
+    return showToast('الغرفة مشغولة الآن');
+  }
+
+  const pk = myIndex === 0 ? 'player1' : 'player2';
+  const player = { name, id: myPlayerId, ready: (players[pk] && players[pk].ready) || false };
+  if (authUid) player.authUid = authUid;
+  if (window.__pendingPhoto) player.photo = window.__pendingPhoto;
+  else if (players[pk] && players[pk].photo) player.photo = players[pk].photo;
+
+  await ref.child('players/' + pk).set(player);
+  playerNames[myIndex] = name;
+  playerPhotos[myIndex] = player.photo || '';
+  usesRemainingCount = (room.maxUses || 1) - (room.totalUses || 0);
+
+  document.getElementById('lobbyRoomCode').textContent = code;
+  document.getElementById('usesRemaining').textContent = usesRemainingCount;
+  const _maxEl2 = document.getElementById('usesMax'); if (_maxEl2) _maxEl2.textContent = room.maxUses || 1;
+  if (room.accessCode) window.__activeAccessCode = room.accessCode;
+  showToast(myIndex === 0 ? '✅ عدتَ للغرفة — أرسل الدعوة لصديقك' : '✅ انضممت للغرفة بنجاح');
+  showSection('lobbySection');
+  updateLobbyInviteUI();
+  attachRoomListeners();
+}
+
 // ===== الانضمام لغرفة (Firebase بدل Socket.IO) =====
 async function joinRoom() {
   const name = getName();
   const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
-  if (!code) return showToast('أدخل كود الغرفة');
+  if (!code) return showToast('أدخل رابط الدعوة أو رمز الانضمام');
   if (!name) return showToast('أدخل اسمك أولاً');
+  await ensurePlayAuth();
+  const authUid = window.__playerAuthUid;
 
   const ref = db.ref('rooms/' + code);
   const snap = await ref.once('value');
   const room = snap.val();
 
   if (!room) return showToast('الغرفة غير موجودة - تأكد من كود الغرفة أو أنشئ واحدة جديدة');
-  if (room.expired) return showToast('انتهت صلاحية كود الغرفة - تم استخدامه 5 مرات بالفعل');
+  if (room.expired) return showToast(roomUsesMsg(room.maxUses));
   if (room.totalUses >= room.maxUses) {
     await ref.update({ expired: true });
-    return showToast('انتهت صلاحية كود الغرفة - تم استخدامه 5 مرات بالفعل');
+    return showToast(roomUsesMsg(room.maxUses));
   }
 
   const players = room.players || {};
   const playerKeys = Object.keys(players);
 
   if (room.status === 'playing' && playerKeys.length >= 2) return showToast('اللعبة بدأت بالفعل');
+
+  // Reconnect returning player instead of taking a new slot
+  if (authUid && players.player1 && players.player1.authUid === authUid) {
+    document.getElementById('roomCodeInput').value = code;
+    window.__friendMode = true;
+    return reconnectToRoom(code);
+  }
+  if (authUid && players.player2 && players.player2.authUid === authUid) {
+    document.getElementById('roomCodeInput').value = code;
+    window.__friendMode = true;
+    return reconnectToRoom(code);
+  }
+  // Buyer reopening session link while alone in lobby (not a friend invite)
+  if (window.__buyerMode && !window.__friendMode && players.player1 && !players.player2 && room.status === 'waiting') {
+    const isOwner = (authUid && players.player1.authUid === authUid)
+      || (room.accessCode && isLocalSessionOwner(room.accessCode, code));
+    if (isOwner) return reconnectToRoom(code);
+  }
+
   if (playerKeys.length >= 2) return showToast('الغرفة مشغولة الآن');
   if (!players.player1 && players.player2) return showToast('الغرفة غير جاهزة الآن. أنشئ غرفة جديدة');
 
@@ -2647,12 +2808,14 @@ async function joinRoom() {
   if (playerKeys.length === 0) {
     myIndex = 0;
     const player = { name: name, id: myPlayerId, ready: false };
+    if (authUid) player.authUid = authUid;
     if (window.__pendingPhoto) player.photo = window.__pendingPhoto;
     const joined = await ref.child('players/player1').transaction((current) => current ? undefined : player);
     if (!joined.committed) return showToast('الغرفة مشغولة الآن');
   } else {
     myIndex = 1;
     const player = { name: name, id: myPlayerId, ready: false };
+    if (authUid) player.authUid = authUid;
     if (window.__pendingPhoto) player.photo = window.__pendingPhoto;
     const joined = await ref.child('players/player2').transaction((current) => current ? undefined : player);
     if (!joined.committed) return showToast('الغرفة مشغولة الآن');
@@ -2667,8 +2830,23 @@ async function joinRoom() {
   const _maxEl2 = document.getElementById('usesMax'); if (_maxEl2) _maxEl2.textContent = room.maxUses || 5;
   showToast('✅ انضممت للغرفة بنجاح');
   showSection('lobbySection');
+  updateLobbyInviteUI();
 
   attachRoomListeners();
+}
+
+function updateLobbyInviteUI() {
+  const warn = document.getElementById('lobbyInviteWarn');
+  const isLegacyAccessCode = window.__activeAccessCode && !/^JS-/i.test(window.__activeAccessCode);
+  if (warn) warn.style.display = (myIndex === 0 && isLegacyAccessCode) ? 'block' : 'none';
+
+  const inviteSection = document.getElementById('inviteSection');
+  if (inviteSection) {
+    const p1Name = document.getElementById('lobbyP1Name')?.textContent;
+    const p2Name = document.getElementById('lobbyP2Name')?.textContent;
+    const isFull = p1Name && p1Name !== '-' && p2Name && p2Name !== '-';
+    inviteSection.style.display = isFull ? 'none' : 'block';
+  }
 }
 
 // نسخ الكود
@@ -2700,29 +2878,63 @@ async function playerReady() {
 }
 
 // ===== المستمعات (Firebase Listeners بدل Socket.IO events) =====
+function applyLobbyPlayersFromSnap(p) {
+  if (!p) return;
+  if (p.player1) { playerNames[0] = p.player1.name; playerPhotos[0] = p.player1.photo || ''; }
+  if (p.player2) { playerNames[1] = p.player2.name; playerPhotos[1] = p.player2.photo || ''; }
+  if (p.player1 && p.player2) {
+    document.getElementById('waitingArea').style.display = 'none';
+    document.getElementById('lobbyPlayers').style.display = 'block';
+    document.getElementById('lobbyP1Name').textContent = playerNames[0];
+    document.getElementById('lobbyP2Name').textContent = playerNames[1];
+    setAvatar(document.getElementById('lobbyP1Avatar'), playerNames[0], playerPhotos[0]);
+    setAvatar(document.getElementById('lobbyP2Avatar'), playerNames[1], playerPhotos[1]);
+    updateLobbyInviteUI();
+    stopLobbyPoll();
+    if (p.player1.ready && p.player2.ready && myIndex === 0 && !gameStarted) {
+      startGame();
+    }
+  }
+}
+
+function stopLobbyPoll() {
+  if (window.__lobbyPoll) {
+    clearInterval(window.__lobbyPoll);
+    window.__lobbyPoll = null;
+  }
+}
+
+function startLobbyPoll() {
+  stopLobbyPoll();
+  window.__lobbyPoll = setInterval(async () => {
+    const wa = document.getElementById('waitingArea');
+    if (!roomRef || !wa || wa.style.display === 'none') {
+      stopLobbyPoll();
+      return;
+    }
+    try {
+      const snap = await roomRef.child('players').once('value');
+      applyLobbyPlayersFromSnap(snap.val());
+    } catch (_) {}
+  }, 2500);
+}
+
+function detachRoomListeners() {
+  if (!roomRef) return;
+  roomRef.child('players').off();
+  roomRef.child('status').off();
+  roomRef.child('roundSubmissions').off();
+  roomRef.child('gameState').off();
+  stopLobbyPoll();
+}
+
 function attachRoomListeners() {
+  detachRoomListeners();
   // مراقبة اللاعبين
   roomRef.child('players').on('value', (snap) => {
-    const p = snap.val();
-    if (!p) return;
-
-    if (p.player1) { playerNames[0] = p.player1.name; playerPhotos[0] = p.player1.photo || ''; }
-    if (p.player2) { playerNames[1] = p.player2.name; playerPhotos[1] = p.player2.photo || ''; }
-
-    if (p.player1 && p.player2) {
-      document.getElementById('waitingArea').style.display = 'none';
-      document.getElementById('lobbyPlayers').style.display = 'block';
-      document.getElementById('lobbyP1Name').textContent = playerNames[0];
-      document.getElementById('lobbyP2Name').textContent = playerNames[1];
-      setAvatar(document.getElementById('lobbyP1Avatar'), playerNames[0], playerPhotos[0]);
-      setAvatar(document.getElementById('lobbyP2Avatar'), playerNames[1], playerPhotos[1]);
-
-      // كلا اللاعبين جاهزين - اللاعب الأول يبدأ اللعبة
-      if (p.player1.ready && p.player2.ready && myIndex === 0 && !gameStarted) {
-        startGame();
-      }
-    }
+    applyLobbyPlayersFromSnap(snap.val());
   });
+  startLobbyPoll();
 
   // مراقبة حالة اللعبة
   roomRef.child('status').on('value', (snap) => {
@@ -2796,21 +3008,34 @@ async function startGame() {
   const snap = await roomRef.once('value');
   const room = snap.val();
   let maxUses = Number(room.maxUses || 5);
-  let newUses = (room.totalUses || 0) + 1;
+  let newUses = Number(room.totalUses || 0);
   let remainingAfterStart = maxUses - newUses;
+  const isJsSession = room.accessCode && /^JS-/i.test(room.accessCode);
 
   if (room.accessCode) {
-    const access = await TPCodes.consume(room.accessCode);
-    if (!access.ok) {
-      await roomRef.update({ expired: true });
-      await roomRef.child('gameState').set({ event: 'roomExpired', message: access.message || 'انتهت صلاحية الكود' });
-      await accessRoomRef(room.accessCode).remove().catch(() => {});
-      return;
+    if (isJsSession) {
+      const v = await TPCodes.validate(room.accessCode);
+      if (!v.ok) {
+        await roomRef.update({ expired: true });
+        await roomRef.child('gameState').set({ event: 'roomExpired', message: v.message || 'انتهت صلاحية البطاقة' });
+        await accessRoomRef(room.accessCode).remove().catch(() => {});
+        return;
+      }
+      maxUses = Number(v.maxSessions || 1);
+      remainingAfterStart = maxUses - newUses;
+    } else {
+      const access = await TPCodes.consume(room.accessCode);
+      if (!access.ok) {
+        await roomRef.update({ expired: true });
+        await roomRef.child('gameState').set({ event: 'roomExpired', message: access.message || 'انتهت صلاحية الكود' });
+        await accessRoomRef(room.accessCode).remove().catch(() => {});
+        return;
+      }
+      maxUses = Number(access.maxSessions || maxUses);
+      newUses = Number(access.usedSessions || (maxUses - access.remaining));
+      remainingAfterStart = Number(access.remaining || 0);
+      if (TPCodes.bumpSessions) TPCodes.bumpSessions();
     }
-    maxUses = Number(access.maxSessions || maxUses);
-    newUses = Number(access.usedSessions || (maxUses - access.remaining));
-    remainingAfterStart = Number(access.remaining || 0);
-    if (TPCodes.bumpSessions) TPCodes.bumpSessions();
   }
 
   if (newUses > maxUses) {
@@ -2820,18 +3045,24 @@ async function startGame() {
     return;
   }
 
-  await roomRef.update({
+  const gameStartPatch = {
     status: 'playing',
     phase: 1,
     round: 0,
     maxUses: maxUses,
-    totalUses: newUses,
     answers: {
       player1: { phase1: {}, phase2: {}, phase3: {}, phase4: {} },
       player2: { phase1: {}, phase2: {}, phase3: {}, phase4: {} }
     },
     roundSubmissions: {}
-  });
+  };
+  if (!isJsSession) {
+    gameStartPatch.totalUses = newUses;
+  } else {
+    gameStartPatch.accessConsumed = true;
+  }
+
+  await roomRef.update(gameStartPatch);
 
   usesRemainingCount = remainingAfterStart;
   const _ur = document.getElementById('usesRemaining');
@@ -2945,7 +3176,18 @@ async function calculateAndShowResults() {
   if (myIndex === 0) {
     const roomSnap = await roomRef.once('value');
     const room = roomSnap.val();
-    const usesRemaining = room.maxUses - room.totalUses;
+    const isJsSession = room.accessCode && /^JS-/i.test(room.accessCode);
+    let usesRemaining = room.maxUses - room.totalUses;
+
+    if (isJsSession && room.accessCode) {
+      const partnerName = (playerNames[1] || (room.players && room.players.player2 && room.players.player2.name) || '').trim();
+      await TPCodes.consume(room.accessCode, {
+        sessionMeta: { scorePct: totalPct, partnerName, roomId: roomCode },
+      }).catch(() => {});
+      usesRemaining = 0;
+      await roomRef.update({ totalUses: 1, expired: true }).catch(() => {});
+      await accessRoomRef(room.accessCode).remove().catch(() => {});
+    }
 
     await roomRef.child('gameState').set({
       event: 'gameOver',
@@ -2953,8 +3195,8 @@ async function calculateAndShowResults() {
       usesRemaining: usesRemaining
     });
 
-    // Free access code for next session (same TP code → new room)
-    if (room.accessCode) {
+    // Free access code for next session (legacy TP multi-session codes)
+    if (room.accessCode && !isJsSession) {
       await accessRoomRef(room.accessCode).remove().catch(() => {});
     }
 
@@ -3316,18 +3558,25 @@ function shareResult() {
 
 // ===== تحدي جديد: مغادرة كاملة + العودة للصفحة الرئيسية =====
 async function newChallenge() {
-  // Detach Firebase listeners and remove this player from the room
+  const accessToFree = window.__activeAccessCode || null;
+  let shouldReturnSession = false;
   try {
-    const accessToFree = window.__activeAccessCode || null;
     if (roomRef) {
       const snap = await roomRef.once('value').catch(() => null);
-      const ac = (snap && snap.val() && snap.val().accessCode) || accessToFree;
+      const room = snap && snap.val();
+      const ac = (room && room.accessCode) || accessToFree;
+      if (ac && /^JS-/i.test(ac) && room && room.status === 'waiting' && !room.accessConsumed) {
+        shouldReturnSession = ac;
+      }
       if (ac) await accessRoomRef(ac).remove().catch(() => {});
       const pk = (typeof myIndex !== 'undefined' && myIndex === 0) ? 'player1' : 'player2';
       roomRef.child('players/' + pk).remove().catch(() => {});
       roomRef.off();
     } else if (accessToFree) {
       await accessRoomRef(accessToFree).remove().catch(() => {});
+    }
+    if (shouldReturnSession && window.TPAccount && TPAccount.returnSession) {
+      await TPAccount.returnSession(shouldReturnSession).catch(() => {});
     }
   } catch (_) {}
 
@@ -3349,7 +3598,7 @@ async function newChallenge() {
   window.__codeUsedSessions = null;
 
   const urlParams = new URLSearchParams(location.search);
-  const urlAccessCode = (urlParams.get('code') || '').toUpperCase().trim();
+  const urlAccessCode = (urlParams.get('code') || urlParams.get('session') || '').toUpperCase().trim();
   const urlRoomCode = (urlParams.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   try {
     if (urlAccessCode && !/^[A-Z0-9]{6}$/.test(urlAccessCode)) {
@@ -3385,7 +3634,17 @@ async function newChallenge() {
 
 // ===== جولة جديدة مع نفس الصديق (يبقى الاثنان في نفس الغرفة) =====
 async function playSameFriend() {
-  if (!roomRef) return newChallenge(); // safety: if room is gone, full reset
+  if (!roomRef) return newChallenge();
+  const snap = await roomRef.once('value').catch(() => null);
+  const room = snap && snap.val();
+  if (room && room.accessCode && /^JS-/i.test(room.accessCode)) {
+    showToast('بطاقة الجلسة لمرة واحدة — ابدأ تحدياً جديداً من حسابك');
+    return newChallenge();
+  }
+  if (room && Number(room.maxUses || 1) <= 1) {
+    showToast('لا يمكن إعادة اللعب بهذه البطاقة — ابدأ تحدياً جديداً');
+    return newChallenge();
+  }
   hasAnswered = false;
   gameStarted = false;
   currentPhase = 1;
@@ -3491,20 +3750,81 @@ async function quickStart() {
   const codeRaw = (document.getElementById('quickCode').value || '').trim().toUpperCase();
   if (!codeRaw) { window.__quickStartBusy = false; showToast('أدخل الكود'); return; }
 
-  // smart routing:
-  //  - exactly 6 alphanumeric chars => room code (join)
-  //  - anything else (TP-XXX, longer, with dash) => access code (create new session)
+  if (window.__pendingReconnectRoom && window.__buyerMode) {
+    const roomId = window.__pendingReconnectRoom;
+    const sessionNorm = (document.getElementById('quickCode').value || '').trim();
+    window.__pendingReconnectRoom = null;
+    try {
+      if (isLocalSessionOwner(sessionNorm, roomId)) {
+        await reconnectToRoom(roomId);
+        return;
+      }
+      window.__buyerMode = false;
+      window.__friendMode = true;
+      if (typeof window.__enterFriendMode === 'function') window.__enterFriendMode(roomId);
+      document.getElementById('roomCodeInput').value = roomId;
+      await joinRoom();
+      return;
+    } catch (_) {}
+  }
+
   const isRoomCode = /^[A-Z0-9]{6}$/.test(codeRaw);
+  const isSessionCode = /^JS[-_]?[A-Z0-9]{4,}$/i.test(codeRaw);
+  const isAccessCode = typeof TPCodes !== 'undefined' && TPCodes.normalize;
+
+  async function startWithAccessCode(raw) {
+    const norm = TPCodes.normalize(raw);
+    if (!norm) { showToast('أدخل الكود'); return; }
+    const res = await TPCodes.validate(norm);
+    if (!res.ok) { showToast(res.message || 'كود غير صالح'); return; }
+    window.__activeAccessCode = norm;
+    window.__codeRemaining = res.remaining;
+    window.__codeMaxSessions = res.maxSessions || 5;
+    window.__codeUsedSessions = res.usedSessions || 0;
+    if (typeof enterWithAccessCode === 'function') {
+      await enterWithAccessCode(norm, res);
+    }
+  }
 
   try {
     if (isRoomCode) {
       document.getElementById('roomCodeInput').value = codeRaw;
       await joinRoom();
-    } else {
-      document.getElementById('passwordInput').value = codeRaw;
-      if (typeof window.confirmPassword === 'function') {
-        await window.confirmPassword();
+    } else if (isSessionCode) {
+      const norm = isAccessCode ? TPCodes.normalize(codeRaw) : codeRaw;
+      let joined = false;
+      try {
+        const existingRoom = (typeof resolveSessionRoomCode === 'function')
+          ? await resolveSessionRoomCode(norm) : '';
+        if (existingRoom) {
+          const isOwner = isLocalSessionOwner(norm, existingRoom);
+          if (window.__buyerMode && isOwner) {
+            await reconnectToRoom(existingRoom);
+          } else {
+            if (!window.__friendMode && typeof window.__enterFriendMode === 'function') {
+              window.__enterFriendMode(existingRoom);
+            }
+            document.getElementById('roomCodeInput').value = existingRoom;
+            document.getElementById('quickCode').value = existingRoom;
+            updateCodeChip();
+            await joinRoom();
+          }
+          joined = true;
+        }
+      } catch (_) {}
+      if (!joined) {
+        if (typeof TPCodes !== 'undefined' && TPCodes.validate) {
+          await startWithAccessCode(codeRaw);
+        } else if (typeof window.confirmPassword === 'function') {
+          document.getElementById('passwordInput').value = norm;
+          await window.confirmPassword();
+        }
       }
+    } else if (typeof TPCodes !== 'undefined' && TPCodes.validate) {
+      await startWithAccessCode(codeRaw);
+    } else if (typeof window.confirmPassword === 'function') {
+      document.getElementById('passwordInput').value = codeRaw;
+      await window.confirmPassword();
     }
   } finally {
     window.__quickStartBusy = false;
@@ -3574,13 +3894,22 @@ document.getElementById('quickCode').addEventListener('keypress', (e) => {
 
   function enterFriendMode(code) {
     window.__friendMode = true;
+    window.__buyerMode = false;
     document.body.classList.add('friend-mode');
+    document.body.classList.remove('buyer-mode');
     const entry = document.getElementById('codeEntryBlock');
     const ready = document.getElementById('friendReadyBlock');
+    const buyerReady = document.getElementById('buyerReadyBlock');
     const f = document.getElementById('quickCode');
     if (entry) entry.classList.add('hidden');
+    if (buyerReady) buyerReady.classList.add('hidden');
     if (ready) ready.classList.remove('hidden');
     if (f) f.value = code;
+    const roomEl = document.getElementById('friendReadyRoom');
+    if (roomEl) roomEl.textContent = code;
+    const btn = document.getElementById('quickStartBtn');
+    if (btn) btn.textContent = (typeof t === 'function' && t('friend_join_btn') !== 'friend_join_btn')
+      ? t('friend_join_btn') : 'انضم للتحدي  ←';
     updateCodeChip();
     try {
       const saved = localStorage.getItem('tp_player_name');
@@ -3592,11 +3921,35 @@ document.getElementById('quickCode').addEventListener('keypress', (e) => {
       if (nameF) nameF.focus();
     }, 400);
   }
+  window.__enterFriendMode = enterFriendMode;
 
   const p = new URLSearchParams(location.search);
   const room = (p.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  const code = (p.get('code') || '').toUpperCase();
-  if (room && isRoomCode(room)) {
+  const session = (p.get('session') || '').toUpperCase().trim();
+  const code = (p.get('code') || session || '').toUpperCase();
+
+  async function resolveSessionEntry(sessionCode) {
+    const norm = (typeof TPCodes !== 'undefined' && TPCodes.normalize)
+      ? TPCodes.normalize(sessionCode) : sessionCode;
+    try {
+      const existingRoom = (typeof resolveSessionRoomCode === 'function')
+        ? await resolveSessionRoomCode(norm) : '';
+      if (existingRoom) {
+        if (isLocalSessionOwner(norm, existingRoom)) {
+          enterBuyerMode(norm);
+          window.__pendingReconnectRoom = existingRoom;
+        } else {
+          enterFriendMode(existingRoom);
+        }
+        return;
+      }
+    } catch (_) {}
+    enterBuyerMode(norm);
+  }
+
+  if (session && /^JS-/i.test(session)) {
+    resolveSessionEntry(session);
+  } else if (room && isRoomCode(room)) {
     enterFriendMode(room);
   } else if (code) {
     const f = document.getElementById('quickCode');
@@ -3630,6 +3983,11 @@ function updateCodeChip(){
     chip.innerHTML = '<span class="dot"></span><span>' + t('chip_room') + '</span>';
     return;
   }
+  if (/^JS[-_]?[A-Z0-9]{4,}$/i.test(v)) {
+    chip.classList.add('is-access');
+    chip.innerHTML = '<span class="dot"></span><span>' + (lang === 'en' ? 'Session code — invite your friend' : 'كود جلسة — ادعُ صديقك') + '</span>';
+    return;
+  }
   if (/^TP[-_]?[A-Z0-9]{6,}$/i.test(v) || v.length >= 8) {
     chip.classList.add('is-access');
     chip.innerHTML = '<span class="dot"></span><span>' + t('chip_access') + '</span>';
@@ -3652,9 +4010,9 @@ window.quickStart = async function(){
 
 // 3) Single smart invite (Web Share API → fallback copy)
 window.shareInviteSmart = async function(){
-  if (!window.roomCode) return showToast('لا يوجد كود غرفة بعد');
+  if (!window.roomCode) return showToast(lang === 'en' ? 'No invite link yet' : 'لا يوجد رابط دعوة بعد');
   const url = inviteLinkFor(window.roomCode);
-  const text = 'انضم لتحدي التخاطر معي: ' + url;
+  const text = t('invite_share_text') + url;
   if (navigator.share) {
     try { await navigator.share({ title: 'Telepathy Challenge', text, url }); return; }
     catch(e) { /* user cancelled or unsupported – fall back */ }
@@ -3676,29 +4034,8 @@ window.shareInviteSmart = async function(){
 // 5) Photo-chip preview is handled by the existing qsPhoto change listener (compressImage flow).
 //    No extra listener needed here.
 
-// 6) QR code: render real QR for invite link whenever lobby code appears.
-function renderLobbyQr(code){
-  if (!code || !/^[A-Z0-9]{6}$/.test(code)) return;
-  const wrap = document.getElementById('lobbyQrWrap');
-  const img  = document.getElementById('lobbyQrImg');
-  if (!wrap || !img) return;
-  const url  = inviteLinkFor(code);
-  const src  = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=2&qzone=1&format=png&data=' + encodeURIComponent(url);
-  img.onload  = () => { wrap.style.display = 'block'; };
-  img.onerror = () => { wrap.style.display = 'none'; };
-  img.src = src;
-}
-window.renderLobbyQr = renderLobbyQr;
-
-// Watch lobby code element for any change → regenerate QR
-(function watchLobbyCode(){
-  const el = document.getElementById('lobbyRoomCode');
-  if (!el) return;
-  const obs = new MutationObserver(() => renderLobbyQr((el.textContent || '').trim()));
-  obs.observe(el, { childList: true, characterData: true, subtree: true });
-  // initial pass in case code was already set
-  if (el.textContent && el.textContent.trim()) renderLobbyQr(el.textContent.trim());
-})();
+// 6) QR intentionally does not render in the live lobby.
+// QR remains in printable/customer-card surfaces where it belongs.
 </script>
 
 <!-- Pointer-tracking glow on glass panels: desktop-only, disabled on touch devices -->
@@ -3715,32 +4052,82 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
 </script>
 
 <!-- 2026 modernization layer: PWA, Audio, Voice, Gemini Nano, QR, Replay -->
-<script src="/js/codes.js?v=36" defer></script>
-<script src="/js/share-card.js?v=39" defer></script>
-<script src="/app-2026.js?v=36" defer></script>
+<script src="/js/codes.js?v=84" defer></script>
+<script src="/js/account.js?v=84" defer></script>
+<script src="/js/share-card.js?v=48" defer></script>
+<script src="/app-2026.js?v=84" defer></script>
 
 <!-- Share Card Modal -->
-<div id="shareCardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.86);backdrop-filter:blur(14px);z-index:500;align-items:flex-start;justify-content:center;padding:10px;overflow-y:auto">
-  <div style="background:linear-gradient(160deg,#17122f,#0b0820);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:14px;max-width:700px;width:100%;max-height:calc(100vh - 20px);overflow-y:auto;font-family:'Tajawal',sans-serif;color:#fff;box-shadow:0 28px 80px rgba(0,0,0,.55)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <h3 style="font-size:1.25rem;font-weight:900">بطاقة النتيجة</h3>
-      <button onclick="closeShareCard()" aria-label="إغلاق" style="background:rgba(255,255,255,.08);border:0;color:#fff;width:42px;height:42px;border-radius:50%;font-size:1.4rem;cursor:pointer;line-height:1">×</button>
+<style>
+#shareCardModal { display:none; position:fixed; inset:0; background:rgba(4,2,14,.92); z-index:500; align-items:flex-start; justify-content:center; padding:10px; overflow-y:auto; }
+.sc-modal-box {
+  background:linear-gradient(165deg,#140c32,#08051a);
+  border:1px solid rgba(168,85,247,.35);
+  border-radius:22px; padding:16px; max-width:700px; width:100%;
+  max-height:calc(100vh - 20px); overflow-y:auto;
+  font-family:'Tajawal',sans-serif; color:#fff;
+  box-shadow:0 0 40px rgba(168,85,247,.18), 0 28px 80px rgba(0,0,0,.55);
+}
+.sc-modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.sc-modal-head h3 { font-size:1.2rem; font-weight:900; text-shadow:0 0 20px rgba(168,85,247,.4); }
+.sc-close-btn {
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+  color:#fff; width:42px; height:42px; border-radius:12px; font-size:1.3rem; cursor:pointer; line-height:1;
+}
+.sc-tpl-row { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+.sc-tpl {
+  flex:1; min-width:90px; padding:11px 10px; border-radius:12px;
+  background:rgba(255,255,255,.05); color:#fff; border:1px solid rgba(255,255,255,.12);
+  font-weight:800; cursor:pointer; font-family:inherit; font-size:.88rem;
+  transition:transform .12s, box-shadow .12s;
+}
+.sc-tpl:active { transform:translateY(2px); }
+.sc-preview-wrap {
+  background:rgba(0,0,0,.35); border-radius:18px; padding:12px; margin-bottom:12px;
+  text-align:center; border:1px solid rgba(168,85,247,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+#scPreview {
+  max-width:100%; width:min(100%,360px); height:auto; border-radius:14px;
+  box-shadow:0 0 32px rgba(168,85,247,.25), 0 16px 46px rgba(0,0,0,.45);
+}
+.sc-actions {
+  display:flex; gap:10px; flex-wrap:wrap; position:sticky; bottom:0;
+  background:linear-gradient(180deg,rgba(8,4,22,.2),#08051a 40%); padding-top:10px;
+}
+.sc-btn-primary {
+  flex:1; min-width:140px; padding:14px; border-radius:12px;
+  background:linear-gradient(180deg,#ff6ba8,#7c3aed); color:#fff; border:2px solid rgba(255,255,255,.18);
+  font-weight:900; cursor:pointer; font-size:.92rem; font-family:inherit;
+  box-shadow:0 4px 0 #5b21b6;
+}
+.sc-btn-secondary {
+  flex:1; min-width:120px; padding:14px; border-radius:12px;
+  background:rgba(12,8,28,.85); color:#fff; border:1px solid rgba(168,85,247,.3);
+  font-weight:800; cursor:pointer; font-size:.92rem; font-family:inherit;
+}
+</style>
+<div id="shareCardModal">
+  <div class="sc-modal-box">
+    <div class="sc-modal-head">
+      <h3>بطاقة النتيجة</h3>
+      <button class="sc-close-btn" onclick="closeShareCard()" aria-label="إغلاق">×</button>
     </div>
 
-    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-      <button class="sc-tpl" data-tpl="fun"      style="flex:1;padding:10px;border-radius:10px;background:linear-gradient(135deg,#00d4ff,#a855f7);color:#fff;border:0;font-weight:700;cursor:pointer">⚡ شبابي</button>
-      <button class="sc-tpl" data-tpl="romantic" style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.12);font-weight:700;cursor:pointer">💞 رومانسي</button>
-      <button class="sc-tpl" data-tpl="luxury"   style="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.12);font-weight:700;cursor:pointer">👑 فاخر</button>
+    <div class="sc-tpl-row">
+      <button class="sc-tpl" data-tpl="fun">⚡ شبابي</button>
+      <button class="sc-tpl" data-tpl="romantic">💞 رومانسي</button>
+      <button class="sc-tpl" data-tpl="luxury">👑 فاخر</button>
     </div>
 
-    <div style="background:rgba(0,0,0,.32);border-radius:16px;padding:10px;margin-bottom:10px;text-align:center;border:1px solid rgba(255,255,255,.08)">
-      <canvas id="scPreview" style="max-width:100%;width:min(100%,340px);height:auto;border-radius:12px;box-shadow:0 16px 46px rgba(0,0,0,.42)"></canvas>
+    <div class="sc-preview-wrap">
+      <canvas id="scPreview"></canvas>
     </div>
 
-    <div style="display:flex;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:linear-gradient(180deg,rgba(15,10,35,.4),#0b0820 35%);padding-top:10px">
-      <button onclick="shareShareCard()" style="flex:1;min-width:140px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#ff5b93,#a855f7);color:#fff;border:0;font-weight:800;cursor:pointer;font-size:.95rem">مشاركة البطاقة</button>
-      <button onclick="downloadShareCard()" style="flex:1;min-width:120px;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:800;cursor:pointer;font-size:.95rem">تنزيل صورة</button>
-      <button onclick="printShareCardPdf()" style="flex:1;min-width:120px;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.18);font-weight:800;cursor:pointer;font-size:.95rem">تقرير PDF</button>
+    <div class="sc-actions">
+      <button class="sc-btn-primary" onclick="shareShareCard()">مشاركة البطاقة</button>
+      <button class="sc-btn-secondary" onclick="downloadShareCard()">تنزيل صورة</button>
+      <button class="sc-btn-secondary" onclick="printShareCardPdf()">تقرير PDF</button>
     </div>
   </div>
 </div>
@@ -3749,11 +4136,31 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
   let __scTemplate = 'fun';
   let __scCanvas = null;
 
+  function applyScTemplateStyles() {
+    const grads = {
+      fun: 'linear-gradient(180deg,#22d3ee,#a855f7)',
+      romantic: 'linear-gradient(180deg,#ff5b93,#c026d3)',
+      luxury: 'linear-gradient(180deg,#ffd700,#7c3aed)'
+    };
+    document.querySelectorAll('.sc-tpl').forEach(x => {
+      x.style.background = 'rgba(255,255,255,.05)';
+      x.style.border = '1px solid rgba(255,255,255,.12)';
+      x.style.boxShadow = 'none';
+    });
+    const active = document.querySelector(`.sc-tpl[data-tpl="${__scTemplate}"]`);
+    if (active) {
+      active.style.background = grads[__scTemplate] || grads.fun;
+      active.style.border = '0';
+      active.style.boxShadow = '0 3px 0 rgba(60,30,100,.8)';
+    }
+  }
+
   function openShareCard() {
     const modal = document.getElementById('shareCardModal');
     modal.style.display = 'flex';
     modal.scrollTop = 0;
     if (modal.firstElementChild) modal.firstElementChild.scrollTop = 0;
+    applyScTemplateStyles();
     renderShareCard();
   }
   function closeShareCard() {
@@ -3762,13 +4169,7 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
   document.querySelectorAll('.sc-tpl').forEach(b => {
     b.onclick = () => {
       __scTemplate = b.dataset.tpl;
-      document.querySelectorAll('.sc-tpl').forEach(x => {
-        x.style.background = 'rgba(255,255,255,.05)';
-        x.style.border = '1px solid rgba(255,255,255,.12)';
-      });
-      const grads = { fun:'linear-gradient(135deg,#00d4ff,#a855f7)', romantic:'linear-gradient(135deg,#ff5b93,#a855f7)', luxury:'linear-gradient(135deg,#ffd700,#7c3aed)' };
-      b.style.background = grads[__scTemplate];
-      b.style.border = '0';
+      applyScTemplateStyles();
       renderShareCard();
     };
   });
@@ -3895,9 +4296,12 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
     const generatedAt = new Date().toLocaleString('ar', { dateStyle: 'medium', timeStyle: 'short' });
     const phaseCards = phases.map(phase => `
       <div class="phase-card">
-        <b>${reportEscape(phase.title)}</b>
-        <strong>${phase.pct}%</strong>
-        <span>${phase.match} من ${phase.total} مطابقات</span>
+        <div class="phase-top">
+          <span class="phase-name">${reportEscape(phase.title.replace(/^المرحلة \d - /, ''))}</span>
+          <strong>${phase.pct}%</strong>
+        </div>
+        <div class="phase-bar"><i style="width:${phase.pct}%"></i></div>
+        <span>${phase.match} / ${phase.total} ${reportEscape('مطابقة')}</span>
       </div>`).join('');
     const rows = buildPdfComparisonRows(result);
     if (!win) {
@@ -3910,52 +4314,59 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
 <head>
 <meta charset="utf-8">
 <title>${filename}</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
-  @page { size: A4; margin: 12mm; }
+  @page { size: A4; margin: 10mm; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #f6f2ff; color: #171427; font-family: Tajawal, Arial, sans-serif; }
-  .report { max-width: 900px; margin: 0 auto; padding: 22px; }
-  .hero { display: grid; grid-template-columns: 260px 1fr; gap: 22px; align-items: center; background: #120b2e; color: #fff; border-radius: 22px; padding: 18px; }
-  .card-img { width: 260px; border-radius: 18px; display: block; box-shadow: 0 18px 40px rgba(0,0,0,.28); }
-  h1 { margin: 0 0 10px; font-size: 30px; }
-  .subtitle { color: rgba(255,255,255,.7); line-height: 1.8; margin: 0 0 16px; }
-  .score { display: flex; gap: 12px; flex-wrap: wrap; }
-  .pill { background: linear-gradient(135deg,#ff5b93,#a855f7); color: #fff; border-radius: 999px; padding: 10px 16px; font-weight: 900; }
-  .section { background: #fff; border: 1px solid #e8ddff; border-radius: 18px; padding: 18px; margin-top: 18px; page-break-inside: avoid; }
-  h2 { margin: 0 0 14px; font-size: 20px; color: #21133f; }
-  .meta { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-  .meta div, .phase-card { background: #f7f3ff; border: 1px solid #eadfff; border-radius: 14px; padding: 12px; }
-  .meta span, .phase-card span { color: #706489; font-size: 13px; display: block; margin-top: 5px; }
-  .phase-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
-  .phase-card strong { display: block; font-size: 26px; margin-top: 8px; color: #a855f7; }
-  table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; font-size: 13px; }
-  th, td { border: 1px solid #eadfff; padding: 9px 8px; text-align: center; vertical-align: middle; }
-  th { background: #21133f; color: #fff; font-weight: 900; }
-  tr.ok td { background: #f0fff6; }
-  .phase-row td { background: #f3ebff; color: #4b247c; font-weight: 900; text-align: right; }
-  .footer { color: #7a708f; text-align: center; font-size: 12px; margin-top: 16px; }
-  @media print {
-    body { background: #fff; }
-    .report { max-width: none; padding: 0; }
-    .hero, .section { box-shadow: none; }
-  }
-  @media (max-width: 720px) {
-    .hero { grid-template-columns: 1fr; }
-    .card-img { width: min(100%, 320px); margin: 0 auto; }
-    .phase-grid, .meta { grid-template-columns: 1fr 1fr; }
-  }
+  body { margin: 0; background: #06040f; color: #fff; font-family: Tajawal, Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .report { max-width: 920px; margin: 0 auto; padding: 18px; }
+  .hero { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: center; background: linear-gradient(145deg, #140c32, #0a0618); border: 1px solid rgba(168,85,247,.35); border-radius: 22px; padding: 20px; }
+  .card-wrap { background: rgba(0,0,0,.35); border-radius: 18px; padding: 10px; border: 1px solid rgba(168,85,247,.22); }
+  .card-img { width: 100%; border-radius: 14px; display: block; }
+  .brand-tag { display: inline-block; font-size: 12px; font-weight: 900; letter-spacing: .08em; padding: 6px 12px; border-radius: 8px; background: linear-gradient(135deg, rgba(34,211,238,.25), rgba(168,85,247,.25)); border: 1px solid rgba(168,85,247,.35); color: #e9d5ff; margin-bottom: 10px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 900; line-height: 1.25; }
+  .subtitle { color: rgba(255,255,255,.68); line-height: 1.75; margin: 0 0 16px; font-size: 14px; }
+  .score { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pill { background: linear-gradient(135deg, #ff6ba8, #7c3aed); color: #fff; border-radius: 12px; padding: 10px 18px; font-weight: 900; font-size: 15px; border: 1px solid rgba(255,255,255,.15); }
+  .pill.alt { background: rgba(255,255,255,.08); border-color: rgba(168,85,247,.3); }
+  .section { background: linear-gradient(180deg, rgba(18,12,42,.85), rgba(8,4,20,.9)); border: 1px solid rgba(168,85,247,.22); border-radius: 18px; padding: 18px; margin-top: 16px; page-break-inside: avoid; }
+  h2 { margin: 0 0 14px; font-size: 18px; font-weight: 900; color: #e9d5ff; }
+  h2::before { content: '◆ '; color: #22d3ee; font-size: 10px; }
+  .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .meta div { background: rgba(255,255,255,.04); border: 1px solid rgba(168,85,247,.18); border-radius: 12px; padding: 12px; }
+  .meta b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .meta span { color: rgba(255,255,255,.58); font-size: 13px; }
+  .phase-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .phase-card { background: rgba(255,255,255,.04); border: 1px solid rgba(168,85,247,.2); border-radius: 14px; padding: 12px; }
+  .phase-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .phase-name { font-size: 12px; font-weight: 800; color: rgba(255,255,255,.75); }
+  .phase-card strong { font-size: 24px; color: #c4b5fd; line-height: 1; }
+  .phase-bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden; margin-bottom: 8px; }
+  .phase-bar i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #22d3ee, #a855f7); }
+  .phase-card span { color: rgba(255,255,255,.5); font-size: 12px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; border-radius: 14px; overflow: hidden; }
+  th, td { border: 1px solid rgba(168,85,247,.18); padding: 8px 7px; text-align: center; vertical-align: middle; }
+  th { background: linear-gradient(180deg, #2a1a55, #1a1038); color: #fff; font-weight: 900; }
+  td { background: rgba(255,255,255,.03); color: rgba(255,255,255,.88); }
+  tr.ok td { background: rgba(34,197,94,.12); }
+  tr.ok td:last-child { color: #86efac; font-weight: 900; }
+  .phase-row td { background: rgba(168,85,247,.14); color: #e9d5ff; font-weight: 900; text-align: right; font-size: 13px; }
+  .footer { color: rgba(255,255,255,.45); text-align: center; font-size: 12px; margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(168,85,247,.18); }
+  @media print { body { background: #06040f; } .report { max-width: none; padding: 0; } }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; } .phase-grid, .meta { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
   <main class="report">
     <section class="hero">
-      <img class="card-img" alt="بطاقة نتيجة التخاطر" src="${cardUrl}">
+      <div class="card-wrap"><img class="card-img" alt="بطاقة نتيجة التخاطر" src="${cardUrl}"></div>
       <div>
-        <h1>تقرير تحدي التخاطر الكامل</h1>
-        <p class="subtitle">تقرير يجمع بطاقة النتيجة، النسبة النهائية، نتائج المراحل، وتفاصيل كل جولة بين اللاعبين.</p>
+        <div class="brand-tag">TELEPATHY CHALLENGE</div>
+        <h1>تقرير تحدي التخاطر</h1>
+        <p class="subtitle">تقرير كامل يضم بطاقة النتيجة، النسبة النهائية، ملخص المراحل الأربع، وتفاصيل كل جولة بين اللاعبين.</p>
         <div class="score">
-          <div class="pill">${Math.round(Number(result.totalPct || 0))}%</div>
-          <div class="pill">${reportEscape(result.rating || '-')}</div>
+          <div class="pill">${Math.round(Number(result.totalPct || 0))}% نسبة التخاطر</div>
+          <div class="pill alt">${reportEscape(result.rating || '-')}</div>
         </div>
       </div>
     </section>
@@ -3983,7 +4394,7 @@ if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(pref
       </table>
     </section>
 
-    <div class="footer">Telepathy Challenge - ${reportEscape(location.host || 'teleplay.online')}</div>
+    <div class="footer">Telepathy Challenge · ${reportEscape(location.host || 'teleplay.online')}</div>
   </main>
   <script>window.onload=function(){setTimeout(function(){window.print()},350)}<\/script>
 </body>

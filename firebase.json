@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "four-fruits-fun",
     "public": "public",
     "ignore": [
       "firebase.json",
@@ -10,6 +11,9 @@
       { "source": "/admin", "destination": "/admin.html" },
       { "source": "/play",  "destination": "/play.html" },
       { "source": "/card",  "destination": "/card.html" },
+      { "source": "/my",    "destination": "/my.html" },
+      { "source": "/payment-success", "destination": "/payment-success.html" },
+      { "source": "/payment-cancel", "destination": "/payment-cancel.html" },
       { "source": "**",     "destination": "/index.html" }
     ],
     "headers": [
@@ -25,5 +29,15 @@
   },
   "database": {
     "rules": "database.rules.json"
+  },
+  "functions": {
+    "source": "functions",
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "*.local"
+    ]
   }
 }

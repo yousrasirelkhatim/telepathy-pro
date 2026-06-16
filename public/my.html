@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#120b2e">
+  <title>حسابي — تحدي التخاطر</title>
+  <link rel="icon" href="/brand/favicon-96x96.png?v=57">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0618; --glass:rgba(255,255,255,0.06); --border:rgba(255,255,255,0.12);
+      --purple:#a855f7; --cyan:#22d3ee; --green:#4ade80; --gold:#fbbf24; --muted:rgba(255,255,255,0.55);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Tajawal',sans-serif;background:radial-gradient(ellipse 120% 80% at 50% -20%,#2d1b69 0%,var(--bg) 55%);color:#fff;min-height:100vh;padding:max(16px,env(safe-area-inset-top)) 16px 32px}
+    .wrap{max-width:720px;margin:0 auto}
+    .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+    .logo img{width:40px;height:40px;border-radius:12px}
+    .panel{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:24px 20px;margin-bottom:16px}
+    .panel-auth{background:rgba(12,10,28,.96);border:1px solid var(--border);border-radius:20px;padding:24px 20px;margin-bottom:16px}
+    .recaptcha-host{display:flex;justify-content:center;align-items:center;min-height:84px;margin:12px 0;padding:10px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px}
+    h1{font-size:22px;margin-bottom:8px}
+    .sub{color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:14px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}
+    input{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(0,0,0,0.25);color:#fff;font-family:inherit;font-size:16px;margin-bottom:12px}
+    input:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,0.25)}
+    .otp-input{letter-spacing:10px;text-align:center;font-weight:800;font-size:22px}
+    #recaptcha-wrap{min-height:78px;margin:12px 0;display:flex;justify-content:center}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(135deg,var(--purple),#ec4899);color:#fff;box-shadow:0 8px 28px rgba(168,85,247,0.35)}
+    .btn-secondary{background:rgba(255,255,255,0.08);color:#fff;border:1px solid var(--border);margin-top:8px}
+    .btn-sm{width:auto;padding:10px 14px;font-size:13px;flex:1}
+    .msg{font-size:14px;margin-top:10px;min-height:20px}.msg.err{color:#f87171}.msg.ok{color:var(--green)}
+    .hidden{display:none!important}
+    .tabs{display:flex;gap:8px;margin-bottom:16px}
+    .tab{flex:1;padding:10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-weight:700;cursor:pointer}
+    .tab.on{background:rgba(168,85,247,0.2);border-color:rgba(168,85,247,0.45);color:#fff}
+    .dash-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+    .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .stat{flex:1;min-width:90px;background:rgba(0,0,0,0.2);border-radius:14px;padding:12px;text-align:center}
+    .stat b{display:block;font-size:20px;color:var(--gold)}.stat span{font-size:11px;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+    .card,.order-item{background:rgba(0,0,0,0.22);border:1px solid var(--border);border-radius:16px;padding:16px}
+    .card.available{border-color:rgba(74,222,128,0.35)}.card.active{border-color:rgba(34,211,238,0.45)}.card.used{opacity:0.85}
+    .card-head,.order-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+    .badge{font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.08)}
+    .badge.pending{color:var(--gold);background:rgba(251,191,36,0.12)}
+    .badge.fulfilled{color:var(--green);background:rgba(74,222,128,0.12)}
+    .badge.cancelled{color:var(--muted)}
+    .order-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+    .btn-danger-sm{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5}
+    .badge.available{color:var(--green);background:rgba(74,222,128,0.12)}
+    .badge.active{color:var(--cyan);background:rgba(34,211,238,0.12)}
+    .code-display{font-family:monospace;font-size:15px;letter-spacing:1px;direction:ltr;text-align:center;padding:8px;background:rgba(255,255,255,0.05);border-radius:10px;margin:8px 0}
+    .card-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .logout{background:none;border:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:13px}
+    .foot{text-align:center;margin-top:20px}.foot a{color:var(--cyan);text-decoration:none;font-size:14px;margin:0 6px}
+    .otp-soon{background:rgba(251,191,36,0.08);border:1px dashed rgba(251,191,36,0.35);border-radius:14px;padding:12px 14px;font-size:13px;color:rgba(255,255,255,0.75);margin-top:14px}
+    .order-list{display:flex;flex-direction:column;gap:12px}
+    .order-meta{font-size:13px;color:var(--muted);line-height:1.6}
+    .buy-packages{display:flex;flex-direction:column;gap:12px}
+    .buy-pkg{background:rgba(0,0,0,0.22);border:1px solid var(--border);border-radius:16px;padding:16px}
+    .buy-pkg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+    .buy-pkg-price{color:var(--gold);font-weight:800;font-size:18px}
+    .buy-pkg-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px}
+    .pay-methods{display:grid;gap:10px;margin-top:12px}
+    .pay-methods .btn{width:100%;margin-top:0}
+    .pay-divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.78rem;margin:4px 0}
+    .pay-divider::before,.pay-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.12)}
+    .buy-confirm-title{font-size:17px;margin-bottom:6px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo"><img src="/brand/web-app-manifest-192x192.png?v=57" alt=""><span>حسابي</span></div>
+    <button class="logout hidden" id="logoutBtn" type="button">خروج</button>
+  </div>
+
+  <div id="authBlock" class="panel-auth">
+    <h1>🎮 بوابة العميل</h1>
+    <p class="sub">سجّل دخولك برقم الواتساب — رمز SMS يصلك فوراً.</p>
+
+    <div id="stepPhone">
+      <label for="authPhone">رقم الواتساب</label>
+      <input id="authPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+2010xxxxxxxx" dir="ltr">
+      <div id="recaptcha-wrap"></div>
+      <button class="btn btn-primary" id="sendOtpBtn" type="button">📱 إرسال رمز التحقق</button>
+      <p class="sub" style="font-size:12px;margin-top:8px;color:var(--muted)">اضغط إرسال — قد يظهر تحقق Google تلقائياً</p>
+    </div>
+
+    <div id="stepOtp" class="hidden">
+      <p class="sub" id="otpHint">أدخل الرمز المرسل إلى هاتفك</p>
+      <label for="authOtp">رمز SMS (6 أرقام)</label>
+      <input id="authOtp" class="otp-input" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••">
+      <button class="btn btn-primary" id="verifyOtpBtn" type="button">✓ تأكيد</button>
+      <button class="btn btn-secondary" id="backPhoneBtn" type="button">← تغيير الرقم</button>
+    </div>
+
+    <div id="stepName" class="hidden">
+      <label for="authName">اسمك</label>
+      <input id="authName" type="text" autocomplete="name" placeholder="اسمك">
+      <button class="btn btn-primary" id="saveNameBtn" type="button">متابعة</button>
+    </div>
+
+    <p class="msg" id="authMsg"></p>
+    <p class="foot"><a href="/">← الرئيسية</a></p>
+  </div>
+
+  <div id="dashBlock" class="hidden">
+    <div class="panel">
+      <h1 id="welcomeName">مرحباً 👋</h1>
+      <p class="sub" id="welcomePhone"></p>
+      <div class="stats">
+        <div class="stat"><b id="statPending">0</b><span>طلبات انتظار</span></div>
+        <div class="stat"><b id="statAvail">0</b><span>جلسات جاهزة</span></div>
+        <div class="stat"><b id="statUsed">0</b><span>منتهية</span></div>
+      </div>
+    </div>
+
+    <div class="dash-tabs">
+      <button type="button" class="tab on" data-view="orders">📋 طلباتي</button>
+      <button type="button" class="tab" data-view="sessions">🃏 بطاقاتي</button>
+      <button type="button" class="tab" data-view="buy">🛒 طلب جديد</button>
+    </div>
+
+    <div id="viewOrders">
+      <div class="order-list" id="orderList"></div>
+    </div>
+
+    <div id="viewSessions" class="hidden">
+      <div class="cards" id="sessionCards"></div>
+    </div>
+
+    <div id="viewBuy" class="hidden">
+      <div class="panel" style="margin-bottom:12px;padding:14px 16px">
+        <p class="sub" style="margin:0" id="buyAccountHint">الطلب يُسجَّل برقم حسابك: <strong id="buyAccountPhone" style="direction:ltr">—</strong></p>
+      </div>
+      <div class="buy-packages" id="buyPackages">
+        <p class="sub">⏳ جاري تحميل الباقات...</p>
+      </div>
+      <div id="buyConfirmPanel" class="panel hidden" style="margin-top:12px">
+        <div class="buy-confirm-title" id="buyConfirmTitle">—</div>
+        <p class="sub" style="margin-bottom:12px" id="buyConfirmPrice">—</p>
+        <div class="pay-methods" id="myPayMethods">
+          <button type="button" class="btn btn-primary" id="myPayStripeBtn">💳 الدفع بالفيزا — تفعيل فوري</button>
+          <div class="pay-divider" id="myPayDivider">أو</div>
+          <button type="button" class="btn btn-secondary" id="myPayWhatsAppBtn">📱 الدفع عبر واتساب</button>
+        </div>
+        <p id="myPayStripeHint" style="font-size:.78rem;color:var(--muted);margin-top:10px;text-align:center;display:none">✨ بعد الدفع بالبطاقة — البطاقات تُفعَّل تلقائياً في حسابك</p>
+        <button type="button" class="btn btn-secondary" id="buyConfirmCancel" style="margin-top:12px">← رجوع للباقات</button>
+      </div>
+      <p class="msg" id="buyMsg"></p>
+    </div>
+
+    <p class="foot"><a href="/play">🎮 اللعب</a> · <a href="/">الرئيسية</a></p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+<script src="/js/codes.js?v=108"></script>
+<script src="/js/phone-auth.js?v=99"></script>
+<script src="/js/account.js?v=99"></script>
+<script src="/js/payments.js?v=107"></script>
+<script>
+(function () {
+  'use strict';
+  TPCodes.init();
+  const auth = firebase.auth();
+  let pk = '';
+  let ordersRef = null;
+  let sessionsRef = null;
+  let ordersListener = null;
+  let sessionsListener = null;
+  let SETTINGS = { whatsappNumber: '' };
+  let currentOrders = [];
+  let currentSessions = [];
+  let pendingUser = null;
+  let BUY_PACKAGES = [];
+  let SELECTED_PKG = null;
+  let PAY_SETTINGS = { stripeEnabled: false };
+  const URL_PARAMS = new URLSearchParams(location.search);
+  const PENDING_BUY_PKG = URL_PARAMS.get('pkg') || '';
+
+  function currencySymbol(c) {
+    return ({ USD: '$', EUR: '€', SAR: 'ر.س', AED: 'د.إ', EGP: 'ج.م' })[String(c || '').toUpperCase()] || (c || '$');
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  }
+
+  async function loadBuyPackages() {
+    const box = document.getElementById('buyPackages');
+    if (!box) return;
+    try {
+      BUY_PACKAGES = await TPCodes.listPackages({ visibleOnly: true });
+    } catch (_) {
+      BUY_PACKAGES = [];
+    }
+    renderBuyPackages();
+  }
+
+  function renderBuyPackages() {
+    const box = document.getElementById('buyPackages');
+    if (!box) return;
+    if (!BUY_PACKAGES.length) {
+      box.innerHTML = '<p class="sub">لا توجد باقات حالياً.</p>';
+      return;
+    }
+    box.innerHTML = BUY_PACKAGES.map((p) => {
+      const sym = currencySymbol(p.currency || SETTINGS.currency);
+      const featured = p.featured ? ' ⭐' : '';
+      return '<div class="buy-pkg">' +
+        '<div class="buy-pkg-head"><div><strong>' + escapeHtml(p.icon || '📦') + ' ' + escapeHtml(p.name) + featured + '</strong>' +
+        '<div class="buy-pkg-desc">' + escapeHtml(p.desc || '') + '</div></div>' +
+        '<div class="buy-pkg-price">' + (Number(p.price) || 0) + ' ' + sym + '</div></div>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-buy-pkg="' + escapeHtml(p.id) + '">' +
+        escapeHtml(p.buttonText || 'اختر طريقة الدفع') + '</button></div>';
+    }).join('');
+
+    box.querySelectorAll('[data-buy-pkg]').forEach((btn) => {
+      btn.addEventListener('click', () => openBuyConfirm(btn.getAttribute('data-buy-pkg')));
+    });
+
+    if (PENDING_BUY_PKG) {
+      const target = box.querySelector('[data-buy-pkg="' + PENDING_BUY_PKG.replace(/"/g, '') + '"]');
+      if (target) {
+        showDashView('buy');
+        openBuyConfirm(PENDING_BUY_PKG);
+      }
+    }
+  }
+
+  function cancelBuyConfirm() {
+    SELECTED_PKG = null;
+    document.getElementById('buyConfirmPanel')?.classList.add('hidden');
+    document.getElementById('buyPackages')?.classList.remove('hidden');
+  }
+
+  async function openBuyConfirm(pkgId) {
+    const pkg = BUY_PACKAGES.find((p) => p.id === pkgId);
+    const msg = document.getElementById('buyMsg');
+    if (!pkg) { showMsg(msg, 'الباقة غير موجودة', false); return; }
+    SELECTED_PKG = pkg;
+    const sym = currencySymbol(pkg.currency || SETTINGS.currency);
+    document.getElementById('buyConfirmTitle').textContent = (pkg.icon || '📦') + ' ' + (pkg.name || '');
+    document.getElementById('buyConfirmPrice').textContent = (Number(pkg.price) || 0) + ' ' + sym +
+      (pkg.unitNote ? ' · ' + pkg.unitNote : '');
+    const paySettings = await TPPayments.loadPaymentSettings();
+    PAY_SETTINGS = paySettings;
+    TPPayments.configurePayMethods({
+      paymobEnabled: paySettings.paymobEnabled,
+      stripeEnabled: paySettings.stripeEnabled,
+      codesCount: pkg.codesCount,
+      stripeBtnId: 'myPayStripeBtn',
+      stripeHintId: 'myPayStripeHint',
+      dividerId: 'myPayDivider',
+      waBtnId: 'myPayWhatsAppBtn',
+    });
+    document.getElementById('buyPackages')?.classList.add('hidden');
+    document.getElementById('buyConfirmPanel')?.classList.remove('hidden');
+    showMsg(msg, '', true);
+    document.getElementById('buyConfirmPanel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function placeMyOrderWhatsApp() {
+    const msg = document.getElementById('buyMsg');
+    const btn = document.getElementById('myPayWhatsAppBtn');
+    const pkg = SELECTED_PKG;
+    if (!pkg) { showMsg(msg, 'اختر باقة أولاً', false); return; }
+    if (btn) btn.disabled = true;
+    showMsg(msg, 'جاري تسجيل الطلب...', true);
+    try {
+      const order = await TPAccount.createOrderForAccount(pkg, { source: 'my', paymentMethod: 'whatsapp' });
+      const waText = encodeURIComponent(TPPayments.buildWhatsAppOrderText(order, 'ar'));
+      const waNum = String(SETTINGS.whatsappNumber || '').replace(/[^\d+]/g, '').replace(/^\+/, '');
+      const waHref = waNum ? ('https://wa.me/' + waNum + '?text=' + waText) : ('https://wa.me/?text=' + waText);
+      showMsg(msg, '✓ تم تسجيل الطلب ' + order.id + ' — أكمل الدفع على واتساب', true);
+      toast('✓ تم تسجيل الطلب');
+      cancelBuyConfirm();
+      showDashView('orders');
+      window.open(waHref, '_blank');
+    } catch (e) {
+      showMsg(msg, TPPayments.orderErrorMessage(e, 'ar'), false);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  async function placeMyOrderStripe() {
+    const msg = document.getElementById('buyMsg');
+    const btn = document.getElementById('myPayStripeBtn');
+    const pkg = SELECTED_PKG;
+    if (!pkg) { showMsg(msg, 'اختر باقة أولاً', false); return; }
+    const paySettings = await TPPayments.loadPaymentSettings();
+    if (!paySettings.cardEnabled) {
+      showMsg(msg, 'الدفع الإلكتروني غير مفعّل بعد — استخدم واتساب', false);
+      return;
+    }
+    if (btn) btn.disabled = true;
+    showMsg(msg, 'جاري فتح صفحة الدفع الآمنة...', true);
+    try {
+      const provider = TPPayments.activeCardProvider(paySettings);
+      const order = await TPAccount.createOrderForAccount(pkg, { source: 'my', paymentMethod: provider || 'paymob' });
+      await TPPayments.startCardCheckout(order.id, paySettings);
+    } catch (e) {
+      showMsg(msg, TPPayments.friendlyError(e), false);
+      if (msg) msg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  document.getElementById('myPayWhatsAppBtn')?.addEventListener('click', placeMyOrderWhatsApp);
+  document.getElementById('myPayStripeBtn')?.addEventListener('click', placeMyOrderStripe);
+  document.getElementById('buyConfirmCancel')?.addEventListener('click', cancelBuyConfirm);
+
+  TPCodes.getSettings().then((s) => { SETTINGS = s || SETTINGS; }).catch(() => {});
+  TPPayments.loadPaymentSettings().catch(() => {});
+
+  const SESSION_LABEL = { available:'جاهزة', active:'نشطة', used:'منتهية', expired:'منتهية' };
+  const ORDER_LABEL = { pending:'في الانتظار', fulfilled:'تم التفعيل', cancelled:'ملغي' };
+
+  function showMsg(el, text, ok) {
+    el.textContent = text || '';
+    el.className = 'msg' + (text ? (ok ? ' ok' : ' err') : '');
+  }
+
+  function showStep(step) {
+    document.getElementById('stepPhone').classList.toggle('hidden', step !== 'phone');
+    document.getElementById('stepOtp').classList.toggle('hidden', step !== 'otp');
+    document.getElementById('stepName').classList.toggle('hidden', step !== 'name');
+  }
+
+  function toast(m) {
+    let t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e1035;border:1px solid rgba(168,85,247,.4);padding:12px 20px;border-radius:14px;z-index:99;font-size:14px;';
+      document.body.appendChild(t);
+    }
+    t.textContent = m;
+    t.style.display = 'block';
+    clearTimeout(t._tm);
+    t._tm = setTimeout(() => { t.style.display = 'none'; }, 2600);
+  }
+
+  function copyText(text, okMsg) {
+    navigator.clipboard.writeText(text).then(() => toast(okMsg || 'تم النسخ ✓')).catch(() => toast('تعذّر النسخ'));
+  }
+
+  function fmtDate(ts) {
+    if (!ts) return '';
+    return new Date(ts).toLocaleDateString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+
+  document.querySelectorAll('.dash-tabs .tab').forEach((btn) => {
+    btn.addEventListener('click', () => showDashView(btn.dataset.view));
+  });
+
+  async function finishAuth(user) {
+    await TPAccount.afterPhoneSignIn(user);
+    const hasProfile = await TPAccount.hasCustomerProfile(user.__phoneKey);
+    if (!hasProfile) {
+      pendingUser = user;
+      showStep('name');
+      showMsg(document.getElementById('authMsg'), 'خطوة أخيرة — أدخل اسمك', true);
+      return;
+    }
+    await showDashboard(user);
+  }
+  function showDashView(view) {
+    document.querySelectorAll('.dash-tabs .tab').forEach((b) => {
+      b.classList.toggle('on', b.dataset.view === view);
+    });
+    document.getElementById('viewOrders').classList.toggle('hidden', view !== 'orders');
+    document.getElementById('viewSessions').classList.toggle('hidden', view !== 'sessions');
+    document.getElementById('viewBuy').classList.toggle('hidden', view !== 'buy');
+  }
+
+  function renderOrders(orders) {
+    const box = document.getElementById('orderList');
+    const pending = orders.filter((o) => o.status === 'pending').length;
+    document.getElementById('statPending').textContent = pending;
+
+    if (!orders.length) {
+      box.innerHTML = '<div class="order-item"><div class="order-head"><strong>لا توجد طلبات بعد</strong><span class="badge pending">ابدأ هنا</span></div><div class="order-meta">اطلب باقة بنفس رقم الواتساب المسجّل هنا، وسيظهر الطلب فوراً في هذه الصفحة بحالة «في الانتظار».</div><div style="margin-top:10px"><button type="button" class="btn btn-primary btn-sm" data-goto-buy>طلب باقة الآن</button></div></div>';
+      box.querySelector('[data-goto-buy]')?.addEventListener('click', () => showDashView('buy'));
+      return;
+    }
+
+    box.innerHTML = orders.map((o) => {
+      const st = o.status || 'pending';
+      let actions = '';
+      let statusLine = '';
+      if (st === 'pending') {
+        const waText = encodeURIComponent('متابعة طلب ' + o.id + ' — ' + (o.packageName || ''));
+        const waNum = String(SETTINGS.whatsappNumber || '').replace(/[^\d+]/g, '').replace(/^\+/, '');
+        const waHref = waNum ? ('https://wa.me/' + waNum + '?text=' + waText) : ('https://wa.me/?text=' + waText);
+        statusLine = 'طلبك وصل — بانتظار تأكيد الدفع والتفعيل من الإدارة';
+        actions = '<a href="' + waHref + '" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="text-decoration:none;display:inline-flex">متابعة الدفع على واتساب</a>'
+          + '<button type="button" class="btn btn-danger-sm btn-sm" data-cancel-order="' + o.id + '">✕ إلغاء الطلب</button>';
+      } else if (st === 'fulfilled') {
+        statusLine = 'تم التفعيل — ' + (o.sessionsCount || 5) + ' بطاقات جاهزة داخل حسابك';
+        actions = '<button type="button" class="btn btn-primary btn-sm" data-goto-sessions>عرض بطاقات الجلسات</button>';
+      } else if (st === 'cancelled') {
+        statusLine = 'تم إلغاء هذا الطلب — لم يُفعَّل';
+        actions = '<button type="button" class="btn btn-danger-sm btn-sm" data-delete-order="' + o.id + '">🗑 حذف من قائمتي</button>';
+      }
+      return '<div class="order-item">' +
+        '<div class="order-head"><strong style="direction:ltr">' + o.id + '</strong>' +
+        '<span class="badge ' + st + '">' + (ORDER_LABEL[st] || st) + '</span></div>' +
+        '<div class="order-meta">' + (o.packageName || 'باقة') +
+        (o.price ? (' · ' + o.price + ' ' + (o.currency || '')) : '') +
+        '<br>' + statusLine +
+        '<br><small>' + fmtDate(o.createdAt) + '</small></div>' +
+        (actions ? ('<div class="order-actions">' + actions + '</div>') : '') +
+        '</div>';
+    }).join('');
+
+    box.querySelectorAll('[data-goto-sessions]').forEach((btn) => {
+      btn.addEventListener('click', () => showDashView('sessions'));
+    });
+    box.querySelectorAll('[data-cancel-order]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const orderId = btn.getAttribute('data-cancel-order');
+        if (!orderId || !confirm('إلغاء الطلب ' + orderId + '؟\n\nلن تُفعَّل البطاقات لهذا الطلب.')) return;
+        btn.disabled = true;
+        try {
+          await TPAccount.cancelCustomerOrder(orderId);
+          toast('تم إلغاء الطلب ✓');
+        } catch (e) {
+          toast(e && e.code === 'cannot_cancel' ? 'لا يمكن إلغاء هذا الطلب' : 'تعذّر الإلغاء — حاول مجدداً');
+          btn.disabled = false;
+        }
+      });
+    });
+    box.querySelectorAll('[data-delete-order]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const orderId = btn.getAttribute('data-delete-order');
+        if (!orderId || !confirm('حذف الطلب ' + orderId + ' من قائمتك؟')) return;
+        btn.disabled = true;
+        try {
+          await TPAccount.deleteCustomerOrder(orderId);
+          toast('تم الحذف ✓');
+        } catch (e) {
+          toast('تعذّر الحذف');
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  function renderSessions(sessions) {
+    const box = document.getElementById('sessionCards');
+    const avail = sessions.filter((s) => s.status === 'available').length;
+    const used = sessions.filter((s) => s.status === 'used' || s.status === 'expired').length;
+    document.getElementById('statAvail').textContent = avail;
+    document.getElementById('statUsed').textContent = used;
+
+    if (!sessions.length) {
+      const hasPending = currentOrders.some((o) => (o.status || 'pending') === 'pending');
+      box.innerHTML = hasPending
+        ? '<div class="order-item"><div class="order-head"><strong>بطاقاتك لم تنزل بعد</strong><span class="badge pending">في الانتظار</span></div><div class="order-meta">عندك طلب بانتظار التفعيل. بمجرد ضغط الإدارة على «تفعيل البطاقات» ستظهر جلساتك هنا تلقائياً.</div><div style="margin-top:10px"><button type="button" class="btn btn-secondary btn-sm" data-goto-orders>عرض الطلبات</button></div></div>'
+        : '<div class="order-item"><div class="order-head"><strong>لا توجد بطاقات بعد</strong><span class="badge pending">ابدأ بطلب</span></div><div class="order-meta">اطلب باقة أولاً، وبعد التفعيل ستظهر بطاقات الجلسات هنا.</div><div style="margin-top:10px"><button type="button" class="btn btn-primary btn-sm" data-goto-buy>طلب باقة</button></div></div>';
+      box.querySelector('[data-goto-orders]')?.addEventListener('click', () => showDashView('orders'));
+      box.querySelector('[data-goto-buy]')?.addEventListener('click', () => showDashView('buy'));
+      return;
+    }
+
+    box.innerHTML = sessions.map((s) => {
+      const st = s.status || 'available';
+      const code = s.sessionCode || '';
+      const inviteLink = (st === 'active' && s.roomId)
+        ? TPAccount.roomPlayLink(s.roomId)
+        : TPAccount.sessionPlayLink(code);
+      let actions = '';
+      if (st === 'available') actions = '<button class="btn btn-primary btn-sm" data-play="' + code + '">▶ ابدأ تحدي</button>';
+      else if (st === 'active') {
+        actions = '<button class="btn btn-primary btn-sm" data-copy-link="' + inviteLink + '">نسخ رابط الدعوة</button>' +
+          (s.roomId ? ('<button class="btn btn-secondary btn-sm" data-copy-code="' + s.roomId + '">نسخ كود الغرفة</button>') : '') +
+          '<button class="btn btn-secondary btn-sm" data-return="' + code + '">إرجاع الجلسة</button>';
+      } else if (st === 'used') {
+        actions = '<p class="sub" style="margin:0;font-size:12px">✓ اكتملت' + (s.scorePct ? (' — ' + s.scorePct + '%') : '') + '</p>';
+      }
+      return '<div class="card ' + st + '"><div class="card-head"><span>جلسة ' + (s.index || '?') + '</span>' +
+        '<span class="badge ' + st + '">' + (SESSION_LABEL[st] || st) + '</span></div>' +
+        (code ? '<div class="code-display">' + code + '</div>' : '') +
+        '<div class="card-actions">' + actions + '</div></div>';
+    }).join('');
+
+    box.querySelectorAll('[data-copy-link]').forEach((b) => b.addEventListener('click', () => copyText(b.getAttribute('data-copy-link'), 'تم نسخ الرابط ✓')));
+    box.querySelectorAll('[data-copy-code]').forEach((b) => b.addEventListener('click', () => copyText(b.getAttribute('data-copy-code'), 'تم نسخ الكود ✓')));
+    box.querySelectorAll('[data-play]').forEach((b) => b.addEventListener('click', () => {
+      location.href = '/play?session=' + encodeURIComponent(b.getAttribute('data-play')) + '&lang=ar';
+    }));
+    box.querySelectorAll('[data-return]').forEach((b) => b.addEventListener('click', async () => {
+      if (!confirm('إرجاع هذه الجلسة لحالة «جاهزة»؟ (استخدمها إذا لم يبدأ التحدي بعد)')) return;
+      b.disabled = true;
+      try {
+        await TPAccount.returnSession(b.getAttribute('data-return'));
+        toast('تم إرجاع الجلسة ✓');
+      } catch (e) {
+        toast('تعذّر إرجاع الجلسة');
+        b.disabled = false;
+      }
+    }));
+  }
+
+  async function showDashboard(user) {
+    document.getElementById('authBlock').classList.add('hidden');
+    document.getElementById('dashBlock').classList.remove('hidden');
+    document.getElementById('logoutBtn').classList.remove('hidden');
+
+    pk = user.__phoneKey || TPAccount.phoneKeyFromUser(user);
+    if (!pk) return;
+
+    const profile = await TPAccount.getProfile(pk);
+    document.getElementById('welcomeName').textContent = 'مرحباً ' + ((profile && profile.name) || '');
+    document.getElementById('welcomePhone').textContent = profile && profile.phone ? ('📱 ' + profile.phone) : '';
+    const buyPhone = document.getElementById('buyAccountPhone');
+    if (buyPhone) buyPhone.textContent = profile && profile.phone ? profile.phone : (user.phoneNumber || '—');
+
+    loadBuyPackages();
+
+    if (URL_PARAMS.get('return') === 'order' || PENDING_BUY_PKG) {
+      showDashView('buy');
+    }
+
+    if (ordersListener && ordersRef) ordersRef.off('value', ordersListener);
+    if (sessionsListener && sessionsRef) sessionsRef.off('value', sessionsListener);
+
+    ordersRef = firebase.database().ref('customerOrders/' + pk);
+    ordersListener = (snap) => {
+      const orders = [];
+      snap.forEach((s) => { orders.push({ id: s.key, ...s.val() }); });
+      orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      currentOrders = orders;
+      renderOrders(orders);
+      renderSessions(currentSessions);
+    };
+    ordersRef.on('value', ordersListener);
+
+    sessionsRef = firebase.database().ref(TPAccount.userDataPath(pk) + '/sessions');
+    sessionsListener = (snap) => {
+      const sessions = [];
+      snap.forEach((s) => { sessions.push({ id: s.key, ...s.val() }); });
+      sessions.sort((a, b) => (Number(a.index) || 0) - (Number(b.index) || 0));
+      currentSessions = sessions;
+      renderSessions(sessions);
+    };
+    sessionsRef.on('value', sessionsListener);
+  }
+
+  async function doSendOtp() {
+    const msg = document.getElementById('authMsg');
+    const btn = document.getElementById('sendOtpBtn');
+    const phone = document.getElementById('authPhone').value.trim();
+    if (!phone) { showMsg(msg, 'أدخل رقم الواتساب', false); return; }
+    btn.disabled = true;
+    showMsg(msg, 'جاري إرسال الرمز...', true);
+    try {
+      const res = await TPPhoneAuth.sendOtp(phone, 'sendOtpBtn', '20', { size: 'invisible' });
+      document.getElementById('otpHint').textContent = 'أدخل الرمز المرسل إلى ' + res.masked;
+      showStep('otp');
+      showMsg(msg, '✓ تم إرسال الرمز', true);
+      document.getElementById('authOtp').focus();
+    } catch (e) {
+      showMsg(msg, TPPhoneAuth.friendlyError(e), false);
+      TPPhoneAuth.resetRecaptcha();
+    } finally { btn.disabled = false; }
+  }
+
+  async function doVerifyOtp() {
+    const msg = document.getElementById('authMsg');
+    const btn = document.getElementById('verifyOtpBtn');
+    const code = document.getElementById('authOtp').value.trim();
+    if (code.length < 6) { showMsg(msg, 'أدخل رمز SMS (6 أرقام)', false); return; }
+    btn.disabled = true;
+    showMsg(msg, 'جاري التحقق...', true);
+    try {
+      const user = await TPPhoneAuth.verifyOtp(code);
+      await finishAuth(user);
+      if (!pendingUser) showMsg(msg, '', true);
+    } catch (e) {
+      const t = (e && e.message) || '';
+      showMsg(msg, t.indexOf('permission_denied') >= 0
+        ? 'خطأ صلاحيات — حدّث الصفحة وجرب مجدداً (تم إصلاح القواعد)'
+        : TPPhoneAuth.friendlyError(e), false);
+    } finally { btn.disabled = false; }
+  }
+
+  async function doSaveName() {
+    const msg = document.getElementById('authMsg');
+    const btn = document.getElementById('saveNameBtn');
+    const name = document.getElementById('authName').value.trim();
+    if (!name || !pendingUser) { showMsg(msg, 'أدخل اسمك', false); return; }
+    btn.disabled = true;
+    try {
+      await TPAccount.setupCustomerProfile(pendingUser, name);
+      await showDashboard(pendingUser);
+      pendingUser = null;
+      toast('✓ مرحباً بك');
+    } catch (e) {
+      showMsg(msg, 'تعذّر حفظ الاسم — حاول مجدداً', false);
+    } finally { btn.disabled = false; }
+  }
+
+  function doBackPhone() {
+    TPPhoneAuth.resetRecaptcha();
+    document.getElementById('authOtp').value = '';
+    showStep('phone');
+    showMsg(document.getElementById('authMsg'), '', true);
+  }
+
+  document.getElementById('sendOtpBtn').addEventListener('click', doSendOtp);
+  document.getElementById('verifyOtpBtn').addEventListener('click', doVerifyOtp);
+  document.getElementById('saveNameBtn').addEventListener('click', doSaveName);
+  document.getElementById('backPhoneBtn').addEventListener('click', doBackPhone);
+  document.getElementById('authOtp').addEventListener('keypress', (e) => { if (e.key === 'Enter') doVerifyOtp(); });
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    TPPhoneAuth.resetRecaptcha();
+    auth.signOut();
+    location.reload();
+  });
+
+  auth.onAuthStateChanged(async (user) => {
+    if (user && user.phoneNumber && !pendingUser) {
+      try {
+        await TPAccount.afterPhoneSignIn(user);
+        user.__phoneKey = TPAccount.phoneKeyFromUser(user);
+        if (user.__phoneKey && await TPAccount.hasCustomerProfile(user.__phoneKey)) {
+          await showDashboard(user);
+        }
+      } catch (_) {}
+    }
+  });
+})();
+</script>
+</body>
+</html>

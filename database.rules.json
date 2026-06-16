@@ -19,6 +19,7 @@
             ".validate": "$pid === 'player1' || $pid === 'player2'",
             "name":  { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 30" },
             "id":    { ".validate": "newData.isString() && newData.val().length <= 64" },
+            "authUid": { ".validate": "newData.isString() && newData.val().length <= 64" },
             "ready": { ".validate": "newData.isBoolean()" },
             "photo": { ".validate": "newData.isString() && newData.val().length <= 200000" },
             "$other": { ".validate": false }
@@ -54,6 +55,14 @@
       }
     },
 
+    "orderRateLimit": {
+      "$phoneKey": {
+        ".read": false,
+        ".write": "!data.exists() || (newData.isNumber() && newData.val() - data.val() >= 50000)",
+        ".validate": "newData.isNumber()"
+      }
+    },
+
     "accessCodes": {
       ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || (query.orderByChild === 'resellerId' && query.equalTo === auth.uid))",
       ".indexOn": ["status", "ownerId", "batchId", "createdAt", "resellerId", "sold"],
@@ -61,7 +70,7 @@
         ".read": true,
         ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (root.child('resellers').child(auth.uid).child('active').val() === true && (!data.exists() || data.child('resellerId').val() === auth.uid)))",
         ".validate": "newData.hasChildren(['type','status','maxSessions','usedSessions','createdAt'])",
-        "type": { ".validate": "newData.isString() && (newData.val() === 'individual' || newData.val() === 'business')" },
+        "type": { ".validate": "newData.isString() && (newData.val() === 'individual' || newData.val() === 'business' || newData.val() === 'session')" },
         "status": {
           ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || (data.parent().child('status').val() === 'active' && newData.isString() && newData.val().matches(/^(active|used|expired)$/))",
           ".validate": "newData.isString() && newData.val().matches(/^(active|used|expired|disabled)$/)"
@@ -85,6 +94,8 @@
         "soldOrderId": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isString() && newData.val().length <= 64" },
         "soldPackageId": { ".write": "auth != null && root.child('admins').child(auth.uid).val() === true", ".validate": "newData.isString() && newData.val().length <= 64" },
         "label": { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "sessionId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "ownerPhoneKey": { ".validate": "newData.isString() && newData.val().length <= 20" },
         "lastUsedAt": {
           ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || (data.parent().child('status').val() === 'active' && newData.isNumber())",
           ".validate": "newData.isNumber()"
@@ -106,12 +117,19 @@
     },
 
     "admins": {
-      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".read": "auth != null && root.child('admins').child(auth.uid).val() === true",
       ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
         ".validate": "newData.isBoolean()"
       }
+    },
+
+    "publicConfig": {
+      ".read": true,
+      ".write": false,
+      "bootstrapPhone": { ".validate": "newData.isString() && newData.val().length <= 20" }
     },
 
     "resellers": {
@@ -193,7 +211,10 @@
         "packageId": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 64" },
         "packageName": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
         "packageType": { ".validate": "newData.isString() && newData.val().length <= 20" },
-        "status": { ".validate": "newData.isString() && newData.val().matches(/^(pending|fulfilled|cancelled)$/)" },
+        "status": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (data.parent().child('phoneKey').exists() && root.child('phoneIndex').child(data.parent().child('phoneKey').val()).child('authUid').val() === auth.uid && data.val() === 'pending' && newData.val() === 'cancelled'))",
+          ".validate": "newData.isString() && newData.val().matches(/^(pending|fulfilled|cancelled)$/)"
+        },
         "codesCount": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 10000" },
         "sessionsPerCode": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100" },
         "price": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000" },
@@ -203,14 +224,143 @@
         "buyerEmail": { ".validate": "newData.isString() && newData.val().length <= 80" },
         "notes": { ".validate": "newData.isString() && newData.val().length <= 300" },
         "source": { ".validate": "newData.isString() && newData.val().length <= 30" },
+        "phoneKey": { ".validate": "newData.isString() && newData.val().length <= 20" },
         "createdAt": { ".validate": "newData.isNumber()" },
         "fulfilledAt": { ".validate": "newData.isNumber()" },
         "fulfilledBy": { ".validate": "newData.isString() && newData.val().length <= 64" },
         "code": { ".validate": "newData.isString() && newData.val().length <= 24" },
         "codes": { "$idx": { ".validate": "newData.isString() && newData.val().length <= 24" } },
-        "cancelledAt": { ".validate": "newData.isNumber()" },
-        "cancelledBy": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "cancelledAt": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (data.parent().child('phoneKey').exists() && root.child('phoneIndex').child(data.parent().child('phoneKey').val()).child('authUid').val() === auth.uid && data.parent().child('status').val() === 'pending'))",
+          ".validate": "newData.isNumber()"
+        },
+        "cancelledBy": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (data.parent().child('phoneKey').exists() && root.child('phoneIndex').child(data.parent().child('phoneKey').val()).child('authUid').val() === auth.uid && data.parent().child('status').val() === 'pending' && newData.val() === auth.uid))",
+          ".validate": "newData.isString() && newData.val().length <= 64"
+        },
+        "paymentMethod": { ".validate": "newData.isString() && newData.val().matches(/^(whatsapp|stripe|paymob)$/)" },
+        "paymentStatus": { ".validate": "newData.isString() && newData.val().matches(/^(pending|paid|failed)$/)" },
+        "stripeSessionId": { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "stripePaymentIntentId": { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "paymobIntentionId": { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "paymobTransactionId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "paymobOrderId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "paidAt": { ".validate": "newData.isNumber()" },
+        "updatedAt": { ".validate": "newData.isNumber()" },
+        "sessionCodes": { "$idx": { ".validate": "newData.isString() && newData.val().length <= 24" } },
         "$other": { ".validate": false }
+      }
+    },
+
+    "phoneIndex": {
+      ".read": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["authUid", "role", "registeredAt"],
+      "$phoneKey": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || !data.exists() || data.child('authUid').val() === auth.uid || (auth.token.phone_number != null && auth.token.phone_number.endsWith($phoneKey)))",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (newData.child('authUid').val() === auth.uid && auth.token.phone_number != null && auth.token.phone_number.endsWith($phoneKey)))",
+        "authUid": {
+          ".validate": "newData.isString() && newData.val().length <= 64"
+        },
+        "phone": { ".validate": "newData.isString() && newData.val().length <= 30" },
+        "name": { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "role": { ".validate": "newData.isString() && newData.val().matches(/^(customer|pending_staff|reseller|admin)$/)" },
+        "authMethod": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "registeredAt": { ".validate": "newData.isNumber()" },
+        "updatedAt": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "customerOrders": {
+      "$phoneKey": {
+        ".read": "auth != null && root.child('phoneIndex').child($phoneKey).child('authUid').val() === auth.uid",
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+        "$orderId": {
+          ".write": "(auth != null && root.child('admins').child(auth.uid).val() === true) || (!data.exists() && root.child('orders').child($orderId).child('phoneKey').val() === $phoneKey && root.child('orders').child($orderId).child('status').val() === 'pending' && newData.child('status').val() === 'pending') || (auth != null && root.child('phoneIndex').child($phoneKey).child('authUid').val() === auth.uid && data.exists() && data.child('status').val() === 'cancelled' && !newData.exists())",
+          "status": {
+            ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (root.child('phoneIndex').child($phoneKey).child('authUid').val() === auth.uid && data.val() === 'pending' && newData.val() === 'cancelled'))",
+            ".validate": "newData.isString() && newData.val().matches(/^(pending|fulfilled|cancelled)$/)"
+          },
+          "cancelledAt": {
+            ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (root.child('phoneIndex').child($phoneKey).child('authUid').val() === auth.uid && root.child('customerOrders').child($phoneKey).child($orderId).child('status').val() === 'pending'))",
+            ".validate": "newData.isNumber()"
+          },
+          "packageId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+          "packageName": { ".validate": "newData.isString() && newData.val().length <= 80" },
+          "price": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "currency": { ".validate": "newData.isString() && newData.val().length <= 8" },
+          "sessionsCount": { ".validate": "newData.isNumber() && newData.val() >= 1" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "fulfilledAt": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+
+    "userData": {
+      "$phoneKey": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('phoneIndex').child($phoneKey).child('authUid').val() === auth.uid)",
+        "profile": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (!data.exists() && root.child('phoneIndex').child($phoneKey).child('authUid').val() === auth.uid && newData.hasChildren(['phone','phoneKey','role','name'])))",
+          ".validate": "newData.hasChildren(['phone','phoneKey','role'])",
+          "name": { ".validate": "newData.isString() && newData.val().length <= 80" },
+          "phone": { ".validate": "newData.isString() && newData.val().length <= 30" },
+          "phoneKey": { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "role": { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "totalSessions": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "lastOrderId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+          "$other": { ".validate": false }
+        },
+        "orders": {
+          "$orderId": {
+            ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+            ".validate": "newData.isNumber()"
+          }
+        },
+        "sessions": {
+          "$sid": {
+            ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (data.child('status').val() === 'available' && newData.child('status').val() === 'active' && root.child('accessCodes').child(data.child('sessionCode').val()).child('type').val() === 'session') || (data.child('status').val() === 'active' && newData.child('status').val() === 'used' && root.child('accessCodes').child(data.child('sessionCode').val()).child('type').val() === 'session') || (data.child('status').val() === 'active' && newData.child('status').val() === 'available' && root.child('phoneIndex').child($phoneKey).child('authUid').val() === auth.uid))",
+            "index": { ".validate": "newData.isNumber() && newData.val() >= 1" },
+            "sessionCode": { ".validate": "newData.isString() && newData.val().length <= 24" },
+            "status": { ".validate": "newData.isString() && newData.val().matches(/^(available|active|used|expired)$/)" },
+            "orderId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+            "packageId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+            "roomId": { ".validate": "newData.isString() && newData.val().length <= 8" },
+            "createdAt": { ".validate": "newData.isNumber()" },
+            "usedAt": { ".validate": "newData.isNumber()" },
+            "scorePct": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100" },
+            "partnerName": { ".validate": "newData.isString() && newData.val().length <= 30" },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    },
+
+    "sessionIndex": {
+      "$code": {
+        ".read": true,
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (!data.exists() && newData.hasChildren(['phoneKey','sessionId','status'])))",
+        ".validate": "newData.hasChildren(['phoneKey','sessionId','status'])",
+        "phoneKey": { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "sessionId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "status": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || (data.parent().child('status').val() === 'available' && newData.val() === 'active') || (data.parent().child('status').val() === 'active' && newData.val() === 'used') || (data.parent().child('status').val() === 'active' && newData.val() === 'available') || newData.val() === 'expired'",
+          ".validate": "newData.isString() && newData.val().matches(/^(available|active|used|expired)$/)"
+        },
+        "roomId": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() === true || data.parent().child('status').val().matches(/^(available|active)$/)",
+          ".validate": "newData.isString() && newData.val().length <= 8"
+        },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "paymobProcessed": {
+      "$txnId": {
+        ".read": false,
+        ".write": false
       }
     },
 
@@ -225,17 +375,29 @@
       "heroBadge":      { ".validate": "newData.isString() && newData.val().length <= 60" },
       "heroStats":      { ".validate": "newData.isString() && newData.val().length <= 240" },
       "bizMessage":     { ".validate": "newData.isString() && newData.val().length <= 200" },
+      "stripeEnabled":  { ".validate": "newData.isBoolean()" },
+      "stripePublishableKey": { ".validate": "newData.isString() && newData.val().length <= 120" },
+      "paymobEnabled":  { ".validate": "newData.isBoolean()" },
+      "paymobPublicKey": { ".validate": "newData.isString() && newData.val().length <= 256" },
+      "paymobIntegrationIds": { ".validate": "newData.isString() && newData.val().length <= 80" },
+      "paymentsNote":   { ".validate": "newData.isString() && newData.val().length <= 200" },
       "$other":         { ".validate": false }
     },
 
     "stats": {
       ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
-      ".write": true,
+      ".write": false,
       "totals": {
         ".read": true,
-        "sessionsPlayed": { ".validate": "newData.isNumber()" },
-        "cardsShared":    { ".validate": "newData.isNumber()" },
-        "$other":         { ".validate": false }
+        "sessionsPlayed": {
+          ".write": "newData.isNumber() && (!data.exists() || newData.val() === data.val() + 1)",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "cardsShared": {
+          ".write": "newData.isNumber() && (!data.exists() || newData.val() === data.val() + 1)",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "$other": { ".validate": false }
       }
     }
   }

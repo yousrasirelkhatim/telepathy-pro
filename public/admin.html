@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
@@ -34,10 +34,19 @@
 
   .wrap{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:24px}
 
-  /* Login */
-  .login-box{max-width:420px;margin:80px auto;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:40px 32px;text-align:center;backdrop-filter:blur(20px)}
-  .login-box h1{font-size:1.6rem;margin-bottom:10px;font-weight:900}
-  .login-box p{color:rgba(255,255,255,.6);margin-bottom:24px;font-size:.95rem}
+  /* Login — هاتف فقط */
+  .login-shell{max-width:420px;margin:60px auto 0}
+  .login-box{background:linear-gradient(165deg,rgba(26,18,52,.98),rgba(10,8,24,.98));border:1px solid rgba(168,85,247,.22);border-radius:24px;padding:36px 32px 28px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .login-box h1{font-size:1.55rem;margin-bottom:8px;font-weight:900;text-align:center}
+  .login-sub{text-align:center;color:rgba(255,255,255,.58);margin-bottom:22px;font-size:.92rem;line-height:1.6}
+  .login-msg{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:.84rem;line-height:1.65;text-align:center}
+  .login-msg:empty{display:none;padding:0;margin:0;border:none}
+  .login-msg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:#86efac}
+  .login-msg.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+  .login-msg.info{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.22);color:rgba(255,255,255,.75)}
+  .login-foot{margin-top:18px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.38);line-height:1.7}
+  #admin-recaptcha-wrap{min-height:0;margin:0;display:none}
+  #admin-recaptcha-wrap:not(:empty){display:flex;min-height:78px;margin:10px 0;justify-content:center;align-items:center}
 
   input[type=text],input[type=email],input[type=password],input[type=number],input[type=date],select,textarea{
     width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;padding:14px 16px;font-size:.95rem;outline:none;transition:.2s
@@ -125,6 +134,26 @@
   .code-card-top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
   .code-card-title{font-weight:900;font-size:1.05rem;direction:ltr;letter-spacing:.8px;color:#fff}
   .code-card-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+  .customer-block{margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25)}
+  .customer-block-title{font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:6px;font-weight:700}
+  .customer-block b{color:#86efac;font-size:.88rem}
+  .customer-block .sub{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:4px;direction:ltr}
+  .acct-sessions-row td{background:rgba(0,0,0,.25);border-top:none;padding:0 12px 16px}
+  .acct-sessions-row.hidden{display:none}
+  .acct-sessions-wrap{padding:14px 8px 6px}
+  .acct-sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+  .acct-session-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px}
+  .acct-session-card.available{border-color:rgba(34,197,94,.35)}
+  .acct-session-card.active{border-color:rgba(59,130,246,.45)}
+  .acct-session-card.used,.acct-session-card.expired{border-color:rgba(255,255,255,.12);opacity:.85}
+  .acct-session-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:.78rem;color:rgba(255,255,255,.55)}
+  .acct-session-code{font-weight:900;direction:ltr;letter-spacing:.6px;font-size:.95rem;color:#fff;margin-bottom:6px}
+  .acct-session-meta{font-size:.72rem;color:rgba(255,255,255,.45);line-height:1.55}
+  .acct-session-meta b{color:rgba(255,255,255,.75);font-weight:600}
+  .acct-cards-summary{font-size:.78rem;line-height:1.6;color:rgba(255,255,255,.65)}
+  .acct-cards-summary .n{color:#86efac;font-weight:800}
+  .acct-cards-summary .a{color:#93c5fd;font-weight:800}
+  .acct-cards-summary .u{color:rgba(255,255,255,.45);font-weight:700}
   .mini-stat{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px}
   .mini-stat span{display:block;color:rgba(255,255,255,.48);font-size:.72rem;margin-bottom:3px}
   .mini-stat b{font-size:.92rem}
@@ -181,6 +210,13 @@
     .metric-card{min-height:112px;padding:15px}
   }
   @media (max-width:420px){.overview-cards{grid-template-columns:1fr}.quick-actions{grid-template-columns:1fr}}
+  .acct-modal{display:none;position:fixed;inset:0;z-index:300;background:rgba(4,4,12,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+  .acct-modal.open{display:flex}
+  .acct-modal-box{width:100%;max-width:680px;background:linear-gradient(165deg,#1a1535,#0d0a22);border:1px solid rgba(168,85,247,.35);border-radius:20px;padding:24px;max-height:90vh;overflow:auto}
+  .acct-modal-box h3{margin:0 0 16px;font-size:1.2rem}
+  .acct-actions-row{display:flex;gap:6px;flex-wrap:wrap}
+  .acct-search{padding:10px 14px;border-radius:10px;background:#1a1535;border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit;width:220px;max-width:100%}
+  .reseller-fields{margin-top:12px;padding:14px;border-radius:12px;background:rgba(168,85,247,.08);border:1px dashed rgba(168,85,247,.25)}
 </style>
 </head>
 <body>
@@ -190,24 +226,33 @@
 
   <!-- LOGIN VIEW -->
   <div id="loginView">
-    <div style="text-align:center;margin-bottom:20px">
+    <div style="text-align:center;margin-bottom:16px">
       <a href="/" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:.9rem">← الرئيسية</a>
     </div>
-    <div class="login-box">
-      <h1><img src="/brand/web-app-manifest-192x192.png?v=40" alt="" style="width:40px;height:40px;border-radius:9px;vertical-align:middle;margin-left:8px">لوحة التحكم</h1>
-      <p id="loginSubtitle">سجّل دخول للوصول إلى إدارة الأكواد</p>
-      <label>البريد الإلكتروني</label>
-      <input type="email" id="loginEmail" autocomplete="email" />
-      <label id="loginPassLabel">كلمة المرور</label>
-      <input type="password" id="loginPass" autocomplete="current-password" />
-      <div style="height:18px"></div>
-      <button class="btn btn-primary btn-w" id="loginPrimaryBtn" onclick="adminLogin()">دخول</button>
-      <button class="btn btn-ghost btn-w" style="margin-top:10px" id="loginToggleBtn" onclick="toggleSignupMode()">حساب جديد للوكلاء؟ سجّل من هنا</button>
-      <button class="btn btn-ghost btn-w" style="margin-top:10px" onclick="adminPasswordReset()" id="loginForgotBtn">نسيت كلمة السر؟</button>
-      <p style="margin-top:18px;font-size:.82rem;color:rgba(255,255,255,.45)" id="loginMsg"></p>
-      <p style="margin-top:14px;font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.7" id="loginHint">
-        الدخول للأدمن والوكلاء المفعّلين فقط. لطلب حساب وكيل: أنشئ حساباً جديداً ثم أرسل UID للإدارة.
-      </p>
+    <div class="login-shell">
+      <div class="login-box">
+        <h1><img src="/brand/web-app-manifest-192x192.png?v=40" alt="" style="width:42px;height:42px;border-radius:10px;vertical-align:middle;margin-left:8px">لوحة التحكم</h1>
+        <p class="login-sub">دخول برقم الهاتف — للأدمن والوكلاء المفعّلين</p>
+
+        <div id="adminStepPhone">
+          <label for="loginPhone">رقم الهاتف (واتساب)</label>
+          <input type="tel" id="loginPhone" inputmode="tel" autocomplete="tel" placeholder="+2010xxxxxxxx" dir="ltr" />
+          <div id="admin-recaptcha-wrap"></div>
+          <button class="btn btn-primary btn-w" id="adminSendOtpBtn" type="button">📱 إرسال رمز SMS</button>
+          <p class="login-foot" style="margin-top:10px">اضغط إرسال — قد يظهر تحقق Google تلقائياً</p>
+        </div>
+
+        <div id="adminStepOtp" class="hidden">
+          <p id="adminOtpHint" style="font-size:.88rem;color:rgba(255,255,255,.65);margin:12px 0;text-align:center">أدخل الرمز المرسل لهاتفك</p>
+          <label for="loginOtp">رمز SMS</label>
+          <input type="text" id="loginOtp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••" style="letter-spacing:8px;text-align:center;font-weight:800" />
+          <button class="btn btn-primary btn-w" id="adminVerifyOtpBtn" type="button" style="margin-top:14px">✓ تأكيد الدخول</button>
+          <button class="btn btn-ghost btn-w" style="margin-top:10px" id="adminBackPhoneBtn" type="button">← تغيير الرقم</button>
+        </div>
+
+        <div class="login-msg" id="loginMsg"></div>
+        <p class="login-foot" id="loginHint">وكيل جديد؟ سجّل في <a href="/my" style="color:#c084fc">/my</a> — ثم يرقّيك الأدمن.</p>
+      </div>
     </div>
   </div>
 
@@ -236,6 +281,7 @@
       <button class="tab admin-only hidden" data-tab="orders">🛒 طلبات الشراء</button>
       <button class="tab" data-tab="generate">⚡ توليد أكواد</button>
       <button class="tab" data-tab="list">📋 قائمة الأكواد</button>
+      <button class="tab admin-only hidden" data-tab="accounts">👥 الحسابات</button>
       <button class="tab admin-only hidden" data-tab="resellers">🤝 الوكلاء</button>
       <button class="tab admin-only hidden" data-tab="pricing">💵 تسعير الأكواد</button>
       <button class="tab admin-only hidden" data-tab="packages">⚙️ الإعدادات والباقات</button>
@@ -290,8 +336,8 @@
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <select id="orderStatusFilter" onchange="loadOrders()">
               <option value="">كل الطلبات</option>
-              <option value="pending">تنتظر التسليم</option>
-              <option value="fulfilled">تم التسليم</option>
+              <option value="pending">في الانتظار</option>
+              <option value="fulfilled">تم التفعيل</option>
               <option value="cancelled">ملغاة</option>
             </select>
             <input type="text" id="orderSearch" placeholder="🔎 اسم / هاتف / رقم الطلب..." oninput="renderOrders()" style="width:auto" />
@@ -300,7 +346,7 @@
         </div>
         <div id="ordersSummary" class="list-summary"></div>
         <p style="margin:-4px 0 12px;color:rgba(255,255,255,.55);font-size:.85rem;line-height:1.7">
-          ملاحظة مهمة: حالة <b>تم التسليم</b> تحفظ الطلب وتمنع بيع الكود مرة أخرى. إرسال الرسالة للعميل يتم عبر زر واتساب أو تلقائياً بعد الضغط على <b>تسليم وفتح واتساب</b>.
+          ملاحظة مهمة: للطلبات الفردية اضغط <b>تفعيل البطاقات</b> لتظهر الجلسات داخل حساب العميل. زر واتساب أصبح إشعاراً اختيارياً فقط.
         </p>
         <div id="ordersOut"><div class="empty">جاري التحميل...</div></div>
       </div>
@@ -343,15 +389,90 @@
       </div>
     </div>
 
+    <!-- ACCOUNTS (ADMIN ONLY) -->
+    <div id="tab-accounts" class="hidden">
+      <div class="panel">
+        <div class="panel-h">
+          <h2>حسابات المستخدمين <span style="color:rgba(255,255,255,.4);font-size:.85rem;font-weight:400" id="accountsCount">(0)</span></h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="accountsRoleFilter" onchange="loadAccounts()" style="padding:8px 12px;border-radius:10px;background:#1a1535;border:1px solid rgba(255,255,255,.12);color:#fff;font-family:inherit">
+              <option value="">كل الأدوار</option>
+              <option value="customer">عملاء</option>
+              <option value="pending_staff">بانتظار التفعيل</option>
+              <option value="reseller">وكلاء</option>
+              <option value="admin">مديرون</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="loadAccounts()">🔄</button>
+          </div>
+        </div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.85rem;line-height:1.7">
+          إدارة كاملة: <b>تعديل</b> · <b>ترقية وكيل/مدير</b> · <b>حذف</b>. كل من يسجّل في <b>/my</b> يظهر هنا.
+          <br>بعد تفعيل الطلب تظهر <b>بطاقات الجلسات</b> داخل كل حساب — نفس ما يراه العميل في <b>/my</b>.
+        </p>
+        <div style="margin-bottom:12px">
+          <input type="search" id="accountsSearch" class="acct-search" placeholder="🔍 بحث بالاسم أو الهاتف..." oninput="renderAccountsTable()" />
+        </div>
+        <div id="accountsOut"><div class="empty">جاري التحميل...</div></div>
+      </div>
+    </div>
+
+    <!-- Account edit modal -->
+    <div class="acct-modal" id="accountModal" onclick="if(event.target===this)closeAccountModal()">
+      <div class="acct-modal-box">
+        <h3>👤 إدارة الحساب</h3>
+        <input type="hidden" id="acctPhoneKey" />
+        <input type="hidden" id="acctUid" />
+        <div class="row">
+          <div><label>الاسم</label><input type="text" id="acctName" /></div>
+          <div><label>الهاتف</label><input type="tel" id="acctPhone" readonly style="opacity:.7" /></div>
+          <div><label>UID</label><input type="text" id="acctUidShow" readonly style="opacity:.7;direction:ltr;font-size:.78rem" /></div>
+          <div><label>الدور / الصلاحية</label>
+            <select id="acctRole" onchange="toggleResellerFields()">
+              <option value="customer">👤 عميل</option>
+              <option value="reseller">🤝 وكيل</option>
+              <option value="admin">🛡 مدير (صلاحيات كاملة)</option>
+            </select>
+          </div>
+        </div>
+        <div id="acctResellerFields" class="reseller-fields hidden">
+          <div class="row">
+            <div><label>فئة الوكيل</label>
+              <select id="acctTier">
+                <option value="bronze">Bronze</option>
+                <option value="silver">Silver</option>
+                <option value="gold">Gold</option>
+                <option value="platinum">Platinum</option>
+              </select>
+            </div>
+            <div><label>خصم %</label><input type="number" id="acctDisc" value="0" min="0" max="90" /></div>
+            <div><label>رصيد أكواد</label><input type="number" id="acctBal" value="0" min="0" /></div>
+            <div><label>ملاحظات</label><input type="text" id="acctNotes" /></div>
+          </div>
+        </div>
+        <div id="acctCustomerCodes" class="customer-block" style="margin-top:14px">
+          <div class="customer-block-title">🃏 بطاقات العميل <span style="opacity:.6;font-weight:400">(نفس /my)</span></div>
+          <div id="acctCodesList"><div class="empty" style="padding:8px;font-size:.82rem">⏳ جاري التحميل...</div></div>
+          <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="viewCustomerCodesFromModal()">📋 فتح في قائمة الأكواد الكاملة</button>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveAccountModal()">💾 حفظ التغييرات</button>
+          <button class="btn btn-danger" onclick="deleteAccountModal()">🗑 حذف الحساب</button>
+          <button class="btn btn-ghost" onclick="closeAccountModal()">إلغاء</button>
+        </div>
+        <p style="margin-top:12px;font-size:.78rem;color:rgba(255,255,255,.4);line-height:1.6">
+          المدير: دخول /admin + كل الصلاحيات. الوكيل: توليد أكواد + محفظة. العميل: /my فقط.
+        </p>
+      </div>
+    </div>
+
     <!-- RESELLERS (ADMIN ONLY) -->
     <div id="tab-resellers" class="hidden">
       <div class="panel">
         <div class="panel-h"><h2>إضافة / تعديل وكيل</h2></div>
         <div class="row">
-          <div><label>UID</label><input type="text" id="rUid" placeholder="UID من Firebase Auth" /></div>
-          <div><label>البريد</label><input type="email" id="rEmail" /></div>
+          <div><label>UID</label><input type="text" id="rUid" placeholder="يُملأ تلقائياً من الهاتف" /></div>
+          <div><label>هاتف *</label><input type="tel" id="rPhone" placeholder="+201..." /><button type="button" class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="lookupResellerPhone()">🔍 جلب UID من الهاتف</button></div>
           <div><label>الاسم</label><input type="text" id="rName" /></div>
-          <div><label>هاتف</label><input type="text" id="rPhone" /></div>
           <div><label>الفئة</label>
             <select id="rTier">
               <option value="bronze">Bronze</option>
@@ -369,7 +490,7 @@
           <button class="btn btn-ghost" onclick="clearResellerForm()">🗑️ مسح</button>
         </div>
         <p style="margin-top:12px;color:rgba(255,255,255,.55);font-size:.82rem;line-height:1.7">
-          <b style="color:#a855f7">🚀 الطريقة السريعة:</b> الوكيل ينشئ حساباً من صفحة الدخول → يضغط زر «إرسال طلب التفعيل عبر واتساب» → تصلك رسالة فيها <b>رابط تفعيل مباشر</b>، اضغطه فيُفتح هذا النموذج معبّأً تلقائياً → اضغط «حفظ + تفعيل» وانتهى.
+          <b style="color:#a855f7">الطريقة الجديدة:</b> الوكيل يسجّل حساباً عادياً في <a href="/my" style="color:#a855f7">/my</a> → تظهر بياناته في تبويب <b>«الحسابات»</b> → اضغط <b>ترقية لوكيل</b> → «حفظ + تفعيل».
         </p>
       </div>
 
@@ -437,6 +558,79 @@
         <p style="margin-top:10px;color:rgba(255,255,255,.45);font-size:.8rem">
           رقم الواتساب يُستخدم في زر "اطلب الآن" بالصفحة الرئيسية. اتركه فارغاً ليُفتح اختيار رقم.
         </p>
+      </div>
+
+      <!-- Stripe / Card payments -->
+      <div class="panel">
+        <div class="panel-h"><h2>💳 الدفع بالفيزا (Stripe)</h2></div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          عند تفعيل Stripe: العميل يدفع بالبطاقة → <b>البطاقات تُفعَّل تلقائياً</b> في حسابه (باقات فردية).
+          المفتاح السري يُضبط في Firebase Functions — لا تضعه هنا.
+        </p>
+        <div class="row">
+          <div style="grid-column:1/-1">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" id="setStripeEnabled" style="width:18px;height:18px" />
+              <span>تفعيل الدفع بالبطاقة (Visa / Mastercard)</span>
+            </label>
+          </div>
+          <div style="grid-column:1/-1"><label>Stripe Publishable Key (اختياري — pk_live_...)</label>
+            <input type="text" id="setStripePk" placeholder="pk_test_..." dir="ltr" style="font-family:ui-monospace,monospace;font-size:.85rem" /></div>
+        </div>
+        <div style="margin-top:14px;padding:14px;border-radius:12px;background:rgba(168,85,247,.08);border:1px dashed rgba(168,85,247,.3);font-size:.82rem;line-height:1.75;color:rgba(255,255,255,.7)">
+          <b style="color:#a855f7">إعداد Firebase (مرة واحدة):</b><br>
+          1. أنشئ حساب <a href="https://dashboard.stripe.com" target="_blank" rel="noopener" style="color:#a855f7">Stripe</a><br>
+          2. في Terminal:<br>
+          <code style="display:block;margin:8px 0;padding:10px;background:#0d0a25;border-radius:8px;direction:ltr;font-size:.78rem">firebase functions:config:set stripe.secret_key="sk_..." stripe.webhook_secret="whsec_..." app.origin="https://teleplay.online"</code>
+          3. في Stripe → Webhooks → أضف:<br>
+          <code style="direction:ltr;font-size:.78rem">https://us-central1-four-fruits-fun.cloudfunctions.net/stripeWebhook</code><br>
+          4. Events: <b>checkout.session.completed</b><br>
+          5. <code style="direction:ltr">firebase deploy --only functions</code>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="savePaymentSettings()">💾 حفظ إعدادات Stripe</button>
+        </div>
+      </div>
+
+      <!-- Paymob Egypt — admin-paymob-v85 -->
+      <div class="panel" id="paymobPanel">
+        <div class="panel-h"><h2>🇪🇬 Paymob — مصر (فيزا · محفظة)</h2></div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          <b>وضع الاختبار (Test):</b> يمكنك الربط والتجربة <b>الآن</b> — لا يلزم انتظار تفعيل Live.
+          بعد الدفع التجريبي تُفعَّل البطاقات تلقائياً في <b>/my</b>.
+        </p>
+        <div id="paymobStatusBox" style="margin-bottom:14px;padding:14px;border-radius:12px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);font-size:.84rem;line-height:1.8"></div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="grid-column:1/-1">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" id="setPaymobEnabled" style="width:18px;height:18px" />
+              <span>تفعيل Paymob للعملاء (Test أو Live)</span>
+            </label>
+          </div>
+          <div style="padding:16px;border-radius:14px;background:rgba(34,211,238,.1);border:2px solid rgba(34,211,238,.35)">
+            <label style="font-size:1rem;font-weight:700;color:#22d3ee">① Integration ID — بطاقة (Test)</label>
+            <input type="text" id="setPaymobIntegration" placeholder="مثال: 5123456" dir="ltr" inputmode="numeric" autocomplete="off"
+              style="display:block;width:100%;margin-top:10px;padding:12px 14px;font-family:ui-monospace,monospace;font-size:1rem;border-radius:10px;border:1px solid rgba(34,211,238,.4);background:#0d0a25;color:#fff" />
+            <p style="margin:8px 0 0;font-size:.8rem;color:rgba(255,255,255,.55)">أرقام فقط — من Paymob → <b>تكاملات الدفع</b> → Card → Integration ID. <b>ليس</b> Transaction ID.</p>
+          </div>
+          <div style="padding:16px;border-radius:14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25)">
+            <label style="font-size:1rem;font-weight:700;color:#c084fc">② Public Key (egy_pk_test_...)</label>
+            <input type="text" id="setPaymobPk" placeholder="egy_pk_test_..." dir="ltr" autocomplete="off"
+              style="display:block;width:100%;margin-top:10px;padding:12px 14px;font-family:ui-monospace,monospace;font-size:.9rem;border-radius:10px;border:1px solid rgba(168,85,247,.3);background:#0d0a25;color:#fff" />
+            <p style="margin:8px 0 0;font-size:.8rem;color:rgba(255,255,255,.55)">مفتاح طويل يبدأ بـ <b style="direction:ltr">egy_pk_test_</b> — من Paymob → API Keys → Public key</p>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding:14px;border-radius:12px;background:rgba(34,211,238,.08);border:1px dashed rgba(34,211,238,.3);font-size:.82rem;line-height:1.75;color:rgba(255,255,255,.7)">
+          <b style="color:#22d3ee">الأسرار (Secret + HMAC):</b> في ملف <code style="direction:ltr">functions/.env.four-fruits-fun</code> ثم:<br>
+          <code style="display:block;margin:8px 0;padding:10px;background:#0d0a25;border-radius:8px;direction:ltr;font-size:.72rem;word-break:break-all">firebase deploy --only functions</code>
+          <b style="color:#22d3ee">Webhook</b> (Transaction Processed) — الصق في Paymob:<br>
+          <code id="paymobWebhookUrl" style="direction:ltr;font-size:.78rem;word-break:break-all">https://us-central1-four-fruits-fun.cloudfunctions.net/paymobWebhook</code>
+          <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="copyPaymobWebhook()">📋 نسخ Webhook</button>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="savePaymobSettings()">💾 حفظ إعدادات Paymob</button>
+          <button class="btn btn-ghost" onclick="refreshPaymobStatus()">🔄 تحقق الجاهزية</button>
+        </div>
       </div>
 
       <!-- Add / Edit Package -->
@@ -548,6 +742,7 @@
             </select>
             <select id="fType" onchange="renderList()">
               <option value="">كل الأنواع</option>
+              <option value="session">بطاقة جلسة (/my)</option>
               <option value="individual">فردي</option>
               <option value="business">شركات</option>
             </select>
@@ -594,11 +789,15 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="/js/codes.js?v=37"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+<script src="/js/codes.js?v=108"></script>
+<script src="/js/phone-auth.js?v=100"></script>
+<script src="/js/account.js?v=100"></script>
 <script>
   TPCodes.init();
   const auth = firebase.auth();
   const db = firebase.database();
+  try { auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (_) {}
 
   let allCodes = [];
   let allOrders = [];
@@ -620,21 +819,37 @@
     setTimeout(() => el.remove(), 3200);
   }
 
-  // ---------------- AUTH ----------------
-  auth.onAuthStateChanged(async (u) => {
-    if (!u) { showLogin(); return; }
+  // ---------------- AUTH (بسيط: OTP → admins/{uid} أو resellers/{uid}) ----------------
+  function setLoginMsg(text, type) {
+    const el = document.getElementById('loginMsg');
+    if (!el) return;
+    el.textContent = text || '';
+    el.className = 'login-msg' + (type ? (' ' + type) : '');
+  }
+
+  function isYes(val) {
+    return val === true || val === 'true' || val === 1;
+  }
+
+  async function routeAuth(u) {
+    if (!u) {
+      showLogin();
+      setLoginMsg('', 'info');
+      return;
+    }
     myUid = u.uid;
-    // 1) admin?
+
     try {
       const adminSnap = await db.ref('admins/' + u.uid).once('value');
-      if (adminSnap.val() === true) {
+      if (isYes(adminSnap.val())) {
         role = 'admin';
         showDash(u);
         return;
       }
-    } catch(e) { /* ignore */ }
-    // 2) reseller?
-    let pendingReseller = null;
+    } catch (e) {
+      console.warn('[admin] admins check', e);
+    }
+
     try {
       const rs = await db.ref('resellers/' + u.uid).once('value');
       const rv = rs.val();
@@ -644,27 +859,18 @@
         showDash(u);
         return;
       }
-      if (rv) pendingReseller = rv;
-    } catch(e) { /* ignore */ }
-    // 3) neither (or reseller pending activation)
-    let waNum = '';
-    try { const s = await TPCodes.getSettings(); waNum = String(s.whatsappNumber||'').replace(/[^\d+]/g,'').replace(/^\+/,''); } catch(_) {}
-    const activateLink = location.origin + '/admin.html?activate=' + encodeURIComponent(u.uid) + '&email=' + encodeURIComponent(u.email||'');
-    const reqMsg = encodeURIComponent('أرغب بتفعيل حسابي كوكيل في تخاطر\nالبريد: ' + (u.email||'') + '\nUID: ' + u.uid + '\n\n🔗 رابط التفعيل المباشر للأدمن:\n' + activateLink);
-    const waBtn = waNum
-      ? '<a href="https://wa.me/' + waNum + '?text=' + reqMsg + '" target="_blank" style="display:inline-block;margin-top:10px;background:#25D366;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:700">📲 إرسال طلب التفعيل عبر واتساب</a>'
-      : '<button onclick="navigator.clipboard.writeText(\'' + u.uid + '\').then(()=>this.textContent=\'✓ تم نسخ UID\')" style="display:inline-block;margin-top:10px;background:#a855f7;color:#fff;padding:10px 18px;border-radius:10px;border:0;font-weight:700;cursor:pointer">📋 نسخ UID</button>';
-    const headerTxt = pendingReseller
-      ? '⏸ <b>حسابك مسجّل لكنه موقوف</b>'
-      : '⏳ <b>حسابك جاهز لكنه ينتظر التفعيل</b>';
-    document.getElementById('loginMsg').innerHTML =
-      '<div style="background:#1a0e3a;border:1px solid rgba(168,85,247,.4);border-radius:12px;padding:16px;text-align:center;color:#f4e4a3">'
-      + '<div style="font-size:1rem;margin-bottom:8px">' + headerTxt + '</div>'
-      + '<div style="font-size:.82rem;color:rgba(255,255,255,.65);margin-bottom:10px">المعرّف التالي يحتاج تفعيل من الإدارة:</div>'
-      + '<code style="display:block;background:#0d0a25;color:#a855f7;padding:10px 14px;border-radius:8px;direction:ltr;font-size:.9rem;user-select:all;word-break:break-all">' + u.uid + '</code>'
-      + waBtn
-      + '</div>';
-    await auth.signOut();
+    } catch (_) {}
+
+    setLoginMsg('🔒 لا صلاحية — UID: ' + u.uid, 'err');
+    showAdminOtpStep(false);
+    showLogin();
+  }
+
+  auth.onAuthStateChanged(function (u) {
+    routeAuth(u).catch(function (e) {
+      console.error('[admin]', e);
+      setLoginMsg('خطأ: ' + (e.message || 'auth'), 'err');
+    });
   });
 
   function showLogin() {
@@ -674,15 +880,15 @@
   function showDash(u) {
     document.getElementById('loginView').classList.add('hidden');
     document.getElementById('dashView').classList.remove('hidden');
-    const me = u.email || u.uid;
-    document.getElementById('meEmail').innerHTML = escapeHtml(me) + ' <span class="role-chip">' + (role === 'reseller' ? 'وكيل' : 'أدمن') + '</span>';
+    const me = u.phoneNumber || u.uid;
+    document.getElementById('meEmail').innerHTML = escapeHtml(me) + ' <span class="role-chip">' + (role === 'reseller' ? 'وكيل' : 'مدير') + '</span>';
     // toggle role-specific elements
     document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', role !== 'admin'));
     document.querySelectorAll('.reseller-only').forEach(el => el.classList.toggle('hidden', role !== 'reseller'));
     refreshStats();
     loadDashboardOverview();
     loadPricing().catch(()=>{});
-    if (role === 'admin') { loadResellers(); loadOpsLog(); loadOrders(); }
+    if (role === 'admin') { loadAccounts(); loadResellers(); loadOpsLog(); loadOrders(); loadList(); }
     if (role === 'reseller') loadWallet();
     setupCostPreview();
     setupPackagePriceHelper();
@@ -694,15 +900,16 @@
     try {
       const params = new URLSearchParams(location.search);
       const uid = params.get('activate');
-      const email = params.get('email') || '';
+      const phone = params.get('phone') || '';
       if (!uid) return;
       activateTab('resellers');
       setTimeout(() => {
         const u = document.getElementById('rUid'); if (u) u.value = uid;
-        const e = document.getElementById('rEmail'); if (e) e.value = email;
+        const p = document.getElementById('rPhone'); if (p) p.value = phone;
         const t = document.getElementById('rTier'); if (t) t.value = 'bronze';
         const d = document.getElementById('rDisc'); if (d) d.value = '20';
         const b = document.getElementById('rBal'); if (b) b.value = '10';
+        if (phone) lookupResellerPhone();
         const card = document.querySelector('#tab-resellers .panel');
         if (card) {
           card.style.transition = 'box-shadow .4s';
@@ -717,79 +924,60 @@
     } catch(_) {}
   }
 
-  async function adminLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass  = document.getElementById('loginPass').value;
-    const msg = document.getElementById('loginMsg');
-    if (!email || !pass) { msg.textContent = '✕ أدخل البريد وكلمة السر'; return; }
-    msg.textContent = '⏳ جاري الدخول...';
+  function showAdminOtpStep(show) {
+    document.getElementById('adminStepPhone').classList.toggle('hidden', show);
+    document.getElementById('adminStepOtp').classList.toggle('hidden', !show);
+  }
+
+  async function adminSendOtp() {
+    const phone = document.getElementById('loginPhone').value.trim();
+    const btn = document.getElementById('adminSendOtpBtn');
+    if (!phone) { setLoginMsg('أدخل رقم الهاتف', 'err'); return; }
+    btn.disabled = true;
+    setLoginMsg('⏳ جاري إرسال الرمز...', 'info');
     try {
-      await auth.signInWithEmailAndPassword(email, pass);
+      const res = await TPPhoneAuth.sendOtp(phone, 'adminSendOtpBtn', '20', { size: 'invisible' });
+      document.getElementById('adminOtpHint').textContent = 'أدخل الرمز المرسل إلى ' + res.masked;
+      showAdminOtpStep(true);
+      setLoginMsg('✓ تم إرسال الرمز — تحقق من SMS', 'ok');
+      document.getElementById('loginOtp').focus();
     } catch (e) {
-      const friendly = {
-        'auth/invalid-email': 'صيغة البريد غير صحيحة',
-        'auth/user-not-found': 'الحساب غير موجود — جرّب «حساب جديد»',
-        'auth/wrong-password': 'كلمة السر غير صحيحة',
-        'auth/invalid-credential': 'بيانات الدخول غير صحيحة',
-        'auth/invalid-login-credentials': 'بيانات الدخول غير صحيحة',
-        'auth/too-many-requests': 'محاولات كثيرة، حاول لاحقاً',
-        'auth/network-request-failed': 'تعذّر الاتصال بالشبكة'
-      }[e.code] || (e.message || 'فشل الدخول');
-      msg.textContent = '✕ ' + friendly;
+      setLoginMsg(TPPhoneAuth.friendlyError(e), 'err');
+      TPPhoneAuth.resetRecaptcha();
+      if (e && (e.code === 'auth/captcha-check-failed' || e.code === 'auth/missing-recaptcha-token')) {
+        setLoginMsg('أكمل مربع Google ثم أعد الإرسال', 'err');
+      }
+    } finally {
+      btn.disabled = false;
     }
   }
 
-  let signupMode = false;
-  function toggleSignupMode() {
-    signupMode = !signupMode;
-    document.getElementById('loginSubtitle').textContent = signupMode
-      ? 'أنشئ حساباً جديداً للوكيل (ستحتاج تفعيل من الإدارة)'
-      : 'سجّل دخول للوصول إلى إدارة الأكواد';
-    document.getElementById('loginPassLabel').textContent = signupMode ? 'كلمة سر جديدة (6 أحرف على الأقل)' : 'كلمة المرور';
-    document.getElementById('loginPass').autocomplete = signupMode ? 'new-password' : 'current-password';
-    document.getElementById('loginPass').value = '';
-    const primary = document.getElementById('loginPrimaryBtn');
-    primary.textContent = signupMode ? 'إنشاء حساب جديد' : 'دخول';
-    primary.setAttribute('onclick', signupMode ? 'adminSignup()' : 'adminLogin()');
-    document.getElementById('loginToggleBtn').textContent = signupMode ? '← لديّ حساب — رجوع للدخول' : 'حساب جديد للوكلاء؟ سجّل من هنا';
-    document.getElementById('loginForgotBtn').style.display = signupMode ? 'none' : '';
-    document.getElementById('loginMsg').textContent = '';
+  async function adminVerifyOtp() {
+    const code = document.getElementById('loginOtp').value.trim();
+    if (code.length < 6) { setLoginMsg('أدخل رمز SMS (6 أرقام)', 'err'); return; }
+    setLoginMsg('⏳ جاري التحقق...', 'info');
+    try {
+      await TPPhoneAuth.verifyOtp(code);
+      setLoginMsg('', 'info');
+    } catch (e) {
+      setLoginMsg(TPPhoneAuth.friendlyError(e), 'err');
+    }
   }
 
-  async function adminSignup() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass  = document.getElementById('loginPass').value;
-    const msg = document.getElementById('loginMsg');
-    if (!email || !pass) { msg.textContent = '✕ أدخل البريد وكلمة سر'; return; }
-    if (pass.length < 6) { msg.textContent = '✕ كلمة السر يجب أن تكون 6 أحرف على الأقل'; return; }
-    msg.textContent = '⏳ جاري إنشاء الحساب...';
-    try {
-      await auth.createUserWithEmailAndPassword(email, pass);
-      // onAuthStateChanged سيعرض رسالة "غير مخوّل + UID" تلقائياً
-    } catch (e) {
-      const friendly = {
-        'auth/email-already-in-use': 'هذا البريد مسجّل مسبقاً — جرّب «دخول» بدلاً من إنشاء',
-        'auth/invalid-email': 'صيغة البريد غير صحيحة',
-        'auth/weak-password': 'كلمة السر ضعيفة جداً',
-        'auth/operation-not-allowed': 'إنشاء الحسابات معطّل في Firebase Console',
-        'auth/network-request-failed': 'تعذّر الاتصال بالشبكة'
-      }[e.code] || (e.message || 'فشل إنشاء الحساب');
-      msg.textContent = '✕ ' + friendly;
-    }
+  function adminBackPhone() {
+    TPPhoneAuth.resetRecaptcha();
+    document.getElementById('loginOtp').value = '';
+    showAdminOtpStep(false);
+    setLoginMsg('', 'info');
   }
-  async function adminPasswordReset() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const msg = document.getElementById('loginMsg');
-    if (!email) { msg.textContent = '✕ أدخل البريد أولاً'; return; }
-    msg.textContent = '⏳ جاري الإرسال...';
-    try {
-      await auth.sendPasswordResetEmail(email);
-      msg.textContent = '✓ تم إرسال رابط استعادة كلمة السر إلى ' + email;
-    } catch (e) {
-      msg.textContent = '✕ ' + (e.message || 'تعذّر الإرسال');
-    }
-  }
-  async function adminLogout() { await auth.signOut(); }
+
+  document.getElementById('adminSendOtpBtn').addEventListener('click', adminSendOtp);
+  document.getElementById('adminVerifyOtpBtn').addEventListener('click', adminVerifyOtp);
+  document.getElementById('adminBackPhoneBtn').addEventListener('click', adminBackPhone);
+  document.getElementById('loginOtp').addEventListener('keydown', function (e) { if (e.key === 'Enter') adminVerifyOtp(); });
+  document.getElementById('loginPhone').addEventListener('keydown', function (e) { if (e.key === 'Enter') adminSendOtp(); });
+
+  async function adminLogout() { TPPhoneAuth.resetRecaptcha(); await auth.signOut(); }
 
   // ---------------- TABS ----------------
   function activateTab(tabName) {
@@ -800,12 +988,14 @@
     t.onclick = () => {
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
       t.classList.add('active');
-      ['overview','orders','generate','list','resellers','pricing','packages','wallet'].forEach(k => {
+      closeAccountModal();
+      ['overview','orders','accounts','generate','list','resellers','pricing','packages','wallet'].forEach(k => {
         const el = document.getElementById('tab-'+k);
         if (el) el.classList.toggle('hidden', k !== t.dataset.tab);
       });
       if (t.dataset.tab === 'overview') { loadDashboardOverview(); if (role === 'admin') loadOpsLog(); }
       if (t.dataset.tab === 'orders') loadOrders();
+      if (t.dataset.tab === 'accounts') loadAccounts();
       if (t.dataset.tab === 'list') loadList();
       if (t.dataset.tab === 'resellers') loadResellers();
       if (t.dataset.tab === 'pricing') loadPricing();
@@ -924,7 +1114,7 @@
         quickAct.style.display = 'block';
         quickAct.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:14px;background:rgba(124,58,237,0.15);border:1px solid rgba(168,85,247,0.35)">'
           + '<div><b>📦 طلب جاهز للتسليم</b><br><span style="font-size:.85rem;color:rgba(255,255,255,.65)">' + escapeHtml(oldestPending.buyerName || '') + ' — ' + escapeHtml(oldestPending.packageName || '') + '</span></div>'
-          + '<button class="btn btn-primary btn-sm" onclick="fulfillOrder(\'' + oldestPending.id + '\')">✅ تسليم وفتح واتساب</button></div>';
+          + '<button class="btn btn-primary btn-sm" onclick="fulfillOrder(\'' + oldestPending.id + '\')">✅ تفعيل / تسليم</button></div>';
       } else if (quickAct) quickAct.style.display = 'none';
 
       const btnQf = document.getElementById('btnQuickFulfill');
@@ -1081,6 +1271,7 @@
     const onlyRem = document.getElementById('chipRemaining') && document.getElementById('chipRemaining').classList.contains('on');
     const q = document.getElementById('fSearch').value.toLowerCase().trim();
     const soldMode = soldFilter;
+    const customerPk = window.__codesCustomerFilter || '';
 
     // Date range (optional)
     const fromV = (document.getElementById('fFrom')||{}).value || '';
@@ -1091,18 +1282,23 @@
     saveListFilters();
 
     // Reset paint limit only when the filter set actually changes (not on "load more")
-    const sig = [status, type, sort, onlyRem, q, soldMode, fromV, toV].join('|');
+    const sig = [status, type, sort, onlyRem, q, soldMode, fromV, toV, customerPk].join('|');
     if (sig !== listFilterSig) { listFilterSig = sig; listRenderLimit = LIST_PAGE; }
 
     // Counts for status chips (respect type/search/remaining/date, ignore current status pick)
     const baseArr = allCodes.filter(c => {
       if (type && (c.type||'individual') !== type) return false;
+      if (customerPk) {
+        const soldPk = (c.soldToPhone && typeof TPAccount !== 'undefined' && TPAccount.phoneKey)
+          ? TPAccount.phoneKey(c.soldToPhone) : '';
+        if (c.ownerPhoneKey !== customerPk && soldPk !== customerPk) return false;
+      }
       if (onlyRem && Math.max(0,(c.maxSessions||0)-(c.usedSessions||0)) <= 0) return false;
       if (soldMode === 'sold' && !c.sold) return false;
       if (soldMode === 'unsold' && c.sold) return false;
       const created = c.createdAt || 0;
       if (created < fromTs || created > toTs) return false;
-      if (q && !((c.code + ' ' + (c.label||'') + ' ' + (c.soldToName||'') + ' ' + (c.soldToPhone||'')).toLowerCase().includes(q))) return false;
+      if (q && !((c.code + ' ' + (c.label||'') + ' ' + (c.soldToName||'') + ' ' + (c.soldToPhone||'') + ' ' + (c.soldOrderId||'') + ' ' + (c.ownerPhoneKey||'')).toLowerCase().includes(q))) return false;
       return true;
     });
     const totalEl = document.getElementById('listTotalCount');
@@ -1151,7 +1347,7 @@
       + `<div class="sum good"><span>جلسات متبقية</span><b>${sums.remaining}</b></div>`;
 
     if (!arr.length) {
-      document.getElementById('listOut').innerHTML = '<div class="empty">لا توجد أكواد مطابقة</div>';
+      document.getElementById('listOut').innerHTML = '<div class="empty">لا توجد أكواد مطابقة' + (customerPk ? ' لهذا العميل' : '') + '</div>';
       updateBulkBar();
       return;
     }
@@ -1177,12 +1373,12 @@
         html += `<tr>
           <td><input type="checkbox" class="bulk-chk" data-code="${c.code}" ${checked} onclick="bulkToggle('${c.code}', this.checked)"></td>
           <td class="code-cell">${c.code}</td>
-          <td><span class="pill ${c.type}">${c.type === 'business' ? 'شركات' : 'فردي'}</span></td>
+          <td><span class="pill ${c.type}">${codeTypeLabel(c)}</span></td>
           <td><span class="pill ${c.status}">${labelStatus(c.status)}</span> ${saleBadge(c)}</td>
           <td>${c.usedSessions}/${c.maxSessions}</td>
           <td style="font-weight:900;color:${remaining ? '#86efac' : '#fca5a5'}">${remaining}</td>
           <td style="color:rgba(255,255,255,.55);font-size:.78rem">${expiryText(c)}</td>
-          <td style="color:rgba(255,255,255,.6)">${escapeHtml(c.label || '-')}</td>
+          <td style="color:rgba(255,255,255,.6)">${escapeHtml(c.soldToName || c.label || '-')}</td>
           <td style="color:rgba(255,255,255,.45);font-size:.78rem">${TPCodes.fmtDate(c.createdAt)}</td>
           <td>
             ${c.status === 'active'
@@ -1260,6 +1456,29 @@
     if (days === 0) return 'ينتهي اليوم';
     return days + ' يوم';
   }
+  function codeTypeLabel(c) {
+    const t = c.type || 'individual';
+    if (t === 'business') return 'شركات';
+    if (t === 'session') return 'بطاقة جلسة';
+    return 'فردي';
+  }
+
+  function customerBlockHtml(c) {
+    if (!c.sold && !c.soldToName && !c.soldToPhone && !c.ownerPhoneKey) return '';
+    const name = escapeHtml(c.soldToName || '—');
+    const phone = escapeHtml(c.soldToPhone || c.ownerPhoneKey || '—');
+    const order = c.soldOrderId ? ('<div class="sub">طلب: ' + escapeHtml(c.soldOrderId) + '</div>') : '';
+    const pk = c.ownerPhoneKey || '';
+    const myLink = pk ? (location.origin + '/my') : '';
+    return '<div class="customer-block">'
+      + '<div class="customer-block-title">👤 المشتري / حساب العميل</div>'
+      + '<div class="mini-stat" style="margin-bottom:6px"><span>الاسم</span><b>' + name + '</b></div>'
+      + '<div class="mini-stat"><span>الهاتف</span><b style="direction:ltr;display:block">' + phone + '</b></div>'
+      + order
+      + (pk ? ('<div style="margin-top:8px"><button type="button" class="btn btn-ghost btn-sm" onclick="viewCustomerCodes(\'' + pk.replace(/'/g, '') + '\')">🔗 أكواد هذا العميل</button></div>') : '')
+      + '</div>';
+  }
+
   function renderCodeCards(codes, showAll) {
     const visible = showAll ? codes : codes.slice(0, 12);
     if (!visible.length) return '<div class="empty">لا توجد أكواد</div>';
@@ -1276,11 +1495,12 @@
           <div class="code-card-title">${escapeHtml(c.code)}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><span class="pill ${c.status || 'active'}">${labelStatus(c.status || 'active')}</span>${saleBadge(c)}</div>
         </div>
+        ${customerBlockHtml(c)}
         <div class="qr-box"><img src="${qrUrl(link)}" alt="QR" loading="lazy" onerror="this.style.display='none'"></div>
         <div class="code-card-meta">
           <div class="mini-stat"><span>الاستخدام</span><b>${c.usedSessions || 0}/${c.maxSessions || 0}</b></div>
           <div class="mini-stat"><span>المتبقي</span><b style="color:${remaining ? '#86efac' : '#fca5a5'}">${remaining}</b></div>
-          <div class="mini-stat"><span>النوع</span><b>${c.type === 'business' ? 'شركات' : 'فردي'}</b></div>
+          <div class="mini-stat"><span>النوع</span><b>${codeTypeLabel(c)}</b></div>
           <div class="mini-stat"><span>الصلاحية</span><b>${expiryText(c)}</b></div>
         </div>
         <div class="link-line">${link}</div>
@@ -1331,23 +1551,33 @@
     return o;
   }
 
-  /** One clear WhatsApp message — single play link (no card link maze) */
   function customerDeliveryMessage(opts) {
     opts = opts || {};
     const name = opts.name || '';
     const link = opts.link || '';
     const sessions = opts.sessions || 5;
+    const isSession = !!opts.isSession;
     const greeting = name ? ('مرحباً ' + name + ' 👋') : 'مرحباً 👋';
+    const sessionNote = isSession
+      ? '🃏 بطاقة جلسة واحدة — ابدأ التحدي ثم ادعُ صديقك *من داخل اللعبة* (لا ترسل له هذا الرابط)\n\n'
+      : '';
+    const usesLine = isSession
+      ? '🔄 جلسة واحدة لكل بطاقة\n\n'
+      : ('🔄 نفس الكود يعمل ' + sessions + ' مرات\n\n');
     return greeting + '\n\n'
       + '🎮 *تحدي التخاطر* جاهز لك!\n\n'
+      + sessionNote
       + '👇 *اضغط وابدأ:*\n' + link + '\n\n'
       + '✨ اكتب اسمك وأضف صورتك\n'
       + '🤝 ادعُ صديقك من داخل اللعبة\n'
-      + '🔄 نفس الكود يعمل ' + sessions + ' مرات\n\n'
+      + usesLine
       + 'استمتع! 💜';
   }
 
   function playLink(code) {
+    if (/^JS-/i.test(code)) {
+      return location.origin + '/play?session=' + encodeURIComponent(code) + '&lang=ar';
+    }
     return location.origin + '/play?code=' + encodeURIComponent(code) + '&lang=ar';
   }
   function cardLink(code) {
@@ -1362,7 +1592,8 @@
     const txt = customerDeliveryMessage({
       name: (item && item.soldToName) || '',
       link,
-      sessions: (item && item.maxSessions) || 5
+      sessions: (item && item.maxSessions) || 5,
+      isSession: item && item.type === 'session'
     });
     window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
   }
@@ -1388,6 +1619,13 @@
     try {
       const status = (document.getElementById('orderStatusFilter') || {}).value || '';
       allOrders = await TPCodes.listOrders({ status, limit: 300 });
+      if (typeof TPAccount !== 'undefined' && TPAccount.ensureCustomerOrderMirror) {
+        const mirrors = allOrders
+          .filter(o => (Number(o.codesCount) || 1) === 1 && o.buyerPhone)
+          .slice(0, 80)
+          .map(o => TPAccount.ensureCustomerOrderMirror(o).catch(() => null));
+        Promise.all(mirrors).catch(() => {});
+      }
       renderOrders();
     } catch (e) {
       out.innerHTML = '<div class="empty">✕ تعذّر تحميل الطلبات<br><span style="font-size:.8rem;color:rgba(255,255,255,.45)">' + escapeHtml(e.message || e.code || e) + '</span></div>';
@@ -1395,7 +1633,7 @@
   }
 
   function orderStatusLabel(status) {
-    return { pending:'تنتظر التسليم', fulfilled:'تم التسليم', cancelled:'ملغاة' }[status] || status || 'غير معروف';
+    return { pending:'في الانتظار', fulfilled:'تم التفعيل', cancelled:'ملغاة' }[status] || status || 'غير معروف';
   }
   function orderStatusClass(status) {
     return status === 'fulfilled' ? 'active' : status === 'cancelled' ? 'disabled' : 'used';
@@ -1406,8 +1644,8 @@
     const summary = document.getElementById('ordersSummary');
     const sums = allOrders.reduce((a,o)=>{ a[o.status || 'pending'] = (a[o.status || 'pending'] || 0) + 1; return a; }, {});
     if (summary) summary.innerHTML = ''
-      + `<div class="sum warn"><span>تنتظر</span><b>${sums.pending||0}</b></div>`
-      + `<div class="sum good"><span>تم التسليم</span><b>${sums.fulfilled||0}</b></div>`
+      + `<div class="sum warn"><span>في الانتظار</span><b>${sums.pending||0}</b></div>`
+      + `<div class="sum good"><span>تم التفعيل</span><b>${sums.fulfilled||0}</b></div>`
       + `<div class="sum bad"><span>ملغاة</span><b>${sums.cancelled||0}</b></div>`;
     // Client-side search across name / phone / order id / package
     const q = ((document.getElementById('orderSearch') || {}).value || '').toLowerCase().trim();
@@ -1450,7 +1688,8 @@
         ${order.notes ? `<div style="margin:10px 0;color:rgba(255,255,255,.7);font-size:.9rem">${escapeHtml(order.notes)}</div>` : ''}
         ${codesHtml}
         <div class="code-actions">
-          ${pending ? `<button class="btn btn-primary btn-sm" onclick="fulfillOrder('${order.id}')">✅ تسليم وفتح واتساب</button>` : ''}
+          ${pending ? `<button class="btn btn-primary btn-sm" onclick="fulfillOrder('${order.id}')">${(Number(order.codesCount)||1) === 1 ? '✅ تفعيل البطاقات' : '✅ تسليم وفتح واتساب'}</button>` : ''}
+          ${order.status === 'fulfilled' && (Number(order.codesCount)||1) === 1 && !(Array.isArray(order.sessionCodes) && order.sessionCodes.length) ? `<button class="btn btn-primary btn-sm" onclick="provisionOrderCards('${order.id}')">🃏 إنشاء بطاقات /my</button>` : ''}
           ${!pending && codes.length ? `<button class="btn btn-primary btn-sm" onclick="openCustomerCard('${codes[0]}')">🪪 بطاقة العميل</button>` : ''}
           <button class="btn btn-ghost btn-sm" onclick="copyOrderMessage('${order.id}')">📋 رسالة العميل</button>
           <button class="btn btn-ghost btn-sm" onclick="openOrderWhatsApp('${order.id}')">📱 واتساب</button>
@@ -1462,6 +1701,14 @@
 
   function orderById(id) { return allOrders.find(o => o.id === id); }
   function orderCustomerMessage(order) {
+    if (order.phoneKey || (Array.isArray(order.sessionCodes) && order.sessionCodes.length)) {
+      return TPAccount.accountDeliveryMessage({
+        name: order.buyerName || '',
+        phone: order.buyerPhone || '',
+        sessionsCount: (Number(order.codesCount) || 1) * (Number(order.sessionsPerCode) || 5),
+        myLink: TPAccount.myPageLink(),
+      });
+    }
     const codes = Array.isArray(order.codes) ? order.codes : (order.code ? [order.code] : []);
     const sessions = Number(order.sessionsPerCode) || 5;
     if (codes.length === 1) {
@@ -1505,15 +1752,66 @@
     return true;
   }
 
+  async function provisionOrderCards(id) {
+    const order = orderById(id);
+    if (!order) return;
+    if ((Number(order.codesCount) || 1) !== 1) { toast('للباقات الفردية فقط', true); return; }
+    if (!confirm('إنشاء بطاقات JS (5 جلسات) في حساب العميل على /my؟')) return;
+    try {
+      const prov = await TPAccount.provisionFromOrder(order, myUid);
+      await TPCodes.saveOrder(id, {
+        phoneKey: prov.phoneKey,
+        sessionCodes: prov.sessions.map((s) => s.sessionCode),
+        codes: prov.sessions.map((s) => s.sessionCode),
+        code: prov.sessions[0]?.sessionCode || '',
+      });
+      toast('✓ تم إنشاء ' + prov.sessionsCount + ' بطاقة في /my');
+      await loadOrders();
+      await loadList();
+      loadAccounts();
+      refreshStats();
+    } catch (e) { toast('فشل: ' + (e.message || e.code || e), true); }
+  }
+
   async function fulfillOrder(id) {
     const order = orderById(id); if (!order) return;
-    if (!confirm('تسليم كود لهذا الطلب وتعليمه كمباع؟')) return;
-    const waWindow = window.open('', '_blank');
+    const useAccount = (Number(order.codesCount) || 1) === 1;
+    const confirmMsg = useAccount
+      ? 'تفعيل بطاقات الجلسات داخل حساب العميل؟'
+      : 'تسليم كود لهذا الطلب وتعليمه كمباع؟';
+    if (!confirm(confirmMsg)) return;
+    let waWindow = null;
+    if (!useAccount) waWindow = window.open('', '_blank');
     if (waWindow) {
-      waWindow.document.write('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;background:#120b2e;color:#fff;display:grid;place-items:center;min-height:100vh;text-align:center"><div><h2>جاري تجهيز رسالة واتساب...</h2><p>سيتم تحويلك تلقائياً بعد تسليم الكود.</p></div></body>');
+      waWindow.document.write('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;background:#120b2e;color:#fff;display:grid;place-items:center;min-height:100vh;text-align:center"><div><h2>جاري تجهيز رسالة واتساب...</h2><p>سيتم تحويلك تلقائياً بعد التسليم.</p></div></body>');
       waWindow.document.close();
     }
     try {
+      if (useAccount && typeof TPAccount !== 'undefined') {
+        const prov = await TPAccount.provisionFromOrder(order, myUid);
+        await TPCodes.saveOrder(id, {
+          status: 'fulfilled',
+          fulfilledAt: Date.now(),
+          fulfilledBy: myUid,
+          phoneKey: prov.phoneKey,
+          sessionCodes: prov.sessions.map((s) => s.sessionCode),
+          codes: prov.sessions.map((s) => s.sessionCode),
+          code: prov.sessions[0]?.sessionCode || '',
+        });
+        const fulfilledOrder = {
+          ...order,
+          status: 'fulfilled',
+          phoneKey: prov.phoneKey,
+          sessionCodes: prov.sessions.map((s) => s.sessionCode),
+        };
+        toast('✓ تم تفعيل ' + prov.sessionsCount + ' بطاقة جلسة');
+        await loadOrders();
+        await loadList();
+        loadAccounts();
+        refreshStats();
+        return;
+      }
+
       const needed = Math.max(1, Number(order.codesCount) || 1);
       const sessions = Math.max(1, Math.min(50, Number(order.sessionsPerCode) || 5));
       const type = needed > 1 ? 'business' : (order.packageType || 'individual');
@@ -1546,7 +1844,13 @@
   async function cancelOrder(id) {
     if (!confirm('إلغاء هذا الطلب؟')) return;
     try {
+      const snap = await firebase.database().ref('orders/' + id).once('value');
+      const order = snap.val() || {};
+      const pk = order.phoneKey || '';
       await TPCodes.saveOrder(id, { status:'cancelled', cancelledAt: Date.now(), cancelledBy: myUid });
+      if (pk && TPAccount && TPAccount.syncCustomerOrderStatus) {
+        await TPAccount.syncCustomerOrderStatus(pk, id, 'cancelled').catch(() => {});
+      }
       toast('✓ تم إلغاء الطلب');
       loadOrders();
     } catch (e) { toast('فشل إلغاء الطلب', true); }
@@ -1707,6 +2011,317 @@
     toast('✓ تم تصدير ' + arr.length + ' كود');
   }
 
+  // ============== ACCOUNTS (admin) ==============
+  let accountsCache = [];
+  let customerSessionsCache = {};
+  const ACCOUNT_ROLE_LABEL = {
+    customer: 'عميل',
+    pending_staff: 'بانتظار',
+    reseller: 'وكيل',
+    admin: 'مدير',
+  };
+  const SESSION_STATUS_LABEL = {
+    available: 'جاهزة',
+    active: 'نشطة',
+    used: 'مستخدمة',
+    expired: 'منتهية',
+  };
+
+  function fmtAccountDate(ts) {
+    if (!ts) return '—';
+    return new Date(ts).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function sessionSummary(sessions) {
+    const s = { total: sessions.length, avail: 0, active: 0, used: 0 };
+    (sessions || []).forEach((x) => {
+      const st = x.status || 'available';
+      if (st === 'available') s.avail++;
+      else if (st === 'active') s.active++;
+      else s.used++;
+    });
+    return s;
+  }
+
+  function sessionSummaryHtml(sessions) {
+    const sum = sessionSummary(sessions);
+    if (!sum.total) return '<span style="color:rgba(255,255,255,.35)">—</span>';
+    return '<div class="acct-cards-summary">'
+      + '<span class="n">' + sum.total + '</span> بطاقة'
+      + (sum.avail ? (' · <span class="n">' + sum.avail + '</span> جاهزة') : '')
+      + (sum.active ? (' · <span class="a">' + sum.active + '</span> نشطة') : '')
+      + (sum.used ? (' · <span class="u">' + sum.used + '</span> منتهية') : '')
+      + '</div>';
+  }
+
+  function renderCustomerSessionsPanel(sessions, phoneKey) {
+    if (!sessions || !sessions.length) {
+      return '<div class="empty" style="padding:12px;font-size:.82rem">لا توجد بطاقات مفعّلة بعد — فعّل الطلب من «طلبات الشراء»</div>';
+    }
+    return '<div class="acct-sessions-grid">' + sessions.map((s) => {
+      const st = s.status || 'available';
+      const code = escapeHtml(s.sessionCode || '—');
+      const pk = String(phoneKey || '').replace(/'/g, '');
+      const codeEsc = String(s.sessionCode || '').replace(/'/g, '');
+      return '<div class="acct-session-card ' + st + '">'
+        + '<div class="acct-session-head"><span>جلسة ' + (s.index || '?') + '</span>'
+        + '<span class="pill ' + (st === 'available' ? 'active' : st === 'active' ? 'pending' : 'used') + '">' + (SESSION_STATUS_LABEL[st] || st) + '</span></div>'
+        + '<div class="acct-session-code">' + code + '</div>'
+        + '<div class="acct-session-meta">'
+        + (s.orderId ? ('<div>طلب: <b>' + escapeHtml(s.orderId) + '</b></div>') : '')
+        + (s.roomId ? ('<div>غرفة: <b>' + escapeHtml(s.roomId) + '</b></div>') : '')
+        + (s.partnerName ? ('<div>الشريك: <b>' + escapeHtml(s.partnerName) + '</b></div>') : '')
+        + (s.scorePct ? ('<div>النتيجة: <b>' + s.scorePct + '%</b></div>') : '')
+        + (s.usedAt ? ('<div>آخر لعب: <b>' + fmtAccountDate(s.usedAt) + '</b></div>') : '')
+        + '</div>'
+        + (codeEsc ? ('<button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="viewSingleSessionCode(\'' + pk + '\',\'' + codeEsc + '\')">🔍 تفاصيل الكود</button>') : '')
+        + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function toggleAccountSessions(phoneKey) {
+    const row = document.getElementById('acct-expand-' + phoneKey);
+    if (!row) return;
+    row.classList.toggle('hidden');
+  }
+
+  function viewSingleSessionCode(phoneKey, sessionCode) {
+    window.__codesCustomerFilter = phoneKey || '';
+    const tab = document.querySelector('.tab[data-tab="list"]');
+    if (tab) tab.click();
+    const search = document.getElementById('fSearch');
+    if (search) search.value = sessionCode || '';
+    const typeSel = document.getElementById('fType');
+    if (typeSel) typeSel.value = 'session';
+    renderList();
+    toast('عرض الكود: ' + sessionCode);
+  }
+
+  function customerCodesForPhoneKey(phoneKey) {
+    if (!phoneKey) return [];
+    return allCodes.filter((c) => {
+      if (c.ownerPhoneKey === phoneKey) return true;
+      if (c.soldToPhone && typeof TPAccount !== 'undefined' && TPAccount.phoneKey) {
+        return TPAccount.phoneKey(c.soldToPhone) === phoneKey;
+      }
+      return false;
+    });
+  }
+
+  function viewCustomerCodes(phoneKey) {
+    window.__codesCustomerFilter = phoneKey || '';
+    const a = accountsCache.find((x) => x.phoneKey === phoneKey);
+    const tab = document.querySelector('.tab[data-tab="list"]');
+    if (tab) tab.click();
+    const search = document.getElementById('fSearch');
+    if (search && a) search.value = a.phone || a.name || phoneKey;
+    const typeSel = document.getElementById('fType');
+    if (typeSel && !typeSel.value) typeSel.value = 'session';
+    renderList();
+    toast('عرض أكواد العميل: ' + (a && a.name ? a.name : phoneKey));
+  }
+
+  function viewCustomerCodesFromModal() {
+    const pk = document.getElementById('acctPhoneKey')?.value || '';
+    closeAccountModal();
+    viewCustomerCodes(pk);
+  }
+
+  async function loadAccounts() {
+    if (role !== 'admin') return;
+    const out = document.getElementById('accountsOut');
+    if (!out) return;
+    out.innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+    try {
+      const filter = document.getElementById('accountsRoleFilter')?.value || '';
+      accountsCache = await TPAccount.listAccounts(filter ? { role: filter } : {});
+      customerSessionsCache = {};
+      await Promise.all(accountsCache.map(async (a) => {
+        if (!a.phoneKey) return;
+        try {
+          customerSessionsCache[a.phoneKey] = await TPAccount.listSessions(a.phoneKey);
+        } catch (_) {
+          customerSessionsCache[a.phoneKey] = [];
+        }
+      }));
+      document.getElementById('accountsCount').textContent = '(' + accountsCache.length + ')';
+      renderAccountsTable();
+    } catch (e) {
+      out.innerHTML = '<div class="empty">✕ ' + escapeHtml(e.message || e.code || e) + '</div>';
+    }
+  }
+
+  function renderAccountsTable() {
+    const out = document.getElementById('accountsOut');
+    if (!out) return;
+    const q = String(document.getElementById('accountsSearch')?.value || '').trim().toLowerCase();
+    let rows = accountsCache.slice();
+    if (q) {
+      rows = rows.filter((a) => {
+        const sessions = customerSessionsCache[a.phoneKey] || [];
+        const codesStr = sessions.map((s) => s.sessionCode || '').join(' ');
+        return String(a.name || '').toLowerCase().includes(q)
+          || String(a.phone || '').includes(q)
+          || String(a.phoneKey || '').includes(q)
+          || String(a.authUid || '').toLowerCase().includes(q)
+          || codesStr.toLowerCase().includes(q);
+      });
+    }
+    if (!rows.length) {
+      out.innerHTML = '<div class="empty">' + (q ? 'لا نتائج للبحث' : 'لا توجد حسابات بعد — اطلب من المستخدم التسجيل في /my') + '</div>';
+      return;
+    }
+    let html = '<table class="tbl"><thead><tr><th>الاسم</th><th>الهاتف</th><th>الدور</th><th>البطاقات</th><th>التسجيل</th><th>UID</th><th>إجراءات</th></tr></thead><tbody>';
+    rows.forEach((a) => {
+      const roleKey = a.role || 'customer';
+      const roleLabel = ACCOUNT_ROLE_LABEL[roleKey] || roleKey;
+      const uidShort = (a.authUid || '').slice(0, 10);
+      const pk = String(a.phoneKey || '').replace(/'/g, '');
+      const sessions = customerSessionsCache[a.phoneKey] || [];
+      const sum = sessionSummary(sessions);
+      html += '<tr>'
+        + '<td><strong>' + escapeHtml(a.name || '—') + '</strong></td>'
+        + '<td style="direction:ltr;font-size:.82rem">' + escapeHtml(a.phone || a.phoneKey || '—') + '</td>'
+        + '<td><span class="pill ' + (roleKey === 'reseller' || roleKey === 'admin' ? 'active' : roleKey === 'customer' ? 'disabled' : 'pending') + '">' + escapeHtml(roleLabel) + '</span></td>'
+        + '<td>' + sessionSummaryHtml(sessions)
+        + (sum.total ? ('<div style="margin-top:6px"><button type="button" class="btn btn-ghost btn-sm" onclick="toggleAccountSessions(\'' + pk + '\')">🃏 عرض البطاقات</button></div>') : '')
+        + '</td>'
+        + '<td style="font-size:.78rem">' + fmtAccountDate(a.registeredAt || a.updatedAt) + '</td>'
+        + '<td style="font-family:ui-monospace,monospace;font-size:.72rem;color:#a855f7" title="' + escapeHtml(a.authUid || '') + '">' + escapeHtml(uidShort) + (uidShort ? '…' : '—') + '</td>'
+        + '<td><div class="acct-actions-row">'
+        + '<button class="btn btn-primary btn-sm" onclick="openAccountModal(\'' + pk + '\')">⚙️ إدارة</button>'
+        + (sum.total ? ('<button class="btn btn-ghost btn-sm" onclick="openAccountModal(\'' + pk + '\')" title="بطاقات العميل">🃏 ' + sum.total + '</button>') : '')
+        + (roleKey !== 'reseller' && roleKey !== 'admin' && a.authUid ? '<button class="btn btn-ghost btn-sm" onclick="quickSetRole(\'' + pk + '\',\'reseller\')">🤝</button>' : '')
+        + (roleKey !== 'admin' && a.authUid ? '<button class="btn btn-ghost btn-sm" onclick="quickSetRole(\'' + pk + '\',\'admin\')" title="ترقية مدير">🛡</button>' : '')
+        + '</div></td></tr>';
+      if (sum.total) {
+        html += '<tr id="acct-expand-' + pk + '" class="acct-sessions-row hidden"><td colspan="7"><div class="acct-sessions-wrap">'
+          + renderCustomerSessionsPanel(sessions, pk)
+          + '</div></td></tr>';
+      }
+    });
+    html += '</tbody></table>';
+    out.innerHTML = html;
+  }
+
+  function toggleResellerFields() {
+    const role = document.getElementById('acctRole')?.value || 'customer';
+    const box = document.getElementById('acctResellerFields');
+    if (box) box.classList.toggle('hidden', role !== 'reseller');
+  }
+
+  async function openAccountModal(phoneKey) {
+    const a = accountsCache.find((x) => x.phoneKey === phoneKey);
+    if (!a) return;
+    document.getElementById('acctPhoneKey').value = a.phoneKey || '';
+    document.getElementById('acctUid').value = a.authUid || '';
+    document.getElementById('acctName').value = a.name || '';
+    document.getElementById('acctPhone').value = a.phone || a.phoneKey || '';
+    document.getElementById('acctUidShow').value = a.authUid || '';
+    const role = a.role === 'pending_staff' ? 'customer' : (a.role || 'customer');
+    document.getElementById('acctRole').value = ['customer', 'reseller', 'admin'].includes(role) ? role : 'customer';
+    if (a.authUid && role === 'reseller') {
+      try {
+        const rs = await db.ref('resellers/' + a.authUid).once('value');
+        const rv = rs.val() || {};
+        document.getElementById('acctTier').value = rv.tier || 'bronze';
+        document.getElementById('acctDisc').value = rv.discountPct || 0;
+        document.getElementById('acctBal').value = rv.balance || 0;
+        document.getElementById('acctNotes').value = rv.notes || '';
+      } catch (_) {}
+    } else {
+      document.getElementById('acctTier').value = 'bronze';
+      document.getElementById('acctDisc').value = '0';
+      document.getElementById('acctBal').value = '0';
+      document.getElementById('acctNotes').value = '';
+    }
+    toggleResellerFields();
+    const codesList = document.getElementById('acctCodesList');
+    if (codesList) codesList.innerHTML = '<div class="empty" style="padding:8px;font-size:.82rem">⏳ جاري التحميل...</div>';
+    document.getElementById('accountModal').classList.add('open');
+    try {
+      const sessions = await TPAccount.listSessions(phoneKey);
+      customerSessionsCache[phoneKey] = sessions;
+      if (codesList) codesList.innerHTML = renderCustomerSessionsPanel(sessions, phoneKey);
+    } catch (_) {
+      if (codesList) codesList.innerHTML = '<div class="empty" style="padding:8px">تعذّر تحميل البطاقات</div>';
+    }
+  }
+
+  function closeAccountModal() {
+    document.getElementById('accountModal')?.classList.remove('open');
+  }
+
+  async function saveAccountModal() {
+    const phoneKey = document.getElementById('acctPhoneKey').value.trim();
+    const authUid = document.getElementById('acctUid').value.trim();
+    const name = document.getElementById('acctName').value.trim();
+    const newRole = document.getElementById('acctRole').value;
+    const phone = document.getElementById('acctPhone').value.trim();
+    if (!phoneKey || !authUid) { toast('UID أو الهاتف مفقود', true); return; }
+    if (!name) { toast('الاسم مطلوب', true); return; }
+    try {
+      await TPAccount.adminSetRole(phoneKey, authUid, newRole, {
+        name,
+        phone,
+        tier: document.getElementById('acctTier').value,
+        discountPct: document.getElementById('acctDisc').value,
+        balance: document.getElementById('acctBal').value,
+        notes: document.getElementById('acctNotes').value,
+        active: true,
+      });
+      toast('✓ تم حفظ الحساب — الدور: ' + (ACCOUNT_ROLE_LABEL[newRole] || newRole));
+      closeAccountModal();
+      loadAccounts();
+      loadResellers();
+    } catch (e) { toast('فشل الحفظ: ' + (e.message || e), true); }
+  }
+
+  async function deleteAccountModal() {
+    const phoneKey = document.getElementById('acctPhoneKey').value.trim();
+    const authUid = document.getElementById('acctUid').value.trim();
+    const name = document.getElementById('acctName').value.trim() || phoneKey;
+    if (!phoneKey) return;
+    if (authUid === myUid) { toast('لا يمكنك حذف حسابك أنت', true); return; }
+    if (!confirm('حذف حساب «' + name + '» نهائياً؟\n\nسيُحذف من قاعدة البيانات (يمكنه التسجيل مجدداً لاحقاً).')) return;
+    try {
+      await TPAccount.adminDeleteAccount(phoneKey, authUid);
+      toast('✓ تم حذف الحساب');
+      closeAccountModal();
+      loadAccounts();
+      loadResellers();
+    } catch (e) { toast('فشل الحذف: ' + (e.message || e), true); }
+  }
+
+  async function quickSetRole(phoneKey, newRole) {
+    const a = accountsCache.find((x) => x.phoneKey === phoneKey);
+    if (!a || !a.authUid) return;
+    const label = newRole === 'admin' ? 'مدير' : 'وكيل';
+    if (!confirm('ترقية «' + (a.name || a.phone) + '» إلى ' + label + '؟')) return;
+    try {
+      await TPAccount.adminSetRole(phoneKey, a.authUid, newRole, {
+        name: a.name || '',
+        phone: a.phone || '',
+        tier: 'bronze',
+        balance: 0,
+        active: true,
+      });
+      toast('✓ تمت الترقية إلى ' + label);
+      loadAccounts();
+      loadResellers();
+    } catch (e) { toast('فشل: ' + (e.message || e), true); openAccountModal(phoneKey); }
+  }
+
+  function prefillResellerFromAccount(phoneKey) {
+    openAccountModal(phoneKey);
+    document.getElementById('acctRole').value = 'reseller';
+    toggleResellerFields();
+  }
+
+  function promoteAccountToReseller(phoneKey) {
+    quickSetRole(phoneKey, 'reseller');
+  }
+
   // ============== RESELLERS (admin) ==============
   let resellersCache = [];
   async function loadResellers() {
@@ -1718,12 +2333,12 @@
       resellersCache = await TPCodes.listResellers();
       document.getElementById('resellersCount').textContent = '(' + resellersCache.length + ')';
       if (!resellersCache.length) { out.innerHTML = '<div class="empty">لا يوجد وكلاء بعد</div>'; return; }
-      let html = '<table class="tbl"><thead><tr><th>UID</th><th>الاسم</th><th>البريد</th><th>الفئة</th><th>خصم %</th><th>الرصيد</th><th>تم التوليد</th><th>الحالة</th><th></th></tr></thead><tbody>';
+      let html = '<table class="tbl"><thead><tr><th>UID</th><th>الاسم</th><th>الهاتف</th><th>الفئة</th><th>خصم %</th><th>الرصيد</th><th>تم التوليد</th><th>الحالة</th><th></th></tr></thead><tbody>';
       resellersCache.forEach(r => {
         html += `<tr>
           <td style="font-family:ui-monospace,monospace;font-size:.72rem;color:#a855f7">${escapeHtml((r.uid||'').slice(0,10))}…</td>
           <td>${escapeHtml(r.name || '-')}</td>
-          <td style="font-size:.78rem">${escapeHtml(r.email || '-')}</td>
+          <td style="font-size:.78rem;direction:ltr">${escapeHtml(r.phone || '-')}</td>
           <td>${escapeHtml(r.tier || '-')}</td>
           <td>${Number(r.discountPct||0)}%</td>
           <td style="font-weight:900;color:#86efac">${Number(r.balance||0)}</td>
@@ -1745,14 +2360,27 @@
     }
   }
   function clearResellerForm() {
-    ['rUid','rEmail','rName','rPhone','rDisc','rBal','rNotes'].forEach(id => document.getElementById(id).value = id === 'rDisc' || id === 'rBal' ? '0' : '');
+    ['rUid','rName','rPhone','rDisc','rBal','rNotes'].forEach(id => document.getElementById(id).value = id === 'rDisc' || id === 'rBal' ? '0' : '');
     document.getElementById('rTier').value = 'bronze';
+  }
+  async function lookupResellerPhone() {
+    const phone = document.getElementById('rPhone').value.trim();
+    if (!phone) { toast('أدخل رقم الهاتف', true); return; }
+    try {
+      const row = await TPAccount.lookupByPhone(phone);
+      if (!row || !row.authUid) {
+        toast('لم يُسجّل هذا الرقم بعد — اطلب من الوكيل تسجيل دخول أولاً', true);
+        return;
+      }
+      document.getElementById('rUid').value = row.authUid;
+      if (row.name) document.getElementById('rName').value = row.name;
+      toast('✓ تم جلب UID');
+    } catch (e) { toast('فشل البحث: ' + (e.message || e), true); }
   }
   function editReseller(uid) {
     const r = resellersCache.find(x => x.uid === uid);
     if (!r) return;
     document.getElementById('rUid').value = r.uid;
-    document.getElementById('rEmail').value = r.email || '';
     document.getElementById('rName').value = r.name || '';
     document.getElementById('rPhone').value = r.phone || '';
     document.getElementById('rTier').value = r.tier || 'bronze';
@@ -1763,12 +2391,16 @@
     toast('✓ تم تحميل بيانات الوكيل في النموذج');
   }
   async function saveResellerForm() {
-    const uid = document.getElementById('rUid').value.trim();
-    if (!uid) { toast('UID مطلوب', true); return; }
+    let uid = document.getElementById('rUid').value.trim();
+    const phone = document.getElementById('rPhone').value.trim();
+    if (!uid && phone) {
+      const row = await TPAccount.lookupByPhone(phone);
+      if (row && row.authUid) uid = row.authUid;
+    }
+    if (!uid) { toast('UID مطلوب — سجّل الوكيل دخولاً أولاً أو اضغط «جلب UID»', true); return; }
     const data = {
-      email: document.getElementById('rEmail').value.trim(),
+      phone: phone,
       name: document.getElementById('rName').value.trim(),
-      phone: document.getElementById('rPhone').value.trim(),
       tier: document.getElementById('rTier').value,
       discountPct: Math.max(0, Math.min(90, +document.getElementById('rDisc').value || 0)),
       balance: Math.max(0, +document.getElementById('rBal').value || 0),
@@ -1787,6 +2419,8 @@
     }
     try {
       await TPCodes.saveReseller(uid, data);
+      const pk = TPAccount.phoneKey(phone);
+      if (pk) await db.ref('phoneIndex/' + pk).update({ role: 'reseller', updatedAt: Date.now() });
       toast('✓ تم حفظ الوكيل');
       clearResellerForm();
       loadResellers();
@@ -1822,8 +2456,7 @@
       '',
       '🔑 طريقة الدخول:',
       '1) افتح: ' + url,
-      '2) سجّل دخول بالبريد: ' + (r.email || '') + ' وكلمة السر التي اخترتها عند التسجيل.',
-      '3) إذا لم تنشئ حساباً بعد: اضغط «حساب جديد للوكلاء؟» ثم سجّل بنفس البريد.',
+      '2) سجّل دخول برقم هاتفك — رمز SMS يصلك فوراً.',
       '',
       '💼 ستجد في لوحتك: أكوادك النشطة، رصيدك، طلب أكواد إضافية، وبطاقات جاهزة لعملائك.'
     ].join('\n');
@@ -1836,10 +2469,15 @@
   }
 
   async function promoteToAdmin(uid) {
-    if (!confirm('ترقية هذا الوكيل إلى أدمن كامل الصلاحيات؟\nسيستطيع رؤية كل الأكواد، إدارة الوكلاء، تغيير الأسعار والباقات.\nUID: ' + uid)) return;
+    if (!confirm('ترقية هذا الوكيل إلى مدير كامل الصلاحيات؟\nUID: ' + uid)) return;
     try {
       await db.ref('admins/' + uid).set(true);
-      toast('✓ تم منح صلاحية الأدمن. يجب أن يسجّل خروج ثم دخول ليرى التغييرات.');
+      const r = (resellersCache || []).find(x => x.uid === uid);
+      if (r && r.phone) {
+        const pk = TPAccount.phoneKey(r.phone);
+        if (pk) await db.ref('phoneIndex/' + pk).update({ role: 'admin', updatedAt: Date.now() });
+      }
+      toast('✓ تم منح صلاحية المدير — يسجّل خروج ثم دخول');
     } catch(e) { toast('فشل: ' + (e.message||e), true); }
   }
 
@@ -1973,7 +2611,93 @@
       const hb = document.getElementById('setHeroBadge'); if (hb) hb.value = s.heroBadge || '';
       const hs = document.getElementById('setHeroStats'); if (hs) hs.value = s.heroStats || '';
       const bm = document.getElementById('setBizMsg'); if (bm) bm.value = s.bizMessage || '';
+      const se = document.getElementById('setStripeEnabled'); if (se) se.checked = !!s.stripeEnabled;
+      const spk = document.getElementById('setStripePk'); if (spk) spk.value = s.stripePublishableKey || '';
+      const pe = document.getElementById('setPaymobEnabled'); if (pe) pe.checked = !!s.paymobEnabled;
+      const ppk = document.getElementById('setPaymobPk'); if (ppk) ppk.value = s.paymobPublicKey || '';
+      const pint = document.getElementById('setPaymobIntegration'); if (pint) pint.value = s.paymobIntegrationIds || '';
+      fixPaymobFieldsFromSettings(s);
+      refreshPaymobStatus();
     } catch(e) { console.warn(e); }
+  }
+  function fixPaymobFieldsFromSettings(s) {
+    const ppk = document.getElementById('setPaymobPk');
+    const pint = document.getElementById('setPaymobIntegration');
+    if (!ppk || !pint) return;
+    const pk = String(s.paymobPublicKey || ppk.value || '').trim();
+    const integ = String(s.paymobIntegrationIds || pint.value || '').trim();
+    const pkDigits = pk.replace(/[^\d]/g, '');
+    const looksLikeIntegration = pkDigits.length >= 4 && !/^(pk_|egy_pk_)/i.test(pk);
+    if (!integ && looksLikeIntegration) {
+      pint.value = pkDigits;
+      ppk.value = '';
+      toast('↪ نُقل Integration ID إلى حقله — أضف Public Key (pk_test_) واحفظ');
+    }
+  }
+  function paymobCheckItem(ok, label) {
+    return '<div style="display:flex;gap:8px;align-items:center"><span style="color:' + (ok ? '#4ade80' : '#fbbf24') + '">' + (ok ? '✓' : '○') + '</span><span>' + label + '</span></div>';
+  }
+  async function refreshPaymobStatus() {
+    const box = document.getElementById('paymobStatusBox');
+    if (!box) return;
+    box.innerHTML = '<div class="empty" style="padding:8px">⏳ جاري التحقق...</div>';
+    let server = null;
+    try {
+      if (typeof firebase !== 'undefined' && firebase.functions) {
+        const fn = firebase.app().functions('us-central1').httpsCallable('getPaymobSetupStatus');
+        const res = await fn({});
+        server = res.data || null;
+      }
+    } catch (e) {
+      server = null;
+    }
+    const pk = (document.getElementById('setPaymobPk')?.value || '').trim();
+    const integ = (document.getElementById('setPaymobIntegration')?.value || '').trim();
+    const enabled = !!document.getElementById('setPaymobEnabled')?.checked;
+    const hasPk = !!(server && server.publicKey) || /^(pk_|egy_pk_)/i.test(pk);
+    const hasSecret = !!(server && server.secretKey);
+    const hasHmac = !!(server && server.hmacSecret);
+    const hasInteg = !!(server && server.integrationIds) || /^\d{4,}$/.test(integ.replace(/[^\d,]/g, ''));
+    const ready = !!(server && server.ready) || (hasPk && hasSecret && hasHmac && hasInteg);
+    const webhook = (server && server.webhookUrl) || document.getElementById('paymobWebhookUrl')?.textContent || '';
+    if (webhook && document.getElementById('paymobWebhookUrl')) {
+      document.getElementById('paymobWebhookUrl').textContent = webhook;
+    }
+    box.innerHTML = '<b style="color:#fff">قائمة الجاهزية:</b><div style="margin-top:8px">'
+      + paymobCheckItem(hasPk, 'Public Key')
+      + paymobCheckItem(hasSecret, 'Secret Key (Firebase — سري)')
+      + paymobCheckItem(hasHmac, 'HMAC Secret (Firebase — سري)')
+      + paymobCheckItem(hasInteg, 'Integration ID (بطاقة Test)')
+      + paymobCheckItem(enabled, 'مفعّل للعملاء في Admin')
+      + '</div><div style="margin-top:10px;padding:10px;border-radius:10px;background:' + (ready && enabled ? 'rgba(34,197,94,.12)' : 'rgba(251,191,36,.1)') + ';border:1px solid ' + (ready && enabled ? 'rgba(34,197,94,.3)' : 'rgba(251,191,36,.25)') + '">'
+      + (ready && enabled ? '✅ <b>جاهز للاختبار</b> — جرّب طلب من /my' : ready ? '⚠️ <b>الإعدادات جاهزة</b> — فعّل خانة Paymob واحفظ' : '⏳ <b>ناقص:</b> أكمل البنود أعلاه + <code style="direction:ltr">firebase deploy --only functions</code>')
+      + (server ? '' : '<br><small style="opacity:.65">ملاحظة: تحقق السيرفر يحتاج deploy للـ Functions</small>')
+      + '</div>';
+  }
+  function copyPaymobWebhook() {
+    const url = document.getElementById('paymobWebhookUrl')?.textContent || '';
+    if (!url) return;
+    navigator.clipboard.writeText(url.trim()).then(() => toast('✓ تم نسخ Webhook'));
+  }
+  async function savePaymobSettings() {
+    try {
+      const s = await TPCodes.getSettings();
+      s.paymobEnabled = !!document.getElementById('setPaymobEnabled')?.checked;
+      s.paymobPublicKey = (document.getElementById('setPaymobPk')?.value || '').trim();
+      s.paymobIntegrationIds = (document.getElementById('setPaymobIntegration')?.value || '').trim().replace(/[^\d,]/g, '');
+      await TPCodes.setSettings(s);
+      toast('✓ تم حفظ إعدادات Paymob');
+      refreshPaymobStatus();
+    } catch (e) { toast('فشل الحفظ: ' + (e.message || e), true); }
+  }
+  async function savePaymentSettings() {
+    try {
+      const s = await TPCodes.getSettings();
+      s.stripeEnabled = !!document.getElementById('setStripeEnabled')?.checked;
+      s.stripePublishableKey = (document.getElementById('setStripePk')?.value || '').trim();
+      await TPCodes.setSettings(s);
+      toast('✓ تم حفظ إعدادات الدفع');
+    } catch (e) { toast('فشل الحفظ: ' + (e.message || e), true); }
   }
   async function saveSettingsForm() {
     const s = {

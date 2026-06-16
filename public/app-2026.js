@@ -1,4 +1,4 @@
-﻿/* =========================================================================
+/* =========================================================================
    Telepathy Challenge – 2026 Modernization Layer
    Adds: PWA install, Web Audio + Vibration, View Transitions, QR Code,
          Voice Mode, Gemini Nano semantic similarity, Replay mode,
@@ -230,6 +230,7 @@
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(location.search);
     const roomParam = params.get('room');
+    const sessionParam = params.get('session');
     if (roomParam && /^[A-Z0-9]{6}$/i.test(roomParam)) {
       const code = roomParam.toUpperCase();
       const roomInput = document.getElementById('roomCodeInput');
@@ -237,6 +238,11 @@
       if (roomInput) roomInput.value = code;
       if (quickInput) quickInput.value = code;
       if (typeof window.showSection === 'function') window.showSection('homeSection');
+    } else if (sessionParam && /^JS-/i.test(sessionParam)) {
+      const code = sessionParam.toUpperCase();
+      const quickInput = document.getElementById('quickCode');
+      if (quickInput) quickInput.value = code;
+      if (typeof window.updateCodeChip === 'function') window.updateCodeChip();
     }
   });
 

@@ -1,0 +1,12 @@
+{
+  "name": "telepathy-functions",
+  "description": "Stripe checkout + auto-fulfillment for Telepathy Challenge",
+  "engines": { "node": "20" },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.6.0",
+    "stripe": "^17.5.0"
+  },
+  "private": true
+}

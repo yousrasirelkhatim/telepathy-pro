@@ -25,6 +25,30 @@
     return firebase;
   }
 
+  let _authReady = null;
+
+  /** Anonymous auth — required for secured RTDB paths (rooms, orders). */
+  async function ensureAuth() {
+    const fb = ensureFirebase();
+    if (!fb) throw new Error('init');
+    if (typeof fb.auth !== 'function') throw new Error('auth_not_loaded');
+    if (_authReady) return _authReady;
+    _authReady = (async () => {
+      const auth = fb.auth();
+      if (auth.currentUser) return auth.currentUser;
+      const cred = await auth.signInAnonymously();
+      return cred.user;
+    })();
+    return _authReady;
+  }
+
+  function phoneRateKey(phone) {
+    const digits = String(phone || '').replace(/\D/g, '').slice(-15);
+    return digits || 'unknown';
+  }
+
+  const ORDER_COOLDOWN_MS = 60000;
+
   // 6-12 char human-friendly code (no ambiguous chars)
   const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   function randomCode(prefix, len = 8) {
@@ -73,11 +97,13 @@
       usedSessions: used,
       expiresAt: c.expiresAt || 0,
       ownerId: c.ownerId || null,
+      sessionId: c.sessionId || null,
     };
   }
 
-  /** Consume one session of an access code (transactional) */
-  async function consume(code) {
+  /** Consume one session of an access code (transactional). opts.sessionMeta for JS cards at game end. */
+  async function consume(code, opts) {
+    opts = opts || {};
     const fb = ensureFirebase(); if (!fb) return { ok: false, reason: 'init' };
     code = normalizeCode(code);
     const ref = fb.database().ref('accessCodes/' + code);
@@ -106,6 +132,10 @@
     const status = usedSessions >= c.maxSessions ? 'used' : 'active';
     await ref.update({ lastUsedAt: Date.now(), status }).catch(() => {});
 
+    if (c.type === 'session' && global.TPAccount && global.TPAccount.markSessionUsed && opts.sessionMeta) {
+      global.TPAccount.markSessionUsed(code, opts.sessionMeta).catch(() => {});
+    }
+
     return {
       ok: true,
       code,
@@ -120,11 +150,17 @@
   /** Bump global session counter (best-effort) */
   function bumpSessions() {
     const fb = ensureFirebase(); if (!fb) return;
-    fb.database().ref('stats/totals/sessionsPlayed').transaction((v) => (v || 0) + 1).catch(() => {});
+    fb.database().ref('stats/totals/sessionsPlayed').transaction((v) => {
+      const n = Number(v || 0);
+      return n + 1;
+    }).catch(() => {});
   }
   function bumpShares() {
     const fb = ensureFirebase(); if (!fb) return;
-    fb.database().ref('stats/totals/cardsShared').transaction((v) => (v || 0) + 1).catch(() => {});
+    fb.database().ref('stats/totals/cardsShared').transaction((v) => {
+      const n = Number(v || 0);
+      return n + 1;
+    }).catch(() => {});
   }
 
   // ============ Admin-only API ============
@@ -300,14 +336,14 @@
   ];
 
   async function listPackages(opts) {
-    const fb = ensureFirebase(); if (!fb) return DEFAULT_PACKAGES.slice();
+    const fb = ensureFirebase();
+    if (!fb) return [];
     const snap = await fb.database().ref('packages').once('value');
     const v = snap.val();
     let out = [];
     if (v && typeof v === 'object') {
       Object.keys(v).forEach(k => out.push({ id: k, ...v[k] }));
     }
-    if (!out.length) out = DEFAULT_PACKAGES.slice();
     if (opts && opts.visibleOnly) out = out.filter(p => p.visible !== false);
     out.sort((a,b) => (Number(a.order)||0) - (Number(b.order)||0));
     return out;
@@ -351,18 +387,32 @@
     heroTitle: 'هل تفكران بنفس الطريقة؟',
     heroBadge: '✨ الإصدار الجديد 2026',
     heroStats: '⚡ يبدأ فوري | 📱 يعمل على الجوال | 🎁 5 تحديات لكل كود',
-    bizMessage: 'أرغب بمعرفة المزيد عن باقات الأعمال'
+    bizMessage: 'أرغب بمعرفة المزيد عن باقات الأعمال',
+    stripeEnabled: false,
+    stripePublishableKey: '',
+    paymobEnabled: false,
+    paymobPublicKey: '',
+    paymobIntegrationIds: '',
+    paymentsNote: '',
   };
   async function getSettings() {
     const fb = ensureFirebase(); if (!fb) return { ...DEFAULT_SETTINGS };
     const snap = await fb.database().ref('settings').once('value');
-    return { ...DEFAULT_SETTINGS, ...(snap.val() || {}) };
+    const raw = snap.val() || {};
+    return {
+      ...DEFAULT_SETTINGS,
+      ...raw,
+      stripeEnabled: raw.stripeEnabled === true || raw.stripeEnabled === 'true',
+      paymobEnabled: raw.paymobEnabled === true || raw.paymobEnabled === 'true',
+    };
   }
   async function setSettings(s) {
     const fb = ensureFirebase(); if (!fb) return;
     const clean = {};
     Object.keys(DEFAULT_SETTINGS).forEach(k => {
-      if (s[k] !== undefined) clean[k] = String(s[k]);
+      if (s[k] === undefined) return;
+      if (k === 'stripeEnabled' || k === 'paymobEnabled') clean[k] = !!s[k];
+      else clean[k] = String(s[k]);
     });
     await fb.database().ref('settings').update(clean);
   }
@@ -394,16 +444,59 @@
     const clean = cleanOrderInput(data);
     if (!clean.packageId || !clean.packageName) throw new Error('package_required');
     if (!clean.buyerName || !clean.buyerPhone) throw new Error('buyer_required');
+
+    const phoneKey = phoneRateKey(clean.buyerPhone);
+    const now = Date.now();
+    try {
+      const rateRef = fb.database().ref('orderRateLimit/' + phoneKey);
+      const rateSnap = await rateRef.once('value');
+      const last = Number(rateSnap.val() || 0);
+      if (last && now - last < ORDER_COOLDOWN_MS) {
+        const err = new Error('rate_limited');
+        err.waitSec = Math.ceil((ORDER_COOLDOWN_MS - (now - last)) / 1000);
+        throw err;
+      }
+      await rateRef.set(now);
+    } catch (e) {
+      if (e && e.message === 'rate_limited') throw e;
+    }
+
     const id = randomCode('ORD', 8);
+    const pk = phoneRateKey(clean.buyerPhone);
     const payload = {
       ...clean,
+      phoneKey: pk,
       status: 'pending',
       createdAt: Date.now(),
-      source: 'landing',
+      source: data && data.source ? String(data.source).slice(0, 30) : 'landing',
+      paymentMethod: data && data.paymentMethod ? String(data.paymentMethod).slice(0, 20) : 'whatsapp',
+      paymentStatus: 'pending',
     };
     await fb.database().ref('orders/' + id).set(payload);
+    if (pk && global.TPAccount && global.TPAccount.linkOrderToCustomer) {
+      await global.TPAccount.linkOrderToCustomer(pk, id, {
+        packageId: clean.packageId,
+        packageName: clean.packageName,
+        price: clean.price,
+        currency: clean.currency,
+        sessionsCount: (Number(clean.codesCount) || 1) * (Number(clean.sessionsPerCode) || 5),
+        createdAt: payload.createdAt,
+      }).catch(() => {});
+    }
     return { id, ...payload };
   }
+
+  function buildOrderWhatsAppMessage(order, lang) {
+    const o = order || {};
+    const isEn = lang === 'en';
+    return (isEn ? 'New Telepathy order\nOrder: ' : 'طلب شراء جديد في Telepathy\nرقم الطلب: ') + (o.id || '')
+      + (isEn ? '\nPackage: ' : '\nالباقة: ') + (o.packageName || '')
+      + (isEn ? '\nName: ' : '\nالاسم: ') + (o.buyerName || '')
+      + (isEn ? '\nWhatsApp: ' : '\nواتساب: ') + (o.buyerPhone || '')
+      + (isEn ? '\nPrice: ' : '\nالسعر: ') + (Number(o.price) || 0) + ' ' + (o.currency || 'USD')
+      + (isEn ? '\n\nFollow from /my after payment confirmation.' : '\n\nبعد تأكيد الدفع — بطاقاتك في /my');
+  }
+
   async function listOrders(filter) {
     const fb = ensureFirebase(); if (!fb) return [];
     const snap = await fb.database().ref('orders').once('value');
@@ -541,6 +634,7 @@
   global.TPCodes = {
     config: FIREBASE_CONFIG,
     init: ensureFirebase,
+    ensureAuth,
     randomCode,
     normalize: normalizeCode,
     fmtDate,
@@ -578,6 +672,7 @@
     whatsappLink,
     // orders
     createOrder,
+    buildOrderWhatsAppMessage,
     listOrders,
     saveOrder,
     markCodeSold,

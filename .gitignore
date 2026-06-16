@@ -14,3 +14,8 @@ Thumbs.db
 
 # Node (in case used later)
 node_modules/
+
+# Firebase Functions env (secrets — never commit)
+functions/.env
+functions/.env.*
+!functions/.env.example
