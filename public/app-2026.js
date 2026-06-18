@@ -137,65 +137,6 @@
   window.Audio2026 = Audio2026;
 
   /* ------------------------------------------------------------------ *
-   * 3) Access-code verification (replaces password)
-   *    Uses /js/codes.js (TPCodes.consume) to atomically consume one
-   *    session of an access code before allowing room creation.
-   * ------------------------------------------------------------------ */
-  const originalShowToast = window.showToast || ((m) => alert(m));
-
-  // Auto-fill from URL ?code= or sessionStorage
-  function getInitialAccessCode() {
-    const p = new URLSearchParams(location.search);
-    return (p.get('code') || sessionStorage.getItem('tp_access_code') || '').toUpperCase();
-  }
-  document.addEventListener('DOMContentLoaded', () => {
-    const code = getInitialAccessCode();
-    if (code) {
-      const inp = document.getElementById('passwordInput');
-      if (inp) inp.value = code;
-    }
-  });
-
-  // Override the inline confirmPassword to validate the access code and route to its active room.
-  window.confirmPassword = async function () {
-    const input = document.getElementById('passwordInput');
-    const code = (input.value || '').toUpperCase().trim();
-    if (!code) { originalShowToast('أدخل الكود أولاً'); input.focus(); return; }
-    if (typeof TPCodes === 'undefined') {
-      originalShowToast('تعذّر تحميل وحدة الأكواد. حدّث الصفحة.');
-      return;
-    }
-    input.disabled = true;
-    try {
-      const res = await TPCodes.validate(code);
-      if (!res.ok) {
-        originalShowToast('✕ ' + (res.message || 'كود غير صالح'));
-        Audio2026.noMatch();
-        input.disabled = false;
-        input.focus();
-        return;
-      }
-      Audio2026.go();
-      sessionStorage.setItem('tp_access_code', code);
-      window.__activeAccessCode = code;
-      window.__codeRemaining = res.remaining;
-      window.__codeMaxSessions = res.maxSessions || 5;
-      window.__codeUsedSessions = res.usedSessions || 0;
-      document.getElementById('passwordModal').classList.remove('show');
-      input.disabled = false;
-      input.value = '';
-      if (typeof window.enterWithAccessCode === 'function') {
-        await window.enterWithAccessCode(code, res);
-        return;
-      }
-      if (typeof window.createRoom === 'function') window.createRoom();
-    } catch (e) {
-      originalShowToast('خطأ في الاتصال — حاول مرة أخرى');
-      input.disabled = false;
-    }
-  };
-
-  /* ------------------------------------------------------------------ *
    * 4) View Transitions API – smoother section changes
    * ------------------------------------------------------------------ */
   const ENABLE_VIEW_TRANSITIONS = false;
@@ -225,26 +166,8 @@
   window.injectQR = injectQR;
 
   /* ------------------------------------------------------------------ *
-   * 6) Auto-join via ?room=CODE
+   * 6) URL room/session prefill — handled in /js/session-entry.js (TPSession)
    * ------------------------------------------------------------------ */
-  window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(location.search);
-    const roomParam = params.get('room');
-    const sessionParam = params.get('session');
-    if (roomParam && /^[A-Z0-9]{6}$/i.test(roomParam)) {
-      const code = roomParam.toUpperCase();
-      const roomInput = document.getElementById('roomCodeInput');
-      const quickInput = document.getElementById('quickCode');
-      if (roomInput) roomInput.value = code;
-      if (quickInput) quickInput.value = code;
-      if (typeof window.showSection === 'function') window.showSection('homeSection');
-    } else if (sessionParam && /^JS-/i.test(sessionParam)) {
-      const code = sessionParam.toUpperCase();
-      const quickInput = document.getElementById('quickCode');
-      if (quickInput) quickInput.value = code;
-      if (typeof window.updateCodeChip === 'function') window.updateCodeChip();
-    }
-  });
 
   /* ------------------------------------------------------------------ *
    * 7) Audio hook into option selection + match feedback
@@ -603,17 +526,9 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * 14) Inject QR code blocks into existing sections after they appear
+   * 14) QR helper — lobby invite link display (optional)
    * ------------------------------------------------------------------ */
   function ensureQrSlots() {
-    const created = document.getElementById('codeCreatedSection');
-    if (created && !document.getElementById('qrCreated')) {
-      const wrap = document.createElement('div');
-      wrap.id = 'qrCreated';
-      wrap.style.cssText = 'text-align:center;margin:18px 0';
-      const codeEl = document.getElementById('createdCode');
-      if (codeEl) codeEl.parentElement.appendChild(wrap);
-    }
     const lobby = document.getElementById('lobbySection');
     if (lobby && !document.getElementById('qrLobby')) {
       const wrap = document.createElement('div');
@@ -624,17 +539,7 @@
     }
   }
 
-  // Watch for createdCode change to inject QR
   function bindQrUpdates() {
-    const created = document.getElementById('createdCode');
-    if (created) {
-      const obs = new MutationObserver(() => {
-        if (created.textContent && /^[A-Z0-9]{6}$/.test(created.textContent)) {
-          injectQR('qrCreated', created.textContent);
-        }
-      });
-      obs.observe(created, { childList: true, characterData: true, subtree: true });
-    }
     const lc = document.getElementById('lobbyRoomCode');
     if (lc) {
       const obs2 = new MutationObserver(() => {
