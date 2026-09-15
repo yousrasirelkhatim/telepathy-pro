@@ -273,8 +273,8 @@
 
   // ============== Pricing ==============
   const DEFAULT_PRICING = {
-    basePerCode: 2,
-    currency: 'USD',
+    basePerCode: 100,
+    currency: 'EGP',
     tiers: [
       { min: 1,   max: 9,    discountPct: 0  },
       { min: 10,  max: 49,   discountPct: 10 },
@@ -301,37 +301,37 @@
       id: 'individual',
       name: 'فردي', icon: '💝',
       desc: 'مثالي لأمسية ممتعة مع الشريك أو صديق',
-      price: 10, currency: 'USD',
+      price: 499, currency: 'EGP',
       codesCount: 1, sessionsPerCode: 5,
       unitNote: 'دفعة واحدة',
       features: '5 جلسات تحدي كاملة\nبطاقة نتيجة قابلة للتنزيل\nقوالب تصميم متعددة\nصلاحية الكود سنة كاملة',
       badge: '', featured: false,
       buttonText: 'اشترِ الآن', order: 1, visible: true,
-      whatsappMsg: 'أرغب بشراء كود فردي (5 جلسات - 10$)'
+      whatsappMsg: 'أرغب بشراء كود فردي (5 جلسات - 499 ج.م)'
     },
     {
       id: 'business-50',
       name: 'باقة شركات صغيرة', icon: '🏪',
       desc: 'لمطاعم، كافيهات، ومتاجر صغيرة',
-      price: 200, currency: 'USD',
+      price: 9999, currency: 'EGP',
       codesCount: 50, sessionsPerCode: 5,
       unitNote: '50 كود — توفير 60%',
       features: '50 كود، كل كود = 5 جلسات\nإجمالي 250 جلسة لعميلكم\nلوحة إدارة الأكواد\nإمكانية تخصيص اسم البزنس على البطاقة\nدعم فني مباشر',
       badge: '⭐ الأكثر طلباً', featured: true,
       buttonText: 'طلب الباقة', order: 2, visible: true,
-      whatsappMsg: 'أرغب بطلب باقة شركات (50 كود - 200$)'
+      whatsappMsg: 'أرغب بطلب باقة شركات (50 كود - 9999 ج.م)'
     },
     {
       id: 'business-100',
       name: 'باقة شركات كبرى', icon: '🏬',
       desc: 'للمولات، الفنادق، وسلاسل المطاعم',
-      price: 350, currency: 'USD',
+      price: 17499, currency: 'EGP',
       codesCount: 100, sessionsPerCode: 5,
       unitNote: '100 كود — توفير 65%',
       features: '100 كود، إجمالي 500 جلسة\nلوحة إدارة وتقارير شاملة\nاسم وشعار البزنس على البطاقة\nQR لكل كود لطباعته\nأولوية في الدعم',
       badge: '', featured: false,
       buttonText: 'طلب الباقة', order: 3, visible: true,
-      whatsappMsg: 'أرغب بطلب باقة شركات كبرى (100 كود - 350$)'
+      whatsappMsg: 'أرغب بطلب باقة شركات كبرى (100 كود - 17499 ج.م)'
     }
   ];
 
@@ -378,11 +378,11 @@
     return true;
   }
 
-  // ============== Settings (brand, whatsapp, currency, hero copy) ==============
+  // ============== Settings (brand, whatsapp, currency, hero copy, contact) ==============
   const DEFAULT_SETTINGS = {
     whatsappNumber: '',
-    currency: 'USD',
-    brandName: 'Telepathy Challenge',
+    currency: 'EGP',
+    brandName: 'Teleplay',
     tagline: 'تحدي التخاطر — لعبة ذكية للأزواج والأصدقاء',
     heroTitle: 'هل تفكران بنفس الطريقة؟',
     heroBadge: '✨ الإصدار الجديد 2026',
@@ -394,6 +394,13 @@
     paymobPublicKey: '',
     paymobIntegrationIds: '',
     paymentsNote: '',
+    // Contact + company attribution (shown in landing footer)
+    contactPhone: '+20 127 536 7743',
+    contactEmail: 'ineed.ad2020@gmail.com',
+    contactAddress: '315 شارع جمال عبد الناصر — العصافرة بحري — الدور الثاني علوي — الإسكندرية، مصر',
+    companyName: 'ineed4ecommerce',
+    companyUrl: 'https://ineed4ecommerce.online/',
+    copyrightYear: '2026',
   };
   async function getSettings() {
     const fb = ensureFirebase(); if (!fb) return { ...DEFAULT_SETTINGS };
@@ -416,6 +423,157 @@
     });
     await fb.database().ref('settings').update(clean);
   }
+
+  // ============== FAQ (Landing — admin-editable) ==============
+  const DEFAULT_FAQ = [
+    {
+      id: 'q1-app',
+      order: 10, visible: true,
+      questionAr: 'هل يلزم تنزيل تطبيق؟',
+      answerAr:  'لا. Teleplay تعمل من المتصفح مباشرة على الجوال والكمبيوتر، ويمكن تثبيتها كتطبيق ويب (PWA) من قائمة المتصفح.',
+      questionEn: 'Do I need to install an app?',
+      answerEn:  'No. Teleplay runs directly in your browser on mobile and desktop, and can be installed as a Progressive Web App (PWA) from your browser menu.',
+    },
+    {
+      id: 'q2-duration',
+      order: 20, visible: true,
+      questionAr: 'كم مدة كل جلسة؟',
+      answerAr:  'الجلسة الواحدة تستغرق حوالي 10–15 دقيقة، مقسمة إلى 4 مراحل × 5 جولات.',
+      questionEn: 'How long is a session?',
+      answerEn:  'Each session takes roughly 10–15 minutes — 4 phases with 5 rounds each.',
+    },
+    {
+      id: 'q3-players',
+      order: 30, visible: true,
+      questionAr: 'كم شخصاً يلعب في الغرفة الواحدة؟',
+      answerAr:  'لاعبان اثنان فقط في كل غرفة — تجربة عميقة وشخصية للتوافق العقلي.',
+      questionEn: 'How many players per room?',
+      answerEn:  'Two players per room only — a deep and personal mind-sync experience.',
+    },
+    {
+      id: 'q4-reuse',
+      order: 40, visible: true,
+      questionAr: 'هل يعمل الكود أكثر من مرة؟',
+      answerAr:  'نعم — كل كود فردي يمنحك 5 جلسات مستقلة. اضغط «تحدي جديد» في نهاية كل جولة للانتقال للتالية.',
+      questionEn: 'Can I reuse a code more than once?',
+      answerEn:  'Yes — each individual code includes 5 separate sessions. Tap "New Challenge" at the end of each round to move to the next.',
+    },
+    {
+      id: 'q5-business',
+      order: 50, visible: true,
+      questionAr: 'هل توجد باقات مخصصة للشركات؟',
+      answerAr:  'نعم. تواصل عبر واتساب أو البريد الإلكتروني لاستلام أكواد بالجملة مع لوحة إدارة خاصة وتخصيص اسم الشركة على بطاقة النتيجة.',
+      questionEn: 'Do you offer business packages?',
+      answerEn:  'Yes. Contact us via WhatsApp or email to receive bulk codes with a dedicated admin panel and custom business branding on result cards.',
+    },
+    {
+      id: 'q6-about',
+      order: 60, visible: true,
+      questionAr: 'ما هي منصة Teleplay؟',
+      answerAr:  'Teleplay (teleplay.online) منصة رقمية تقدم خدمات اشتراك في محتوى ترفيهي وتفاعلي رقمي (Digital Interactive Entertainment & Media Services). بعد إتمام الدفع، يحصل المستخدم مباشرة على وصول رقمي (Digital Access) للخدمات المطلوبة عبر حسابه داخل المنصة، دون الحاجة إلى شحن أو تسليم فيزيائي.',
+      questionEn: 'What is Teleplay?',
+      answerEn:  'Teleplay (teleplay.online) is a digital platform providing subscription-based interactive entertainment and media services. After payment, users receive immediate digital access to the requested services via their in-platform account — no physical shipping or delivery required.',
+    },
+    {
+      id: 'q7-privacy',
+      order: 70, visible: true,
+      questionAr: 'سياسة الخصوصية',
+      answerAr:
+        'منصة Teleplay تحرص على حماية خصوصية مستخدميها.\n\n' +
+        '• البيانات التي نجمعها: رقم الهاتف (لتسجيل الدخول عبر SMS)، الاسم (يظهر لشريكك أثناء اللعب فقط)، الصورة الشخصية الاختيارية (تظهر لشريكك أثناء الجلسة فقط)، وبيانات الطلب.\n\n' +
+        '• بيانات الدفع: تُعالج بالكامل عبر بوابة Paymob المرخّصة — نحن لا نُخزّن أرقام بطاقاتك.\n\n' +
+        '• أطراف ثالثة: نستخدم Firebase (Google Cloud) لاستضافة قاعدة البيانات وتسجيل الدخول، و Paymob لمعالجة المدفوعات.\n\n' +
+        '• استخدام البيانات: يقتصر على تفعيل الجلسات الرقمية، تسليم البطاقات، والتواصل بخصوص طلبك.\n\n' +
+        '• حقوقك: يمكنك مراجعة بياناتك في صفحة /my، وطلب حذف حسابك بالكامل عبر التواصل معنا.\n\n' +
+        '• للاستفسار: ineed.ad2020@gmail.com  |  +20 127 536 7743',
+      questionEn: 'Privacy Policy',
+      answerEn:
+        'Teleplay is committed to protecting user privacy.\n\n' +
+        '• Data we collect: phone number (for SMS sign-in), display name (shown only to your play partner), optional profile photo (shown only during the session), and order data.\n\n' +
+        '• Payment data: fully processed through the licensed Paymob gateway — we never store your card numbers.\n\n' +
+        '• Third parties: Firebase (Google Cloud) for database and auth, Paymob for payment processing.\n\n' +
+        '• Data usage: limited to activating digital sessions, delivering cards, and communicating about your order.\n\n' +
+        '• Your rights: review your data at /my, or contact us to request full account deletion.\n\n' +
+        '• Contact: ineed.ad2020@gmail.com  |  +20 127 536 7743',
+    },
+    {
+      id: 'q8-refund',
+      order: 80, visible: true,
+      questionAr: 'سياسة الاسترجاع',
+      answerAr:
+        'منتجاتنا رقمية — يحصل العميل على الوصول فوراً بعد إتمام الدفع.\n\n' +
+        '• جلسات لم يتم استخدامها: يحق للعميل طلب استرداد كامل خلال ٧ أيام من تاريخ الشراء.\n\n' +
+        '• جلسات تم بدؤها: غير قابلة للاسترداد بعد بدء التحدي (تم تسليم المنتج الرقمي).\n\n' +
+        '• باقات الشركات: يمكن استرداد قيمة الأكواد غير المفعّلة خلال ١٤ يوماً من تاريخ الشراء.\n\n' +
+        '• كيفية طلب الاسترداد: تواصل معنا عبر واتساب (+20 127 536 7743) أو البريد الإلكتروني (ineed.ad2020@gmail.com)، مع ذكر رقم الطلب.\n\n' +
+        '• مدة المعالجة: ٧-١٤ يوم عمل من تاريخ الموافقة على الطلب. تُرد الأموال بنفس وسيلة الدفع المستخدمة.',
+      questionEn: 'Refund Policy',
+      answerEn:
+        'Our products are digital — customers receive immediate access after payment.\n\n' +
+        '• Unused sessions: full refund available within 7 days of purchase.\n\n' +
+        '• Started sessions: non-refundable once the challenge has begun (digital product delivered).\n\n' +
+        '• Business packages: unactivated codes are refundable within 14 days of purchase.\n\n' +
+        '• How to request: contact us via WhatsApp (+20 127 536 7743) or email (ineed.ad2020@gmail.com), mentioning your order number.\n\n' +
+        '• Processing time: 7-14 business days from approval. Refunds are issued to the original payment method.',
+    },
+    {
+      id: 'q9-contact',
+      order: 90, visible: true,
+      questionAr: 'كيف أتواصل معكم؟',
+      answerAr:
+        '📞 هاتف / واتساب: +20 127 536 7743\n' +
+        '📧 بريد إلكتروني: ineed.ad2020@gmail.com\n' +
+        '📍 العنوان: 315 شارع جمال عبد الناصر — العصافرة بحري — الدور الثاني علوي — الإسكندرية، مصر\n\n' +
+        'التحدي تابع لشركة ineed4ecommerce.online — جميع الحقوق محفوظة.',
+      questionEn: 'How can I contact you?',
+      answerEn:
+        '📞 Phone / WhatsApp: +20 127 536 7743\n' +
+        '📧 Email: ineed.ad2020@gmail.com\n' +
+        '📍 Address: 315 Gamal Abdel Nasser St. — El Asafra Bahri — 2nd Floor — Alexandria, Egypt\n\n' +
+        'This challenge is operated by ineed4ecommerce.online — All rights reserved.',
+    },
+  ];
+
+  async function listFaq(opts) {
+    const fb = ensureFirebase();
+    if (!fb) return [];
+    const snap = await fb.database().ref('faq').once('value');
+    const v = snap.val();
+    let out = [];
+    if (v && typeof v === 'object') {
+      Object.keys(v).forEach(k => out.push({ id: k, ...v[k] }));
+    }
+    if (opts && opts.visibleOnly) out = out.filter(f => f.visible !== false);
+    out.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+    return out;
+  }
+
+  async function saveFaq(id, data) {
+    const fb = ensureFirebase(); if (!fb) return;
+    if (!id) throw new Error('faq id required');
+    const clean = {};
+    ['questionAr', 'answerAr', 'questionEn', 'answerEn'].forEach(k => {
+      if (data[k] !== undefined) clean[k] = String(data[k]);
+    });
+    if (data.order !== undefined) clean.order = Number(data.order) || 0;
+    if (data.visible !== undefined) clean.visible = !!data.visible;
+    await fb.database().ref('faq/' + id).update(clean);
+  }
+
+  async function deleteFaq(id) {
+    const fb = ensureFirebase(); if (!fb) return;
+    await fb.database().ref('faq/' + id).remove();
+  }
+
+  async function seedFaqIfEmpty() {
+    const fb = ensureFirebase(); if (!fb) return false;
+    const snap = await fb.database().ref('faq').once('value');
+    if (snap.val()) return false;
+    const updates = {};
+    DEFAULT_FAQ.forEach(f => { updates[f.id] = { ...f }; delete updates[f.id].id; });
+    await fb.database().ref('faq').set(updates);
+    return true;
+  }
   function whatsappLink(number, message) {
     const num = String(number || '').replace(/[^\d+]/g, '').replace(/^\+/, '');
     const msg = encodeURIComponent(String(message || ''));
@@ -432,7 +590,7 @@
       codesCount: Math.max(1, Math.min(10000, Number(data.codesCount) || 1)),
       sessionsPerCode: Math.max(1, Math.min(100, Number(data.sessionsPerCode) || 5)),
       price: Math.max(0, Number(data.price) || 0),
-      currency: String(data.currency || 'USD').slice(0, 8),
+      currency: String(data.currency || 'EGP').slice(0, 8),
       buyerName: String(data.buyerName || '').trim().slice(0, 80),
       buyerPhone: String(data.buyerPhone || '').replace(/[^\d+]/g, '').slice(0, 30),
       buyerEmail: String(data.buyerEmail || '').trim().slice(0, 80),
@@ -493,7 +651,7 @@
       + (isEn ? '\nPackage: ' : '\nالباقة: ') + (o.packageName || '')
       + (isEn ? '\nName: ' : '\nالاسم: ') + (o.buyerName || '')
       + (isEn ? '\nWhatsApp: ' : '\nواتساب: ') + (o.buyerPhone || '')
-      + (isEn ? '\nPrice: ' : '\nالسعر: ') + (Number(o.price) || 0) + ' ' + (o.currency || 'USD')
+      + (isEn ? '\nPrice: ' : '\nالسعر: ') + (Number(o.price) || 0) + ' ' + (o.currency || 'EGP')
       + (isEn ? '\n\nFollow from /my after payment confirmation.' : '\n\nبعد تأكيد الدفع — بطاقاتك في /my');
   }
 
@@ -545,7 +703,7 @@
       unit: Math.round(unit * 100) / 100,
       total: Math.round(total * 100) / 100,
       basePerCode: pricing.basePerCode,
-      currency: pricing.currency || 'USD',
+      currency: pricing.currency || 'EGP',
       tierDiscountPct: baseDiscount,
       personalDiscountPct: personalDiscount,
       totalDiscountPct: Math.round(totalDiscount * 1000) / 10
@@ -666,6 +824,12 @@
     savePackage,
     deletePackage,
     seedPackagesIfEmpty,
+    // faq
+    DEFAULT_FAQ,
+    listFaq,
+    saveFaq,
+    deleteFaq,
+    seedFaqIfEmpty,
     DEFAULT_SETTINGS,
     getSettings,
     setSettings,
