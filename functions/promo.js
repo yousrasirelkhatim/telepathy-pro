@@ -15,10 +15,6 @@ function normalizeCode(raw) {
   return String(raw || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 24).trim();
 }
 
-function normalizeAffiliateId(raw) {
-  return String(raw || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
-}
-
 function round2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
 }
@@ -106,7 +102,6 @@ async function evaluateFromDb(db, rawCode, opts) {
 
 module.exports = {
   normalizeCode,
-  normalizeAffiliateId,
   evaluatePromo,
   evaluateFromDb,
 };

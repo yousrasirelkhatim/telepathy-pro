@@ -139,7 +139,7 @@ async function createIntention(opts) {
 
   const names = splitName(order.buyerName);
   const phone = normalizePhone(order.buyerPhone);
-  const origin = opts.origin || 'https://four-fruits-fun.web.app';
+  const origin = opts.origin || 'https://teleplay.online';
   const webhookUrl = opts.notificationUrl || `${origin.replace(/\/$/, '')}/api/paymobWebhook`;
 
   const body = {

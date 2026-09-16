@@ -1,0 +1,63 @@
+# Deploys Cloud Functions + Realtime Database rules when they change on main.
+#
+# WHY: the existing firebase-hosting-merge.yml only deploys Hosting, which
+# previously left rules/functions deploys as a manual local step — a mismatch
+# window where the frontend could reference functions that don't exist yet.
+#
+# REQUIREMENT (one-time): the service account stored in the
+# FIREBASE_SERVICE_ACCOUNT_FOUR_FRUITS_FUN secret must have these IAM roles in
+# addition to the Hosting ones it already has:
+#   - Cloud Functions Admin        (roles/cloudfunctions.admin)
+#   - Service Account User         (roles/iam.serviceAccountUser)
+#   - Firebase Rules Admin         (roles/firebaserules.admin)
+#   - Cloud Run Admin              (roles/run.admin)  ← gen2 functions run on Cloud Run
+# Grant them in Google Cloud Console → IAM. Until granted, this workflow will
+# fail with a permissions error (Hosting deploys are unaffected).
+
+name: Deploy backend on merge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'functions/**'
+      - 'database.rules.json'
+      - 'firebase.json'
+      - '.github/workflows/firebase-backend-deploy.yml'
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy_backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install functions dependencies
+        run: npm ci --prefix functions
+
+      - name: Write service account credentials
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOUR_FRUITS_FUN }}
+        run: printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/firebase-sa.json"
+
+      - name: Deploy database rules
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: npx firebase-tools@13 deploy --only database --project four-fruits-fun --non-interactive
+
+      - name: Deploy Cloud Functions
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: npx firebase-tools@13 deploy --only functions --project four-fruits-fun --non-interactive --force
+
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"

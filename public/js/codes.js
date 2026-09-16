@@ -1,7 +1,9 @@
 /* =========================================================================
-   Telepathy – Access Codes shared module
-   Used by: home.html, index.html (game), admin.html
-   No business logic of the game is touched.
+   Telepathy – Access Codes shared module (TPCodes)
+   Used by: index.html, play.html, my.html, admin.html, card.html,
+            payment-success.html
+   Scope: access codes, orders, packages, pricing, settings, FAQ,
+          promo codes & affiliates. No game logic here.
    ========================================================================= */
 (function (global) {
   'use strict';
@@ -23,23 +25,6 @@
     }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     return firebase;
-  }
-
-  let _authReady = null;
-
-  /** Anonymous auth — required for secured RTDB paths (rooms, orders). */
-  async function ensureAuth() {
-    const fb = ensureFirebase();
-    if (!fb) throw new Error('init');
-    if (typeof fb.auth !== 'function') throw new Error('auth_not_loaded');
-    if (_authReady) return _authReady;
-    _authReady = (async () => {
-      const auth = fb.auth();
-      if (auth.currentUser) return auth.currentUser;
-      const cred = await auth.signInAnonymously();
-      return cred.user;
-    })();
-    return _authReady;
   }
 
   function phoneRateKey(phone) {
@@ -393,6 +378,8 @@
     paymobEnabled: false,
     paymobPublicKey: '',
     paymobIntegrationIds: '',
+    paymobCurrency: 'EGP',
+    paymobEgpRate: '50',
     paymentsNote: '',
     // Contact + company attribution (shown in landing footer)
     contactPhone: '+20 127 536 7743',
@@ -437,37 +424,10 @@
     return String(raw || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 24).trim();
   }
 
-  /**
-   * Client-side arithmetic ONLY — never trust for actual payment.
-   * Real validation happens server-side via applyPromoCode Cloud Function.
-   */
-  function computeDiscount(price, promo) {
-    const p = Math.max(0, Number(price) || 0);
-    if (!promo || !p) return { discountAmount: 0, finalPrice: p, commission: 0 };
-    const min = Number(promo.minOrderAmount || 0);
-    if (min > 0 && p < min) return { discountAmount: 0, finalPrice: p, commission: 0, tooLow: true, minOrderAmount: min };
-
-    let discount = 0;
-    if (String(promo.discountType) === 'percent') {
-      const pct = Math.max(0, Math.min(100, Number(promo.discountValue) || 0));
-      discount = (p * pct) / 100;
-    } else {
-      discount = Math.max(0, Number(promo.discountValue) || 0);
-    }
-    discount = Math.min(discount, p);
-    const final = Math.max(0, p - discount);
-
-    let commission = 0;
-    if (String(promo.commissionType) === 'percent') {
-      const pct = Math.max(0, Math.min(100, Number(promo.commissionValue) || 0));
-      commission = (final * pct) / 100;
-    } else {
-      commission = Math.max(0, Number(promo.commissionValue) || 0);
-    }
-
-    const r = (n) => Math.round(n * 100) / 100;
-    return { discountAmount: r(discount), finalPrice: r(final), commission: r(commission) };
-  }
+  // NOTE: discount math intentionally has NO client-side implementation.
+  // The single authoritative implementation is functions/promo.js
+  // (evaluatePromo), reached via the applyPromoCode callable — the client
+  // can never compute (or tamper with) a price.
 
   async function getPromoCode(code) {
     const fb = ensureFirebase(); if (!fb) return null;
@@ -1018,7 +978,6 @@
   global.TPCodes = {
     config: FIREBASE_CONFIG,
     init: ensureFirebase,
-    ensureAuth,
     randomCode,
     normalize: normalizeCode,
     fmtDate,
@@ -1058,7 +1017,6 @@
     seedFaqIfEmpty,
     // marketing — promo codes & affiliates
     normalizePromoCode,
-    computeDiscount,
     getPromoCode,
     listPromoCodes,
     savePromoCode,

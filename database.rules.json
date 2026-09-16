@@ -369,6 +369,13 @@
       }
     },
 
+    "stripeProcessed": {
+      "$eventId": {
+        ".read": false,
+        ".write": false
+      }
+    },
+
     "settings": {
       ".read":  true,
       ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
@@ -385,6 +392,8 @@
       "paymobEnabled":  { ".validate": "newData.isBoolean()" },
       "paymobPublicKey": { ".validate": "newData.isString() && newData.val().length <= 256" },
       "paymobIntegrationIds": { ".validate": "newData.isString() && newData.val().length <= 80" },
+      "paymobCurrency": { ".validate": "newData.isString() && newData.val().length <= 6" },
+      "paymobEgpRate":  { ".validate": "newData.isString() && newData.val().length <= 12" },
       "paymentsNote":   { ".validate": "newData.isString() && newData.val().length <= 200" },
       "contactPhone":   { ".validate": "newData.isString() && newData.val().length <= 40" },
       "contactEmail":   { ".validate": "newData.isString() && newData.val().length <= 80" },
@@ -403,7 +412,6 @@
       ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
       ".indexOn": ["status", "affiliateId", "createdAt"],
       "$code": {
-        ".read": true,
         ".validate": "$code.matches(/^[A-Z0-9_-]{1,24}$/) && newData.hasChildren(['status','discountType','discountValue'])",
         "status":          { ".validate": "newData.isString() && newData.val().matches(/^(active|disabled|expired)$/)" },
         "discountType":    { ".validate": "newData.isString() && newData.val().matches(/^(percent|fixed)$/)" },

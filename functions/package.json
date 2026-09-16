@@ -1,6 +1,6 @@
 {
   "name": "telepathy-functions",
-  "description": "Stripe checkout + auto-fulfillment for Telepathy Challenge",
+  "description": "Payments (Paymob + Stripe), promo/affiliate settlement, and order auto-fulfillment for Teleplay",
   "engines": { "node": "20" },
   "main": "index.js",
   "dependencies": {

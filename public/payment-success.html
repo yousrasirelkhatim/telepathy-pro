@@ -35,8 +35,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
-  <script src="/js/codes.js?v=101"></script>
-  <script src="/js/account.js?v=101"></script>
+  <script src="/js/codes.js?v=115"></script>
+  <script src="/js/account.js?v=115"></script>
   <script>
     (function () {
       const p = new URLSearchParams(location.search);
@@ -86,7 +86,9 @@
       async function tryClaimFulfillment() {
         try {
           if (typeof firebase.functions !== 'function') return false;
-          const fn = firebase.functions().httpsCallable('claimOrderFulfillment');
+          // Region MUST match functions/index.js FN_REGION — default region
+          // callable would 404 and silently skip the fulfillment claim.
+          const fn = firebase.app().functions('us-central1').httpsCallable('claimOrderFulfillment');
           const res = await fn({ orderId: orderId });
           const data = res && res.data;
           if (data && data.ok && data.status === 'fulfilled') return true;
