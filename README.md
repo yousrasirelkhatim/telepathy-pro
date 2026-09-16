@@ -128,6 +128,31 @@ To rotate the Paymob account safely use `scripts/switch-paymob-account.sh`
 - Hosting: Firebase Console → Hosting → release history → rollback
 - Functions: redeploy from the snapshot branch
 
+## Testing (local, no credentials needed)
+
+`scripts/e2e-emulator-test.sh` runs a full integration suite against the
+Firebase emulators — the **actual** functions code, database rules, and RTDB:
+
+- `applyPromoCode` validation matrix (valid / expired / disabled / used-up /
+  below-min / unknown / fixed & percent discounts / no commission leak)
+- Paymob webhook end-to-end: HMAC verification, fulfillment, session-card
+  provisioning, affiliate ledger settlement
+- **Webhook idempotency**: identical retry must be flagged duplicate and must
+  NOT double-credit commission or usage counters
+- Invalid HMAC rejection (401)
+
+```bash
+npm install -g firebase-tools          # or a local install
+npm install --prefix functions
+# test-only secrets (git-ignored):
+cp functions/.env.example functions/.env.local && edit  # any dummy values work
+firebase emulators:start --project four-fruits-fun --only database,functions,auth &
+bash scripts/e2e-emulator-test.sh      # expects 24/24 PASS
+```
+
+Note: the functions Admin SDK in the emulator uses RTDB namespace
+`four-fruits-fun` (already configured in the script).
+
 ---
 
 ## Conventions

@@ -39,5 +39,13 @@
       "firebase-debug.*.log",
       "*.local"
     ]
+  },
+  "emulators": {
+    "database": { "port": 9000 },
+    "functions": { "port": 5001 },
+    "auth": { "port": 9099 },
+    "hosting": { "port": 5000 },
+    "ui": { "enabled": false },
+    "singleProjectMode": true
   }
 }
