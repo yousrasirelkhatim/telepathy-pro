@@ -1,8 +1,9 @@
 # Deploys Cloud Functions + Realtime Database rules when they change on main.
 #
-# WHY: the existing firebase-hosting-merge.yml only deploys Hosting, which
-# previously left rules/functions deploys as a manual local step — a mismatch
+# WHY: the existing firebase-hosting-merge.yml originally only deployed Hosting,
+# which left rules/functions deploys as a manual local step — a mismatch
 # window where the frontend could reference functions that don't exist yet.
+# Hosting merge now also publishes database rules via RTDB REST as a fallback.
 #
 # REQUIREMENT (one-time): the service account stored in the
 # FIREBASE_SERVICE_ACCOUNT_FOUR_FRUITS_FUN secret must have these IAM roles in
@@ -10,6 +11,7 @@
 #   - Cloud Functions Admin        (roles/cloudfunctions.admin)
 #   - Service Account User         (roles/iam.serviceAccountUser)
 #   - Firebase Rules Admin         (roles/firebaserules.admin)
+#   - Firebase Realtime Database Admin (roles/firebasedatabase.admin)
 #   - Cloud Run Admin              (roles/run.admin)  ← gen2 functions run on Cloud Run
 # Grant them in Google Cloud Console → IAM. Until granted, this workflow will
 # fail with a permissions error (Hosting deploys are unaffected).
@@ -24,14 +26,35 @@ on:
       - 'functions/**'
       - 'database.rules.json'
       - 'firebase.json'
+      - 'scripts/ci-deploy-database-rules.js'
       - '.github/workflows/firebase-backend-deploy.yml'
+  workflow_dispatch:
 
 concurrency:
   group: backend-deploy
   cancel-in-progress: false
 
 jobs:
-  deploy_backend:
+  deploy_database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write service account credentials
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOUR_FRUITS_FUN }}
+        run: printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/firebase-sa.json"
+
+      - name: Deploy database rules (REST fallback)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: node scripts/ci-deploy-database-rules.js
+
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"
+
+  deploy_functions:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,11 +70,6 @@ jobs:
         env:
           FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOUR_FRUITS_FUN }}
         run: printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/firebase-sa.json"
-
-      - name: Deploy database rules
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
-        run: npx firebase-tools@13 deploy --only database --project four-fruits-fun --non-interactive
 
       - name: Deploy Cloud Functions
         env:

@@ -17,3 +17,15 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOUR_FRUITS_FUN }}
           channelId: live
           projectId: four-fruits-fun
+
+      # Hosting SA cannot always call Database Admin instances.get
+      # (firebase-tools "Failed to get instance details"), so publish
+      # rules via RTDB REST / Rules API using the same secret.
+      - name: Deploy Realtime Database rules
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOUR_FRUITS_FUN }}
+        run: |
+          printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/firebase-sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+          node scripts/ci-deploy-database-rules.js
+          rm -f "$RUNNER_TEMP/firebase-sa.json"
