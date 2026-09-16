@@ -248,6 +248,11 @@
         "paidAt": { ".validate": "newData.isNumber()" },
         "updatedAt": { ".validate": "newData.isNumber()" },
         "sessionCodes": { "$idx": { ".validate": "newData.isString() && newData.val().length <= 24" } },
+        "promoCode":          { ".validate": "newData.isString() && newData.val().length <= 24" },
+        "originalPrice":      { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "discountAmount":     { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "affiliateId":        { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "affiliateCommission":{ ".validate": "newData.isNumber() && newData.val() >= 0" },
         "$other": { ".validate": false }
       }
     },
@@ -387,7 +392,105 @@
       "companyName":    { ".validate": "newData.isString() && newData.val().length <= 60" },
       "companyUrl":     { ".validate": "newData.isString() && newData.val().length <= 200" },
       "copyrightYear":  { ".validate": "newData.isString() && newData.val().length <= 10" },
+      "singlePackageMode": { ".validate": "newData.isBoolean()" },
+      "promoEnabled":      { ".validate": "newData.isBoolean()" },
+      "featuredPackageId": { ".validate": "newData.isString() && newData.val().length <= 64" },
       "$other":         { ".validate": false }
+    },
+
+    "promoCodes": {
+      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["status", "affiliateId", "createdAt"],
+      "$code": {
+        ".read": true,
+        ".validate": "$code.matches(/^[A-Z0-9_-]{1,24}$/) && newData.hasChildren(['status','discountType','discountValue'])",
+        "status":          { ".validate": "newData.isString() && newData.val().matches(/^(active|disabled|expired)$/)" },
+        "discountType":    { ".validate": "newData.isString() && newData.val().matches(/^(percent|fixed)$/)" },
+        "discountValue":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000" },
+        "commissionType":  { ".validate": "newData.isString() && newData.val().matches(/^(percent|fixed)$/)" },
+        "commissionValue": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000" },
+        "affiliateId":     { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "affiliateName":   { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "usageLimit":      { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000" },
+        "usedCount":       { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "minOrderAmount":  { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "expiresAt":       { ".validate": "newData.isNumber()" },
+        "createdAt":       { ".validate": "newData.isNumber()" },
+        "notes":           { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "$other":          { ".validate": false }
+      }
+    },
+
+    "affiliates": {
+      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["active", "createdAt"],
+      "$affiliateId": {
+        ".validate": "$affiliateId.matches(/^[a-zA-Z0-9_-]{1,40}$/)",
+        "name":              { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "phone":             { ".validate": "newData.isString() && newData.val().length <= 30" },
+        "email":             { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "active":            { ".validate": "newData.isBoolean()" },
+        "payoutMethod":      { ".validate": "newData.isString() && newData.val().matches(/^(instapay|bank|wallet|cash)$/)" },
+        "payoutRef":         { ".validate": "newData.isString() && newData.val().length <= 120" },
+        "defaultCommissionType":  { ".validate": "newData.isString() && newData.val().matches(/^(percent|fixed)$/)" },
+        "defaultCommissionValue": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 1000000" },
+        "notes":             { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "createdAt":         { ".validate": "newData.isNumber()" },
+        "totalOrders":       { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "totalRevenue":      { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "totalDiscountGiven":{ ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "totalCommission":   { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "pendingCommission": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "paidCommission":    { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "lastPayoutAt":      { ".validate": "newData.isNumber()" },
+        "$other":            { ".validate": false }
+      }
+    },
+
+    "promoUses": {
+      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["affiliateId", "code", "orderId", "at", "status"],
+      "$opId": {
+        ".validate": "newData.hasChildren(['code','orderId','at']) && $opId.matches(/^[A-Za-z0-9_-]{1,40}$/)",
+        "code":            { ".validate": "newData.isString() && newData.val().length <= 24" },
+        "affiliateId":     { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "orderId":         { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "buyerPhoneKey":   { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "originalPrice":   { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "discountAmount":  { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "finalPrice":      { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "commissionEarned":{ ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "at":              { ".validate": "newData.isNumber()" },
+        "status":          { ".validate": "newData.isString() && newData.val().matches(/^(pending|confirmed|refunded)$/)" },
+        "paymobTxnId":     { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "provider":        { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "$other":          { ".validate": false }
+      }
+    },
+
+    "affiliatePayouts": {
+      ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["affiliateId", "at"],
+      "$opId": {
+        ".validate": "newData.hasChildren(['affiliateId','amount','at']) && $opId.matches(/^[A-Za-z0-9_-]{1,40}$/)",
+        "affiliateId": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "amount":      { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "at":          { ".validate": "newData.isNumber()" },
+        "note":        { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "$other":      { ".validate": false }
+      }
+    },
+
+    "orderPromoIndex": {
+      "$orderId": {
+        ".read":  "auth != null && root.child('admins').child(auth.uid).val() === true",
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+        ".validate": "newData.isString() && newData.val().length <= 24"
+      }
     },
 
     "faq": {

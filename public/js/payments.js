@@ -80,7 +80,7 @@
     return 'طلب ' + (order && order.id) + ' — ' + (order && order.packageName);
   }
 
-  async function startPaymobCheckout(orderId) {
+  async function startPaymobCheckout(orderId, opts) {
     if (typeof firebase === 'undefined' || typeof firebase.functions !== 'function') {
       const err = new Error('functions_not_loaded');
       err.code = 'functions_not_loaded';
@@ -88,7 +88,9 @@
     }
     const functions = firebase.app().functions('us-central1');
     const fn = functions.httpsCallable('createPaymobCheckout');
-    const res = await fn({ orderId: String(orderId || '') });
+    const payload = { orderId: String(orderId || '') };
+    if (opts && opts.promoCode) payload.promoCode = String(opts.promoCode).trim();
+    const res = await fn(payload);
     const url = res && res.data && res.data.url;
     if (!url) {
       const err = new Error('checkout_failed');
@@ -99,14 +101,16 @@
     return url;
   }
 
-  async function startStripeCheckout(orderId) {
+  async function startStripeCheckout(orderId, opts) {
     if (typeof firebase === 'undefined' || typeof firebase.functions !== 'function') {
       const err = new Error('functions_not_loaded');
       err.code = 'functions_not_loaded';
       throw err;
     }
     const fn = firebase.app().functions('us-central1').httpsCallable('createStripeCheckout');
-    const res = await fn({ orderId: String(orderId || '') });
+    const payload = { orderId: String(orderId || '') };
+    if (opts && opts.promoCode) payload.promoCode = String(opts.promoCode).trim();
+    const res = await fn(payload);
     const url = res && res.data && res.data.url;
     if (!url) {
       const err = new Error('checkout_failed');
@@ -116,11 +120,11 @@
     window.location.href = url;
   }
 
-  async function startCardCheckout(orderId, settings) {
+  async function startCardCheckout(orderId, settings, opts) {
     settings = settings || await loadPaymentSettings();
     const provider = activeCardProvider(settings);
-    if (provider === 'paymob') return startPaymobCheckout(orderId);
-    if (provider === 'stripe') return startStripeCheckout(orderId);
+    if (provider === 'paymob') return startPaymobCheckout(orderId, opts);
+    if (provider === 'stripe') return startStripeCheckout(orderId, opts);
     const err = new Error('card_disabled');
     err.code = 'card_disabled';
     throw err;

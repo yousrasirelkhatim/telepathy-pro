@@ -5,6 +5,7 @@ const admin = require('firebase-admin');
 const Stripe = require('stripe');
 const { provisionFromOrder, phoneKey } = require('./provision');
 const paymob = require('./paymob');
+const promo = require('./promo');
 
 const FN_REGION = 'us-central1';
 const publicCall = (handler) => onCall({ region: FN_REGION, invoker: 'public' }, handler);
@@ -106,7 +107,77 @@ async function fulfillPaidOrder(orderId, paymentMeta, provider) {
   }
 
   await db.ref(`orders/${orderId}`).update(patch);
+
+  // Marketing: record promo usage + accrue affiliate commission (idempotent).
+  try {
+    await settleAffiliateForOrder(orderId, order, provider, paymentMeta);
+  } catch (err) {
+    // Do not fail the fulfillment on marketing bookkeeping errors — session
+    // cards are already provisioned; we just log for admin review.
+    console.error('settleAffiliateForOrder failed', orderId, err && err.message);
+  }
+
   return { fulfilled: true, orderId, sessionCodes };
+}
+
+/**
+ * Idempotently record a promo use + credit the affiliate's pending commission.
+ * Guarded by `orderPromoIndex/{orderId}` — safe to re-invoke from retries.
+ */
+async function settleAffiliateForOrder(orderId, order, provider, paymentMeta) {
+  const code = String(order.promoCode || '').trim();
+  const affiliateId = String(order.affiliateId || '').trim();
+  if (!code || !affiliateId) return { skipped: 'no_promo' };
+
+  const indexRef = db.ref(`orderPromoIndex/${orderId}`);
+  const tx = await indexRef.transaction((cur) => (cur ? cur : code));
+  if (!tx.committed) return { skipped: 'index_conflict' };
+  if (tx.snapshot.val() !== code) return { skipped: 'already_settled' };
+
+  const originalPrice = Math.max(0, Number(order.originalPrice) || Number(order.price) || 0);
+  const discountAmount = Math.max(0, Number(order.discountAmount) || 0);
+  const finalPrice = Math.max(0, Number(order.price) || (originalPrice - discountAmount));
+  const commission = Math.max(0, Number(order.affiliateCommission) || 0);
+
+  // Increment aggregates on the affiliate record — best-effort transaction.
+  await db.ref(`affiliates/${affiliateId}`).transaction((cur) => {
+    if (!cur) return cur; // affiliate might have been deleted; skip silently
+    cur.totalOrders = Number(cur.totalOrders || 0) + 1;
+    cur.totalRevenue = Math.round((Number(cur.totalRevenue || 0) + originalPrice) * 100) / 100;
+    cur.totalDiscountGiven = Math.round((Number(cur.totalDiscountGiven || 0) + discountAmount) * 100) / 100;
+    cur.totalCommission = Math.round((Number(cur.totalCommission || 0) + commission) * 100) / 100;
+    cur.pendingCommission = Math.round((Number(cur.pendingCommission || 0) + commission) * 100) / 100;
+    return cur;
+  });
+
+  // Increment usedCount on the promo code.
+  await db.ref(`promoCodes/${code}/usedCount`).transaction((v) => (Number(v) || 0) + 1);
+
+  // Audit log entry.
+  const opId = randomOpId('USE');
+  await db.ref(`promoUses/${opId}`).set({
+    code,
+    affiliateId,
+    orderId,
+    buyerPhoneKey: String(order.phoneKey || phoneKey(order.buyerPhone) || ''),
+    originalPrice,
+    discountAmount,
+    finalPrice,
+    commissionEarned: commission,
+    at: Date.now(),
+    status: 'confirmed',
+    provider,
+    paymobTxnId: String((paymentMeta && paymentMeta.transactionId) || ''),
+  });
+
+  return { ok: true, opId, commission };
+}
+
+function randomOpId(prefix) {
+  const alpha = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = '';
+  for (let i = 0; i < 10; i += 1) s += alpha[Math.floor(Math.random() * alpha.length)];
+  return `${prefix}-${s}`;
 }
 
 /** Callable: after payment redirect — ensure session cards exist in /my (webhook backup). */
@@ -161,6 +232,86 @@ exports.claimOrderFulfillment = publicCall(async (request) => {
   };
 });
 
+/**
+ * Callable: Client-side promo code preview.
+ * Given a code + package/order price, returns the discounted amount and (public)
+ * affiliate name. Does not touch RTDB — pure read + compute.
+ */
+exports.applyPromoCode = publicCall(async (request) => {
+  const data = request.data || {};
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'Sign in required');
+  }
+  const code = promo.normalizeCode(data.code || '');
+  const price = Math.max(0, Number(data.price) || 0);
+  if (!code) throw new HttpsError('invalid-argument', 'code required');
+  if (!price) throw new HttpsError('invalid-argument', 'price required');
+
+  // buyerPhoneKey — try to derive from auth token phone (best-effort);
+  // real anti-self-referral is enforced again at checkout.
+  const rawPhone = (request.auth.token && request.auth.token.phone_number) || '';
+  const pk = rawPhone ? phoneKey(rawPhone) : '';
+
+  const result = await promo.evaluateFromDb(db, code, { price, buyerPhoneKey: pk });
+  if (!result.ok) {
+    return {
+      ok: false,
+      reason: result.reason,
+      minOrderAmount: result.minOrderAmount || 0,
+    };
+  }
+  return {
+    ok: true,
+    code,
+    discountAmount: result.discountAmount,
+    finalPrice: result.finalPrice,
+    affiliateName: result.affiliateName || '',
+    // commission NOT returned to client — server-only.
+  };
+});
+
+/**
+ * Apply promo code server-side to an order (before hitting payment gateway).
+ * Mutates the in-memory order object with promoCode / originalPrice / discountAmount /
+ * affiliateId / affiliateCommission and returns the discounted price to charge.
+ * Idempotent by design — safe to call multiple times per order attempt.
+ */
+async function applyPromoToOrder(order, rawCode) {
+  const originalPrice = Math.max(0, Number(order.price) || 0);
+  if (!rawCode) return { chargePrice: originalPrice, appliedPromo: null };
+
+  const code = promo.normalizeCode(rawCode);
+  if (!code) return { chargePrice: originalPrice, appliedPromo: null };
+
+  const evalResult = await promo.evaluateFromDb(db, code, {
+    price: originalPrice,
+    buyerPhoneKey: order.phoneKey || '',
+  });
+
+  if (!evalResult.ok) {
+    // Invalid promo at checkout — reject with a clear error so the client
+    // clears the field and retries. Never silently drop; user paid attention.
+    const map = {
+      not_found: 'كود الخصم غير موجود',
+      disabled:  'كود الخصم موقوف',
+      expired:   'كود الخصم منتهي الصلاحية',
+      used_up:   'تم استهلاك عدد استخدامات الكود',
+      below_min: 'قيمة الطلب أقل من الحد الأدنى المطلوب لهذا الكود',
+      self_use:  'لا يمكنك استخدام كودك الخاص',
+    };
+    const msg = map[evalResult.reason] || 'كود الخصم غير صالح';
+    throw new HttpsError('failed-precondition', msg);
+  }
+
+  order.promoCode = code;
+  order.originalPrice = originalPrice;
+  order.discountAmount = evalResult.discountAmount;
+  order.affiliateId = evalResult.affiliateId;
+  order.affiliateCommission = evalResult.commission;
+  order.price = evalResult.finalPrice;
+  return { chargePrice: evalResult.finalPrice, appliedPromo: evalResult };
+}
+
 /** Callable: Paymob Unified Checkout — create intention + redirect URL. */
 exports.createPaymobCheckout = publicCall(async (request) => {
   const data = request.data || {};
@@ -186,6 +337,10 @@ exports.createPaymobCheckout = publicCall(async (request) => {
     const order = await assertOrderOwner(orderId, request.auth.uid);
     const origin = siteOrigin();
 
+    // Apply promo code (optional). May throw HttpsError with human-readable message.
+    const rawPromoCode = String(data.promoCode || order.promoCode || '').trim();
+    const { appliedPromo } = await applyPromoToOrder(order, rawPromoCode);
+
     const result = await paymob.createIntention({
       order,
       orderId,
@@ -195,13 +350,22 @@ exports.createPaymobCheckout = publicCall(async (request) => {
     });
 
     try {
-      await db.ref(`orders/${orderId}`).update({
+      const orderPatch = {
         paymentMethod: 'paymob',
         paymentStatus: 'pending',
         paymobIntentionId: result.intentionId || '',
         paymobOrderId: String(result.intentionOrderId || ''),
         updatedAt: Date.now(),
-      });
+      };
+      if (appliedPromo) {
+        orderPatch.promoCode = order.promoCode;
+        orderPatch.originalPrice = order.originalPrice;
+        orderPatch.discountAmount = order.discountAmount;
+        orderPatch.affiliateId = order.affiliateId;
+        orderPatch.affiliateCommission = order.affiliateCommission;
+        orderPatch.price = order.price;
+      }
+      await db.ref(`orders/${orderId}`).update(orderPatch);
     } catch (dbErr) {
       console.error('createPaymobCheckout order update failed', orderId, dbErr.message);
     }
@@ -209,6 +373,8 @@ exports.createPaymobCheckout = publicCall(async (request) => {
     return {
       url: result.checkoutUrl,
       intentionId: result.intentionId,
+      finalPrice: order.price,
+      discountApplied: appliedPromo ? (appliedPromo.discountAmount || 0) : 0,
     };
   } catch (err) {
     if (err instanceof HttpsError) throw err;
@@ -345,6 +511,11 @@ exports.createStripeCheckout = publicCall(async (request) => {
   const order = await assertOrderOwner(orderId, request.auth.uid);
   const stripe = stripeClient();
   const origin = siteOrigin();
+
+  // Apply promo code (optional) — mutates `order.price` if valid.
+  const rawPromoCode = String(data.promoCode || order.promoCode || '').trim();
+  const { appliedPromo } = await applyPromoToOrder(order, rawPromoCode);
+
   const currency = String(order.currency || settings.currency || 'USD').toLowerCase();
   const amount = stripeMinorUnits(order.price, currency);
 
@@ -362,7 +533,7 @@ exports.createStripeCheckout = publicCall(async (request) => {
         unit_amount: amount,
         product_data: {
           name: order.packageName || 'Telepathy Challenge',
-          description: `Order ${orderId}`,
+          description: `Order ${orderId}${appliedPromo ? ` (promo ${appliedPromo.promo && appliedPromo.promo.code || order.promoCode})` : ''}`,
         },
       },
     }],
@@ -371,20 +542,35 @@ exports.createStripeCheckout = publicCall(async (request) => {
       orderId,
       phoneKey: order.phoneKey || phoneKey(order.buyerPhone),
       project: 'four-fruits-fun',
+      ...(order.promoCode ? { promoCode: order.promoCode, affiliateId: order.affiliateId || '' } : {}),
     },
     success_url: `${origin}/payment-success?order=${encodeURIComponent(orderId)}&provider=stripe&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/payment-cancel?order=${encodeURIComponent(orderId)}`,
     customer_email: order.buyerEmail || undefined,
   });
 
-  await db.ref(`orders/${orderId}`).update({
+  const orderPatch = {
     paymentMethod: 'stripe',
     paymentStatus: 'pending',
     stripeSessionId: session.id,
     updatedAt: Date.now(),
-  });
+  };
+  if (appliedPromo) {
+    orderPatch.promoCode = order.promoCode;
+    orderPatch.originalPrice = order.originalPrice;
+    orderPatch.discountAmount = order.discountAmount;
+    orderPatch.affiliateId = order.affiliateId;
+    orderPatch.affiliateCommission = order.affiliateCommission;
+    orderPatch.price = order.price;
+  }
+  await db.ref(`orders/${orderId}`).update(orderPatch);
 
-  return { url: session.url, sessionId: session.id };
+  return {
+    url: session.url,
+    sessionId: session.id,
+    finalPrice: order.price,
+    discountApplied: appliedPromo ? (appliedPromo.discountAmount || 0) : 0,
+  };
 });
 
 /** Stripe webhook — auto-fulfill on successful payment. */

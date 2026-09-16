@@ -401,6 +401,10 @@
     companyName: 'ineed4ecommerce',
     companyUrl: 'https://ineed4ecommerce.online/',
     copyrightYear: '2026',
+    // Marketing / single-package toggles (v1)
+    singlePackageMode: false,
+    promoEnabled: true,
+    featuredPackageId: '',
   };
   async function getSettings() {
     const fb = ensureFirebase(); if (!fb) return { ...DEFAULT_SETTINGS };
@@ -411,17 +415,239 @@
       ...raw,
       stripeEnabled: raw.stripeEnabled === true || raw.stripeEnabled === 'true',
       paymobEnabled: raw.paymobEnabled === true || raw.paymobEnabled === 'true',
+      singlePackageMode: raw.singlePackageMode === true || raw.singlePackageMode === 'true',
+      promoEnabled: raw.promoEnabled !== false && raw.promoEnabled !== 'false',
     };
   }
   async function setSettings(s) {
     const fb = ensureFirebase(); if (!fb) return;
+    const BOOL_KEYS = new Set(['stripeEnabled', 'paymobEnabled', 'singlePackageMode', 'promoEnabled']);
     const clean = {};
     Object.keys(DEFAULT_SETTINGS).forEach(k => {
       if (s[k] === undefined) return;
-      if (k === 'stripeEnabled' || k === 'paymobEnabled') clean[k] = !!s[k];
+      if (BOOL_KEYS.has(k)) clean[k] = !!s[k];
       else clean[k] = String(s[k]);
     });
     await fb.database().ref('settings').update(clean);
+  }
+
+  // ============== Promo Codes & Affiliates (marketing) ==============
+
+  function normalizePromoCode(raw) {
+    return String(raw || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 24).trim();
+  }
+
+  /**
+   * Client-side arithmetic ONLY — never trust for actual payment.
+   * Real validation happens server-side via applyPromoCode Cloud Function.
+   */
+  function computeDiscount(price, promo) {
+    const p = Math.max(0, Number(price) || 0);
+    if (!promo || !p) return { discountAmount: 0, finalPrice: p, commission: 0 };
+    const min = Number(promo.minOrderAmount || 0);
+    if (min > 0 && p < min) return { discountAmount: 0, finalPrice: p, commission: 0, tooLow: true, minOrderAmount: min };
+
+    let discount = 0;
+    if (String(promo.discountType) === 'percent') {
+      const pct = Math.max(0, Math.min(100, Number(promo.discountValue) || 0));
+      discount = (p * pct) / 100;
+    } else {
+      discount = Math.max(0, Number(promo.discountValue) || 0);
+    }
+    discount = Math.min(discount, p);
+    const final = Math.max(0, p - discount);
+
+    let commission = 0;
+    if (String(promo.commissionType) === 'percent') {
+      const pct = Math.max(0, Math.min(100, Number(promo.commissionValue) || 0));
+      commission = (final * pct) / 100;
+    } else {
+      commission = Math.max(0, Number(promo.commissionValue) || 0);
+    }
+
+    const r = (n) => Math.round(n * 100) / 100;
+    return { discountAmount: r(discount), finalPrice: r(final), commission: r(commission) };
+  }
+
+  async function getPromoCode(code) {
+    const fb = ensureFirebase(); if (!fb) return null;
+    const norm = normalizePromoCode(code);
+    if (!norm) return null;
+    const snap = await fb.database().ref('promoCodes/' + norm).once('value');
+    const v = snap.val();
+    if (!v) return null;
+    return { code: norm, ...v };
+  }
+
+  async function listPromoCodes(filter) {
+    const fb = ensureFirebase(); if (!fb) return [];
+    const snap = await fb.database().ref('promoCodes').once('value');
+    const out = [];
+    snap.forEach(s => { out.push({ code: s.key, ...s.val() }); });
+    out.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    let arr = out;
+    if (filter && filter.status) arr = arr.filter(x => x.status === filter.status);
+    if (filter && filter.affiliateId) arr = arr.filter(x => x.affiliateId === filter.affiliateId);
+    if (filter && filter.limit) arr = arr.slice(0, filter.limit);
+    return arr;
+  }
+
+  async function savePromoCode(code, data) {
+    const fb = ensureFirebase(); if (!fb) return;
+    const norm = normalizePromoCode(code);
+    if (!norm) throw new Error('promo_code_invalid');
+    const clean = {
+      status: (data.status === 'disabled' || data.status === 'expired') ? data.status : 'active',
+      discountType: (data.discountType === 'fixed') ? 'fixed' : 'percent',
+      discountValue: Math.max(0, Number(data.discountValue) || 0),
+      commissionType: (data.commissionType === 'fixed') ? 'fixed' : 'percent',
+      commissionValue: Math.max(0, Number(data.commissionValue) || 0),
+      affiliateId: String(data.affiliateId || '').slice(0, 64),
+      affiliateName: String(data.affiliateName || '').slice(0, 80),
+      usageLimit: Math.max(0, Math.min(1000000, Number(data.usageLimit) || 0)),
+      minOrderAmount: Math.max(0, Number(data.minOrderAmount) || 0),
+      expiresAt: Number(data.expiresAt) || 0,
+      notes: String(data.notes || '').slice(0, 200),
+    };
+    const existing = await getPromoCode(norm);
+    if (!existing) {
+      clean.createdAt = Date.now();
+      clean.usedCount = 0;
+    }
+    await fb.database().ref('promoCodes/' + norm).update(clean);
+    return { code: norm, ...clean };
+  }
+
+  async function deletePromoCode(code) {
+    const fb = ensureFirebase(); if (!fb) return;
+    const norm = normalizePromoCode(code);
+    await fb.database().ref('promoCodes/' + norm).remove();
+  }
+
+  async function setPromoCodeStatus(code, status) {
+    const fb = ensureFirebase(); if (!fb) return;
+    const norm = normalizePromoCode(code);
+    if (!['active', 'disabled', 'expired'].includes(status)) throw new Error('bad_status');
+    await fb.database().ref('promoCodes/' + norm + '/status').set(status);
+  }
+
+  // ---- Affiliates ----
+
+  function normalizeAffiliateId(raw) {
+    return String(raw || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
+  }
+
+  async function listAffiliates(filter) {
+    const fb = ensureFirebase(); if (!fb) return [];
+    const snap = await fb.database().ref('affiliates').once('value');
+    const out = [];
+    snap.forEach(s => { out.push({ id: s.key, ...s.val() }); });
+    out.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    let arr = out;
+    if (filter && filter.active !== undefined) arr = arr.filter(x => !!x.active === !!filter.active);
+    if (filter && filter.limit) arr = arr.slice(0, filter.limit);
+    return arr;
+  }
+
+  async function getAffiliate(id) {
+    const fb = ensureFirebase(); if (!fb) return null;
+    const norm = normalizeAffiliateId(id);
+    if (!norm) return null;
+    const snap = await fb.database().ref('affiliates/' + norm).once('value');
+    const v = snap.val();
+    if (!v) return null;
+    return { id: norm, ...v };
+  }
+
+  async function saveAffiliate(id, data) {
+    const fb = ensureFirebase(); if (!fb) return;
+    const norm = normalizeAffiliateId(id);
+    if (!norm) throw new Error('affiliate_id_invalid');
+    const clean = {
+      name: String(data.name || '').slice(0, 80),
+      phone: String(data.phone || '').slice(0, 30),
+      email: String(data.email || '').slice(0, 80),
+      active: data.active !== false,
+      payoutMethod: (['instapay', 'bank', 'wallet', 'cash'].includes(data.payoutMethod)) ? data.payoutMethod : 'instapay',
+      payoutRef: String(data.payoutRef || '').slice(0, 120),
+      defaultCommissionType: (data.defaultCommissionType === 'fixed') ? 'fixed' : 'percent',
+      defaultCommissionValue: Math.max(0, Number(data.defaultCommissionValue) || 0),
+      notes: String(data.notes || '').slice(0, 200),
+    };
+    const existing = await getAffiliate(norm);
+    if (!existing) {
+      clean.createdAt = Date.now();
+      clean.totalOrders = 0;
+      clean.totalRevenue = 0;
+      clean.totalDiscountGiven = 0;
+      clean.totalCommission = 0;
+      clean.pendingCommission = 0;
+      clean.paidCommission = 0;
+    }
+    await fb.database().ref('affiliates/' + norm).update(clean);
+    return { id: norm, ...clean };
+  }
+
+  async function deleteAffiliate(id) {
+    const fb = ensureFirebase(); if (!fb) return;
+    const norm = normalizeAffiliateId(id);
+    await fb.database().ref('affiliates/' + norm).remove();
+  }
+
+  async function markCommissionPaid(affiliateId, amount, note) {
+    const fb = ensureFirebase(); if (!fb) throw new Error('init');
+    const norm = normalizeAffiliateId(affiliateId);
+    if (!norm) throw new Error('affiliate_id_invalid');
+    const amt = Math.max(0, Number(amount) || 0);
+    if (!amt) throw new Error('amount_required');
+
+    const ref = fb.database().ref('affiliates/' + norm);
+    const now = Date.now();
+    const tx = await ref.transaction(cur => {
+      if (!cur) return cur;
+      const pending = Math.max(0, Number(cur.pendingCommission || 0));
+      if (amt > pending + 0.01) return cur; // abort — insufficient pending
+      cur.pendingCommission = Math.round((pending - amt) * 100) / 100;
+      cur.paidCommission = Math.round((Number(cur.paidCommission || 0) + amt) * 100) / 100;
+      cur.lastPayoutAt = now;
+      return cur;
+    });
+    if (!tx.committed) throw new Error('payout_conflict');
+
+    const opId = randomCode('PAY', 8);
+    await fb.database().ref('affiliatePayouts/' + opId).set({
+      affiliateId: norm,
+      amount: amt,
+      at: now,
+      note: String(note || '').slice(0, 200),
+    });
+    return { affiliateId: norm, amount: amt, opId };
+  }
+
+  async function listPromoUses(filter) {
+    const fb = ensureFirebase(); if (!fb) return [];
+    const snap = await fb.database().ref('promoUses').once('value');
+    const out = [];
+    snap.forEach(s => { out.push({ id: s.key, ...s.val() }); });
+    out.sort((a, b) => (b.at || 0) - (a.at || 0));
+    let arr = out;
+    if (filter && filter.affiliateId) arr = arr.filter(x => x.affiliateId === filter.affiliateId);
+    if (filter && filter.code) arr = arr.filter(x => x.code === filter.code);
+    if (filter && filter.status) arr = arr.filter(x => x.status === filter.status);
+    if (filter && filter.limit) arr = arr.slice(0, filter.limit);
+    return arr;
+  }
+
+  async function listAffiliatePayouts(filter) {
+    const fb = ensureFirebase(); if (!fb) return [];
+    const snap = await fb.database().ref('affiliatePayouts').once('value');
+    const out = [];
+    snap.forEach(s => { out.push({ id: s.key, ...s.val() }); });
+    out.sort((a, b) => (b.at || 0) - (a.at || 0));
+    let arr = out;
+    if (filter && filter.affiliateId) arr = arr.filter(x => x.affiliateId === filter.affiliateId);
+    if (filter && filter.limit) arr = arr.slice(0, filter.limit);
+    return arr;
   }
 
   // ============== FAQ (Landing — admin-editable) ==============
@@ -830,6 +1056,22 @@
     saveFaq,
     deleteFaq,
     seedFaqIfEmpty,
+    // marketing — promo codes & affiliates
+    normalizePromoCode,
+    computeDiscount,
+    getPromoCode,
+    listPromoCodes,
+    savePromoCode,
+    deletePromoCode,
+    setPromoCodeStatus,
+    normalizeAffiliateId,
+    listAffiliates,
+    getAffiliate,
+    saveAffiliate,
+    deleteAffiliate,
+    markCommissionPaid,
+    listPromoUses,
+    listAffiliatePayouts,
     DEFAULT_SETTINGS,
     getSettings,
     setSettings,
