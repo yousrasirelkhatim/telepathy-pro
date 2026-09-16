@@ -551,6 +551,17 @@
           <div style="grid-column:1/-1"><label>شرائح Hero (افصل بـ |)</label><input type="text" id="setHeroStats" placeholder="⚡ يبدأ فوري | 📱 يعمل على الجوال | 🎁 5 تحديات" /></div>
           <div style="grid-column:1/-1"><label>رسالة واتساب للأعمال</label><input type="text" id="setBizMsg" placeholder="أرغب بمعرفة المزيد عن باقات الأعمال" /></div>
         </div>
+
+        <h3 style="margin:22px 0 10px;font-size:1rem">معلومات التواصل — تظهر في تذييل الموقع</h3>
+        <div class="row">
+          <div><label>هاتف / واتساب</label><input type="tel" id="setContactPhone" placeholder="+20 127 536 7743" dir="ltr" /></div>
+          <div><label>البريد الإلكتروني</label><input type="email" id="setContactEmail" placeholder="ineed.ad2020@gmail.com" dir="ltr" /></div>
+          <div style="grid-column:1/-1"><label>العنوان (سطر واحد)</label><input type="text" id="setContactAddress" placeholder="315 شارع جمال عبد الناصر — العصافرة بحري — الإسكندرية" /></div>
+          <div><label>اسم الشركة المشغّلة</label><input type="text" id="setCompanyName" placeholder="ineed4ecommerce" /></div>
+          <div><label>موقع الشركة (URL)</label><input type="url" id="setCompanyUrl" placeholder="https://ineed4ecommerce.online/" dir="ltr" /></div>
+          <div><label>سنة حقوق النشر</label><input type="text" id="setCopyrightYear" placeholder="2026" dir="ltr" inputmode="numeric" /></div>
+        </div>
+
         <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn btn-primary" onclick="saveSettingsForm()">💾 حفظ الإعدادات</button>
           <button class="btn btn-ghost" onclick="loadSettingsForm()">↻ تحديث</button>
@@ -558,6 +569,54 @@
         <p style="margin-top:10px;color:rgba(255,255,255,.45);font-size:.8rem">
           رقم الواتساب يُستخدم في زر "اطلب الآن" بالصفحة الرئيسية. اتركه فارغاً ليُفتح اختيار رقم.
         </p>
+      </div>
+
+      <!-- FAQ EDITOR (admin) -->
+      <div class="panel" id="faqPanel">
+        <div class="panel-h"><h2>❓ الأسئلة الشائعة (FAQ)</h2></div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          تظهر في قسم "أسئلة شائعة" على الصفحة الرئيسية. لكل سؤال نسخة عربية (إلزامية) ونسخة إنجليزية (اختيارية).
+          يمكنك إخفاء أي سؤال دون حذفه، وتغيير ترتيب الظهور من حقل "الترتيب".
+        </p>
+        <div id="faqList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+          <div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>
+        </div>
+        <div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-ghost" onclick="loadFaqList()">↻ تحديث القائمة</button>
+          <button class="btn btn-ghost" onclick="seedFaqDefaults()">📥 استعادة الأسئلة الافتراضية (لو الفارغ)</button>
+        </div>
+
+        <h3 style="margin:18px 0 12px;font-size:1rem" id="faqFormTitle">➕ إضافة سؤال جديد</h3>
+        <div class="row">
+          <div><label>المعرّف (id) — أحرف/أرقام/شرطات</label><input type="text" id="faqId" placeholder="مثال: q10-support" dir="ltr" /></div>
+          <div><label>الترتيب (رقم — الأصغر يظهر أولاً)</label><input type="number" id="faqOrder" min="0" max="100000" step="10" placeholder="100" /></div>
+          <div style="grid-column:1/-1">
+            <label>السؤال (عربي) *</label>
+            <input type="text" id="faqQAr" placeholder="ما هي منصة Teleplay؟" />
+          </div>
+          <div style="grid-column:1/-1">
+            <label>الإجابة (عربي) *</label>
+            <textarea id="faqAAr" rows="4" placeholder="نص الإجابة — يمكنك استخدام أسطر جديدة" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:#fff;font-family:inherit;font-size:.95rem;line-height:1.7;resize:vertical"></textarea>
+          </div>
+          <div style="grid-column:1/-1">
+            <label>السؤال (English) — اختياري</label>
+            <input type="text" id="faqQEn" placeholder="What is Teleplay?" dir="ltr" />
+          </div>
+          <div style="grid-column:1/-1">
+            <label>الإجابة (English) — اختياري</label>
+            <textarea id="faqAEn" rows="4" placeholder="Optional English answer" dir="ltr" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:#fff;font-family:inherit;font-size:.95rem;line-height:1.7;resize:vertical"></textarea>
+          </div>
+          <div>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:8px">
+              <input type="checkbox" id="faqVisible" checked style="width:18px;height:18px" />
+              <span>مرئي في الصفحة الرئيسية</span>
+            </label>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveFaqForm()">💾 حفظ السؤال</button>
+          <button class="btn btn-ghost" onclick="resetFaqForm()">↺ إفراغ النموذج</button>
+        </div>
       </div>
 
       <!-- Stripe / Card payments -->
@@ -790,7 +849,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
-<script src="/js/codes.js?v=108"></script>
+<script src="/js/codes.js?v=113"></script>
 <script src="/js/phone-auth.js?v=100"></script>
 <script src="/js/account.js?v=100"></script>
 <script>
@@ -999,7 +1058,7 @@
       if (t.dataset.tab === 'list') loadList();
       if (t.dataset.tab === 'resellers') loadResellers();
       if (t.dataset.tab === 'pricing') loadPricing();
-      if (t.dataset.tab === 'packages') { loadSettingsForm(); loadPackagesList(); }
+      if (t.dataset.tab === 'packages') { loadSettingsForm(); loadPackagesList(); loadFaqList(); }
       if (t.dataset.tab === 'wallet') loadWallet();
     };
   });
@@ -2606,11 +2665,17 @@
       document.getElementById('setBrand').value = s.brandName || '';
       document.getElementById('setTagline').value = s.tagline || '';
       document.getElementById('setWa').value = s.whatsappNumber || '';
-      document.getElementById('setCurr').value = (s.currency || 'USD').toUpperCase();
+      document.getElementById('setCurr').value = (s.currency || 'EGP').toUpperCase();
       const ht = document.getElementById('setHeroTitle'); if (ht) ht.value = s.heroTitle || '';
       const hb = document.getElementById('setHeroBadge'); if (hb) hb.value = s.heroBadge || '';
       const hs = document.getElementById('setHeroStats'); if (hs) hs.value = s.heroStats || '';
       const bm = document.getElementById('setBizMsg'); if (bm) bm.value = s.bizMessage || '';
+      const cph = document.getElementById('setContactPhone'); if (cph) cph.value = s.contactPhone || '';
+      const cem = document.getElementById('setContactEmail'); if (cem) cem.value = s.contactEmail || '';
+      const cad = document.getElementById('setContactAddress'); if (cad) cad.value = s.contactAddress || '';
+      const con = document.getElementById('setCompanyName'); if (con) con.value = s.companyName || '';
+      const cou = document.getElementById('setCompanyUrl'); if (cou) cou.value = s.companyUrl || '';
+      const cyr = document.getElementById('setCopyrightYear'); if (cyr) cyr.value = s.copyrightYear || '';
       const se = document.getElementById('setStripeEnabled'); if (se) se.checked = !!s.stripeEnabled;
       const spk = document.getElementById('setStripePk'); if (spk) spk.value = s.stripePublishableKey || '';
       const pe = document.getElementById('setPaymobEnabled'); if (pe) pe.checked = !!s.paymobEnabled;
@@ -2708,11 +2773,150 @@
       heroTitle: (document.getElementById('setHeroTitle')?.value || '').trim(),
       heroBadge: (document.getElementById('setHeroBadge')?.value || '').trim(),
       heroStats: (document.getElementById('setHeroStats')?.value || '').trim(),
-      bizMessage: (document.getElementById('setBizMsg')?.value || '').trim()
+      bizMessage: (document.getElementById('setBizMsg')?.value || '').trim(),
+      contactPhone: (document.getElementById('setContactPhone')?.value || '').trim(),
+      contactEmail: (document.getElementById('setContactEmail')?.value || '').trim(),
+      contactAddress: (document.getElementById('setContactAddress')?.value || '').trim(),
+      companyName: (document.getElementById('setCompanyName')?.value || '').trim(),
+      companyUrl: (document.getElementById('setCompanyUrl')?.value || '').trim(),
+      copyrightYear: (document.getElementById('setCopyrightYear')?.value || '').trim().replace(/[^\d]/g,''),
     };
     try { await TPCodes.setSettings(s); toast('✓ تم حفظ الإعدادات'); }
     catch(e) { toast('فشل الحفظ: '+(e.message||e), true); }
   }
+
+  // ============== FAQ (admin) ==============
+  let editingFaqId = null;
+
+  function faqEscape(str) {
+    return String(str || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  async function loadFaqList() {
+    const box = document.getElementById('faqList');
+    if (!box) return;
+    box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>';
+    try {
+      const items = await TPCodes.listFaq();
+      if (!items || !items.length) {
+        box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">لا توجد أسئلة بعد — اضغط "استعادة الأسئلة الافتراضية" أو أضف أول سؤال.</div>';
+        return;
+      }
+      box.innerHTML = items.map(f => {
+        const q = faqEscape(f.questionAr || f.questionEn || '(بدون سؤال)');
+        const preview = faqEscape(String(f.answerAr || f.answerEn || '').slice(0, 140));
+        const visible = f.visible !== false;
+        return (
+          '<div style="padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">' +
+          '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:6px">' +
+          '<div style="flex:1"><div style="font-weight:800;font-size:.98rem;margin-bottom:4px">' + q + '</div>' +
+          '<div style="color:rgba(255,255,255,.55);font-size:.82rem;line-height:1.6">' + preview + (preview.length >= 140 ? '…' : '') + '</div></div>' +
+          '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;font-size:.72rem;color:rgba(255,255,255,.5)">' +
+          '<span>#' + faqEscape(f.id) + '</span>' +
+          '<span>ترتيب: ' + (Number(f.order) || 0) + '</span>' +
+          '<span style="color:' + (visible ? '#4ade80' : '#fbbf24') + '">' + (visible ? '✓ مرئي' : '⚠ مخفي') + '</span>' +
+          '</div></div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' +
+          '<button class="btn btn-ghost btn-sm" onclick="editFaq(\'' + faqEscape(f.id) + '\')">✏️ تعديل</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="toggleFaqVisible(\'' + faqEscape(f.id) + '\',' + (visible ? 'false' : 'true') + ')">' + (visible ? '👁 إخفاء' : '👁 إظهار') + '</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="deleteFaqItem(\'' + faqEscape(f.id) + '\')" style="color:#f87171">🗑 حذف</button>' +
+          '</div></div>'
+        );
+      }).join('');
+    } catch (e) {
+      box.innerHTML = '<div class="empty" style="padding:14px;color:#f87171">تعذّر تحميل الأسئلة: ' + faqEscape(e.message || e) + '</div>';
+    }
+  }
+
+  async function editFaq(id) {
+    try {
+      const items = await TPCodes.listFaq();
+      const f = items.find(x => x.id === id);
+      if (!f) { toast('السؤال غير موجود', true); return; }
+      editingFaqId = id;
+      document.getElementById('faqFormTitle').textContent = '✏️ تعديل السؤال #' + id;
+      document.getElementById('faqId').value = id;
+      document.getElementById('faqId').setAttribute('readonly', 'readonly');
+      document.getElementById('faqOrder').value = f.order || 0;
+      document.getElementById('faqQAr').value = f.questionAr || '';
+      document.getElementById('faqAAr').value = f.answerAr || '';
+      document.getElementById('faqQEn').value = f.questionEn || '';
+      document.getElementById('faqAEn').value = f.answerEn || '';
+      document.getElementById('faqVisible').checked = f.visible !== false;
+      document.getElementById('faqPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (e) { toast('تعذّر التحميل: ' + (e.message || e), true); }
+  }
+
+  function resetFaqForm() {
+    editingFaqId = null;
+    document.getElementById('faqFormTitle').textContent = '➕ إضافة سؤال جديد';
+    ['faqId','faqOrder','faqQAr','faqAAr','faqQEn','faqAEn'].forEach(k => {
+      const el = document.getElementById(k); if (el) el.value = '';
+    });
+    document.getElementById('faqId').removeAttribute('readonly');
+    document.getElementById('faqVisible').checked = true;
+  }
+
+  async function saveFaqForm() {
+    const rawId = (document.getElementById('faqId').value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!rawId) { toast('أدخل معرّف صالح (أحرف/أرقام/شرطات)', true); return; }
+    const qAr = (document.getElementById('faqQAr').value || '').trim();
+    const aAr = (document.getElementById('faqAAr').value || '').trim();
+    if (!qAr || !aAr) { toast('السؤال والإجابة بالعربي إلزاميان', true); return; }
+    const data = {
+      order: Number(document.getElementById('faqOrder').value) || 100,
+      visible: !!document.getElementById('faqVisible').checked,
+      questionAr: qAr,
+      answerAr: aAr,
+      questionEn: (document.getElementById('faqQEn').value || '').trim(),
+      answerEn: (document.getElementById('faqAEn').value || '').trim(),
+    };
+    try {
+      await TPCodes.saveFaq(rawId, data);
+      toast(editingFaqId ? '✓ تم تحديث السؤال' : '✓ تم إضافة السؤال');
+      resetFaqForm();
+      loadFaqList();
+    } catch (e) {
+      toast('فشل الحفظ: ' + (e.message || e), true);
+    }
+  }
+
+  async function toggleFaqVisible(id, newVisible) {
+    try {
+      await TPCodes.saveFaq(id, { visible: !!newVisible });
+      toast(newVisible ? '✓ أصبح السؤال مرئياً' : '✓ تم إخفاء السؤال');
+      loadFaqList();
+    } catch (e) { toast('فشل: ' + (e.message || e), true); }
+  }
+
+  async function deleteFaqItem(id) {
+    if (!confirm('حذف السؤال #' + id + ' نهائياً؟')) return;
+    try {
+      await TPCodes.deleteFaq(id);
+      toast('✓ تم الحذف');
+      if (editingFaqId === id) resetFaqForm();
+      loadFaqList();
+    } catch (e) { toast('فشل الحذف: ' + (e.message || e), true); }
+  }
+
+  async function seedFaqDefaults() {
+    if (!confirm('استعادة الأسئلة الافتراضية؟\n(يعمل فقط لو قسم الأسئلة الحالي فارغ — لا يمس أسئلتك المحفوظة)')) return;
+    try {
+      const seeded = await TPCodes.seedFaqIfEmpty();
+      toast(seeded ? '✓ تم إضافة الأسئلة الافتراضية' : 'القسم غير فارغ — لم يتم استبدال شيء');
+      loadFaqList();
+    } catch (e) { toast('فشل: ' + (e.message || e), true); }
+  }
+
+  window.editFaq = editFaq;
+  window.toggleFaqVisible = toggleFaqVisible;
+  window.deleteFaqItem = deleteFaqItem;
+  window.seedFaqDefaults = seedFaqDefaults;
+  window.saveFaqForm = saveFaqForm;
+  window.resetFaqForm = resetFaqForm;
+  window.loadFaqList = loadFaqList;
 
   // ============== PACKAGES (admin) ==============
   let editingPkgId = null;

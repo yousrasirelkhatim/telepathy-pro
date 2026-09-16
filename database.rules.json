@@ -381,7 +381,29 @@
       "paymobPublicKey": { ".validate": "newData.isString() && newData.val().length <= 256" },
       "paymobIntegrationIds": { ".validate": "newData.isString() && newData.val().length <= 80" },
       "paymentsNote":   { ".validate": "newData.isString() && newData.val().length <= 200" },
+      "contactPhone":   { ".validate": "newData.isString() && newData.val().length <= 40" },
+      "contactEmail":   { ".validate": "newData.isString() && newData.val().length <= 80" },
+      "contactAddress": { ".validate": "newData.isString() && newData.val().length <= 240" },
+      "companyName":    { ".validate": "newData.isString() && newData.val().length <= 60" },
+      "companyUrl":     { ".validate": "newData.isString() && newData.val().length <= 200" },
+      "copyrightYear":  { ".validate": "newData.isString() && newData.val().length <= 10" },
       "$other":         { ".validate": false }
+    },
+
+    "faq": {
+      ".read":  true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": ["order", "visible"],
+      "$faqId": {
+        ".validate": "$faqId.matches(/^[a-zA-Z0-9_-]{1,40}$/) && newData.hasChildren(['questionAr','answerAr'])",
+        "questionAr": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 200" },
+        "answerAr":   { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 4000" },
+        "questionEn": { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "answerEn":   { ".validate": "newData.isString() && newData.val().length <= 4000" },
+        "order":      { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000" },
+        "visible":    { ".validate": "newData.isBoolean()" },
+        "$other":     { ".validate": false }
+      }
     },
 
     "stats": {

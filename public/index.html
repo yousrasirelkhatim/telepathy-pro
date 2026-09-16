@@ -529,11 +529,35 @@ details > p { margin:0 20px 18px; color:var(--text-muted); line-height:1.7; font
   display:grid; grid-template-columns:1fr; gap:28px; margin-bottom:32px;
 }
 .footer-brand p { color:var(--text-dim); font-size:.88rem; line-height:1.65; margin-top:10px; max-width:320px; }
-.footer-links { display:flex; flex-wrap:wrap; gap:16px 24px; }
+.footer-heading {
+  display:block; font-size:.82rem; font-weight:800; letter-spacing:.04em;
+  color:var(--text); margin-bottom:10px; text-transform:uppercase;
+}
+.footer-links { display:flex; flex-direction:column; gap:8px; }
 .footer-links a { font-size:.88rem; color:var(--text-muted); font-weight:600; }
 .footer-links a:hover { color:var(--purple); }
-.footer-bottom { text-align:center; color:var(--text-dim); font-size:.82rem; }
-.footer-note { margin-top:8px; font-size:.78rem; color:var(--text-dim); max-width:520px; margin-inline:auto; line-height:1.65; }
+.footer-contact { display:flex; flex-direction:column; gap:10px; }
+.footer-contact a {
+  font-size:.88rem; color:var(--text-muted); font-weight:600;
+  display:inline-flex; align-items:center; gap:8px; direction:ltr;
+  unicode-bidi:plaintext;
+}
+.footer-contact a:hover { color:var(--purple); }
+.footer-address {
+  font-size:.82rem; color:var(--text-dim); line-height:1.7; margin:0;
+  display:flex; gap:8px; align-items:flex-start;
+}
+.footer-bottom {
+  text-align:center; color:var(--text-dim); font-size:.82rem;
+  padding-top:20px; border-top:1px solid var(--border);
+}
+.footer-attribution { margin-bottom:6px; }
+.footer-attribution a {
+  color:var(--purple); font-weight:700; text-decoration:none;
+  border-bottom:1px dashed rgba(168,85,247,.4);
+}
+.footer-attribution a:hover { color:var(--pink); border-bottom-color:rgba(255,77,141,.4); }
+#footerRights { margin-top:4px; font-size:.78rem; color:var(--text-dim); }
 
 /* Modals */
 .modal {
@@ -613,7 +637,7 @@ details > p { margin:0 20px 18px; color:var(--text-muted); line-height:1.7; font
   .preview-layout .section-head { text-align:start; margin-inline:0; }
   .preview-layout .section-sub { margin-inline:0; }
   .trust-grid { justify-content:flex-start; margin-inline:0; max-width:none; }
-  .footer-grid { grid-template-columns:1.4fr 1fr; align-items:start; }
+  .footer-grid { grid-template-columns:1.5fr 1fr 1.3fr; align-items:start; gap:36px; }
   .hero-visual { order:2; }
   .hero-copy { order:1; }
 }
@@ -925,7 +949,7 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       <span class="section-label">FAQ</span>
       <h2 class="section-title" data-i18n="faq_title">أسئلة شائعة</h2>
     </div>
-    <div class="faq">
+    <div class="faq" id="faqList" data-fallback="1">
       <details><summary data-i18n="faq1_q">هل يلزم تنزيل تطبيق؟</summary><p data-i18n="faq1_a">لا. تعمل من المتصفح على الجوال، ويمكن تثبيتها كـ PWA.</p></details>
       <details><summary data-i18n="faq2_q">كم مدة كل جلسة؟</summary><p data-i18n="faq2_a">حوالي 10–15 دقيقة. ٤ مراحل × ٥ جولات.</p></details>
       <details><summary data-i18n="faq3_q">كم شخصاً يلعب؟</summary><p data-i18n="faq3_a">لاعبان في كل غرفة — تجربة عميقة وشخصية.</p></details>
@@ -937,19 +961,29 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
   <footer class="site-footer">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="logo"><div class="logo-mark"><img src="/brand/web-app-manifest-192x192.png?v=44" alt="" width="42" height="42"></div><span>Telepathy</span></div>
+        <div class="logo"><div class="logo-mark"><img src="/brand/web-app-manifest-192x192.png?v=44" alt="" width="42" height="42"></div><span id="footerBrandName">Teleplay</span></div>
         <p data-i18n="footer_tagline">لعبة تخاطر تفاعلية — للأزواج، الأصدقاء، والأعمال.</p>
-</div>
+      </div>
       <div class="footer-links">
+        <strong class="footer-heading" data-i18n="footer_nav">روابط</strong>
         <a href="#pricing" data-i18n="nav_pricing">الأسعار</a>
+        <a href="#faq" data-i18n="footer_faq">الأسئلة الشائعة</a>
         <a href="/my" data-i18n="nav_account">حسابي</a>
         <a href="/play" data-i18n="hero_cta_start">ابدأ اللعب</a>
-        <a href="/admin" data-i18n="footer_admin">لوحة التحكم</a>
+      </div>
+      <div class="footer-contact" id="footerContact">
+        <strong class="footer-heading" data-i18n="footer_contact">تواصل معنا</strong>
+        <a id="footerPhoneLink" href="#" rel="noopener"><span aria-hidden="true">📞</span> <span id="footerPhone">+20 127 536 7743</span></a>
+        <a id="footerEmailLink" href="#" rel="noopener"><span aria-hidden="true">📧</span> <span id="footerEmail">ineed.ad2020@gmail.com</span></a>
+        <p class="footer-address"><span aria-hidden="true">📍</span> <span id="footerAddress">315 شارع جمال عبد الناصر — العصافرة بحري — الدور الثاني علوي — الإسكندرية، مصر</span></p>
+      </div>
     </div>
-  </div>
     <div class="footer-bottom">
-      <p data-i18n="footer_rights">© 2026 Telepathy Challenge</p>
-      <p class="footer-note" data-i18n="footer_privacy">لا نطلب حساباً — فقط الكود للعب. لا نشارك بياناتك.</p>
+      <p class="footer-attribution">
+        <span data-i18n="footer_operated_by">التحدي تابع لشركة</span>
+        <a id="footerCompanyLink" href="https://ineed4ecommerce.online/" target="_blank" rel="noopener"><span id="footerCompanyName">ineed4ecommerce</span></a>
+      </p>
+      <p id="footerRights" data-i18n="footer_rights">© 2026 Teleplay — جميع الحقوق محفوظة</p>
     </div>
   </footer>
 </div>
@@ -1037,7 +1071,7 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
-<script src="/js/codes.js?v=108"></script>
+<script src="/js/codes.js?v=113"></script>
 <script src="/js/phone-auth.js?v=91"></script>
 <script src="/js/account.js?v=91"></script>
 <script src="/js/payments.js?v=107"></script>
@@ -1082,8 +1116,10 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       faq4_q: 'هل الكود يعمل أكثر من مرة؟', faq4_a: 'نعم — ٥ جلسات منفصلة. اضغط «تحدي جديد» بعد كل جولة.',
       faq5_q: 'باقات الشركات؟', faq5_a: 'تواصل عبر WhatsApp — نرسل الأكواد دفعة واحدة مع لوحة إدارة.',
       footer_tagline: 'لعبة تخاطر تفاعلية — للأزواج، الأصدقاء، والأعمال.',
-      footer_rights: '© 2026 Telepathy Challenge', footer_admin: 'لوحة التحكم',
+      footer_rights: '© 2026 Teleplay — جميع الحقوق محفوظة', footer_admin: 'لوحة التحكم',
       footer_privacy: 'بعد الشراء: حسابك في /my — بطاقات جلسات + رابط أو كود لكل تحدي.',
+      footer_nav: 'روابط', footer_faq: 'الأسئلة الشائعة',
+      footer_contact: 'تواصل معنا', footer_operated_by: 'التحدي تابع لشركة',
       modal_code_btn: 'ابدأ',
       buy_h: '🛒 شراء باقة', buy_desc: 'سجّل دخولك أو أنشئ حساباً — ثم أكمل الطلب هنا مباشرة.',
       buy_step1: '① حساب', buy_step2: '② تأكيد', buy_step3: '③ الطلب',
@@ -1146,8 +1182,10 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       faq4_q: 'Can I reuse my code?', faq4_a: 'Yes — 5 separate sessions. Tap "New challenge" after each round.',
       faq5_q: 'Business packages?', faq5_a: 'Contact us on WhatsApp — all codes at once with admin dashboard.',
       footer_tagline: 'Interactive telepathy game — for couples, friends, and business.',
-      footer_rights: '© 2026 Telepathy Challenge', footer_admin: 'Dashboard',
+      footer_rights: '© 2026 Teleplay — All rights reserved', footer_admin: 'Dashboard',
       footer_privacy: 'After purchase: your account at /my — session cards with invite link or code.',
+      footer_nav: 'Links', footer_faq: 'FAQ',
+      footer_contact: 'Contact us', footer_operated_by: 'Operated by',
       modal_code_btn: 'Start',
       buy_h: '🛒 Buy a package', buy_desc: 'Sign in or create an account — complete your order right here.',
       buy_step1: '① Account', buy_step2: '② Verify', buy_step3: '③ Order',
@@ -1529,6 +1567,67 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
     }
   }
 
+  function applyFooter(s) {
+    s = s || {};
+    const defaults = (TPCodes && TPCodes.DEFAULT_SETTINGS) || {};
+    const brand   = String(s.brandName   || defaults.brandName   || 'Teleplay').trim();
+    const phone   = String(s.contactPhone   || defaults.contactPhone   || '').trim();
+    const email   = String(s.contactEmail   || defaults.contactEmail   || '').trim();
+    const address = String(s.contactAddress || defaults.contactAddress || '').trim();
+    const company = String(s.companyName    || defaults.companyName    || '').trim();
+    const compUrl = String(s.companyUrl     || defaults.companyUrl     || '').trim();
+    const year    = String(s.copyrightYear  || defaults.copyrightYear  || new Date().getFullYear()).trim();
+
+    const brandEl = document.getElementById('footerBrandName');
+    if (brandEl && brand) brandEl.textContent = brand;
+
+    const phoneSpan = document.getElementById('footerPhone');
+    const phoneLink = document.getElementById('footerPhoneLink');
+    if (phoneSpan) phoneSpan.textContent = phone || '—';
+    if (phoneLink) {
+      const digits = phone.replace(/[^\d+]/g, '');
+      phoneLink.href = digits ? ('tel:' + digits) : '#';
+    }
+
+    const emailSpan = document.getElementById('footerEmail');
+    const emailLink = document.getElementById('footerEmailLink');
+    if (emailSpan) emailSpan.textContent = email || '—';
+    if (emailLink) emailLink.href = email ? ('mailto:' + email) : '#';
+
+    const addrEl = document.getElementById('footerAddress');
+    if (addrEl) addrEl.textContent = address || '—';
+
+    const companySpan = document.getElementById('footerCompanyName');
+    const companyLink = document.getElementById('footerCompanyLink');
+    if (companySpan) companySpan.textContent = company || '';
+    if (companyLink && compUrl) companyLink.href = compUrl;
+
+    const rights = document.getElementById('footerRights');
+    if (rights) {
+      const rightsText = (lang === 'en')
+        ? `© ${year} ${brand} — All rights reserved`
+        : `© ${year} ${brand} — جميع الحقوق محفوظة`;
+      rights.textContent = rightsText;
+    }
+  }
+
+  async function renderFaqDynamic() {
+    const container = document.getElementById('faqList');
+    if (!container || !TPCodes || !TPCodes.listFaq) return;
+    let items = [];
+    try { items = await TPCodes.listFaq({ visibleOnly: true }); } catch (_) { items = []; }
+    if (!items.length) return; // keep hardcoded fallback intact
+    const en = lang === 'en';
+    const html = items.map(f => {
+      const q = en ? (f.questionEn || f.questionAr || '') : (f.questionAr || f.questionEn || '');
+      const aRaw = en ? (f.answerEn || f.answerAr || '') : (f.answerAr || f.answerEn || '');
+      const a = escapeHtml(aRaw).replace(/\n/g, '<br>');
+      return `<details><summary>${escapeHtml(q)}</summary><p>${a}</p></details>`;
+    }).join('');
+    container.innerHTML = html;
+    container.removeAttribute('data-fallback');
+  }
+
   async function loadLanding() {
     try {
       const [settings, packages] = await Promise.all([
@@ -1539,12 +1638,15 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       PACKAGES = packages || [];
       LANDING_SETTINGS = SETTINGS;
       if (lang === 'ar') applyLandingSettings(SETTINGS);
+      applyFooter(SETTINGS);
       renderPackages();
     } catch (e) {
       SETTINGS = { ...TPCodes.DEFAULT_SETTINGS };
       PACKAGES = [];
+      applyFooter(SETTINGS);
       renderPackages();
     }
+    renderFaqDynamic();
     const biz = document.getElementById('bizContactBtn');
     if (biz) biz.href = TPCodes.whatsappLink(SETTINGS.whatsappNumber, SETTINGS.bizMessage || 'أرغب بمعرفة المزيد عن باقات الأعمال');
   }
