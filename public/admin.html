@@ -285,6 +285,7 @@
       <button class="tab admin-only hidden" data-tab="resellers">🤝 الوكلاء</button>
       <button class="tab admin-only hidden" data-tab="pricing">💵 تسعير الأكواد</button>
       <button class="tab admin-only hidden" data-tab="packages">⚙️ الإعدادات والباقات</button>
+      <button class="tab admin-only hidden" data-tab="marketing">🎯 التسويق</button>
       <button class="tab reseller-only hidden" data-tab="wallet">💼 محفظتي</button>
     </div>
 
@@ -840,6 +841,191 @@
       </div>
     </div>
 
+    <!-- MARKETING (ADMIN ONLY) -->
+    <div id="tab-marketing" class="hidden">
+      <!-- Quick stats -->
+      <div class="panel">
+        <div class="panel-h"><h2>📊 لوحة التسويق</h2></div>
+        <div class="row" id="marketingStatsRow">
+          <div style="padding:14px;border-radius:14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25)">
+            <div style="font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:4px">إجمالي المسوّقين النشطين</div>
+            <div id="mkStatAffiliates" style="font-size:1.6rem;font-weight:900;color:#c084fc">—</div>
+          </div>
+          <div style="padding:14px;border-radius:14px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25)">
+            <div style="font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:4px">أكواد فعّالة</div>
+            <div id="mkStatPromoActive" style="font-size:1.6rem;font-weight:900;color:#22d3ee">—</div>
+          </div>
+          <div style="padding:14px;border-radius:14px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25)">
+            <div style="font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:4px">عمولات معلّقة (المستحقة)</div>
+            <div id="mkStatPending" style="font-size:1.6rem;font-weight:900;color:#4ade80">—</div>
+          </div>
+          <div style="padding:14px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25)">
+            <div style="font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:4px">إجمالي عمولات مصروفة</div>
+            <div id="mkStatPaid" style="font-size:1.6rem;font-weight:900;color:#fbbf24">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Single-package mode toggle -->
+      <div class="panel">
+        <div class="panel-h"><h2>🎁 وضع "باقة واحدة"</h2></div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          لما تفعّل الخيار ده، الصفحة الرئيسية بتعرض باقة واحدة بس (الباقة المميّزة). الباقات التانية بتفضل موجودة في قاعدة البيانات — بس مش هتظهر للزوار.
+          الأكواد التسويقية هي طريقة الترويج والخصومات.
+        </p>
+        <div class="row">
+          <div style="grid-column:1/-1">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" id="setSinglePackageMode" style="width:18px;height:18px" />
+              <span>تفعيل عرض باقة واحدة فقط على الصفحة الرئيسية</span>
+            </label>
+          </div>
+          <div style="grid-column:1/-1">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" id="setPromoEnabled" style="width:18px;height:18px" />
+              <span>عرض حقل كود الخصم في نافذة الشراء</span>
+            </label>
+          </div>
+          <div style="grid-column:1/-1">
+            <label>الباقة المعروضة (اختياري — لو فاضي هتُختار "المميّزة" تلقائياً)</label>
+            <select id="setFeaturedPackageId" style="width:100%">
+              <option value="">— تلقائي (المميّزة) —</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveMarketingSettings()">💾 حفظ إعدادات التسويق</button>
+        </div>
+      </div>
+
+      <!-- Affiliates -->
+      <div class="panel" id="affiliatesPanel">
+        <div class="panel-h"><h2>👥 المسوّقون (Affiliates)</h2></div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          أضف المؤثرين والمسوّقين هنا، وبعدين اربطهم بأكواد الخصم في القسم اللي بعده.
+          كل مسوّق ليه رصيد عمولات معلّقة (المستحق) ورصيد مصروف (تم دفعه).
+        </p>
+        <div id="affiliatesList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+          <div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>
+        </div>
+
+        <h3 style="margin:18px 0 12px;font-size:1rem" id="affFormTitle">➕ إضافة مسوّق جديد</h3>
+        <div class="row">
+          <div><label>المعرّف (id) — أحرف/أرقام/شرطات</label><input type="text" id="affId" placeholder="ahmed_marketing" dir="ltr" /></div>
+          <div><label>الاسم *</label><input type="text" id="affName" placeholder="أحمد مسوّق" /></div>
+          <div><label>الهاتف</label><input type="tel" id="affPhone" placeholder="+201234567890" dir="ltr" /></div>
+          <div><label>البريد الإلكتروني</label><input type="email" id="affEmail" placeholder="ahmed@example.com" dir="ltr" /></div>
+          <div>
+            <label>وسيلة الدفع</label>
+            <select id="affPayoutMethod">
+              <option value="instapay">إنستا باي</option>
+              <option value="bank">تحويل بنكي</option>
+              <option value="wallet">محفظة إلكترونية</option>
+              <option value="cash">كاش</option>
+            </select>
+          </div>
+          <div><label>رقم/حساب الدفع</label><input type="text" id="affPayoutRef" placeholder="01000000000 أو IBAN" dir="ltr" /></div>
+          <div>
+            <label>نوع العمولة الافتراضي</label>
+            <select id="affDefaultCommissionType">
+              <option value="percent">نسبة مئوية (%)</option>
+              <option value="fixed">مبلغ ثابت</option>
+            </select>
+          </div>
+          <div><label>قيمة العمولة الافتراضية</label><input type="number" id="affDefaultCommissionValue" min="0" step="0.5" placeholder="15" /></div>
+          <div style="grid-column:1/-1">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" id="affActive" checked style="width:18px;height:18px" />
+              <span>مفعّل — يستقبل عمولات جديدة</span>
+            </label>
+          </div>
+          <div style="grid-column:1/-1">
+            <label>ملاحظات داخلية (اختياري)</label>
+            <input type="text" id="affNotes" placeholder="مؤثر إنستجرام — 200 ألف متابع" />
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveAffiliateForm()">💾 حفظ المسوّق</button>
+          <button class="btn btn-ghost" onclick="resetAffiliateForm()">↺ إفراغ النموذج</button>
+          <button class="btn btn-ghost" onclick="loadAffiliatesList()">🔄 تحديث القائمة</button>
+        </div>
+      </div>
+
+      <!-- Promo Codes -->
+      <div class="panel" id="promoCodesPanel">
+        <div class="panel-h"><h2>🎫 الأكواد التسويقية (Promo Codes)</h2></div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          اربط كل كود بمسوّق (أو خصم عام بدون مسوّق).
+          نوع الخصم: نسبة مئوية (بيتحسب من سعر الطلب) أو مبلغ ثابت.
+          العمولة كذلك: نسبة من السعر النهائي بعد الخصم، أو مبلغ ثابت لكل عملية.
+        </p>
+        <div id="promoCodesList" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+          <div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>
+        </div>
+
+        <h3 style="margin:18px 0 12px;font-size:1rem" id="promoFormTitle">➕ إنشاء كود جديد</h3>
+        <div class="row">
+          <div><label>الكود * (يظهر للعميل)</label><input type="text" id="promoCode" placeholder="AHMED10" dir="ltr" style="text-transform:uppercase" /></div>
+          <div>
+            <label>الحالة</label>
+            <select id="promoStatus">
+              <option value="active">فعّال</option>
+              <option value="disabled">موقوف</option>
+              <option value="expired">منتهي</option>
+            </select>
+          </div>
+          <div>
+            <label>نوع الخصم *</label>
+            <select id="promoDiscountType">
+              <option value="percent">نسبة مئوية (%)</option>
+              <option value="fixed">مبلغ ثابت</option>
+            </select>
+          </div>
+          <div><label>قيمة الخصم *</label><input type="number" id="promoDiscountValue" min="0" step="0.5" placeholder="10" /></div>
+          <div>
+            <label>المسوّق المربوط</label>
+            <select id="promoAffiliateId">
+              <option value="">— بدون مسوّق (خصم عام) —</option>
+            </select>
+          </div>
+          <div>
+            <label>نوع العمولة</label>
+            <select id="promoCommissionType">
+              <option value="percent">نسبة مئوية (%)</option>
+              <option value="fixed">مبلغ ثابت</option>
+            </select>
+          </div>
+          <div><label>قيمة العمولة</label><input type="number" id="promoCommissionValue" min="0" step="0.5" placeholder="15" /></div>
+          <div><label>حد أدنى لقيمة الطلب</label><input type="number" id="promoMinOrderAmount" min="0" step="0.5" placeholder="0" /></div>
+          <div><label>حد استخدامات (0 = بدون حد)</label><input type="number" id="promoUsageLimit" min="0" step="1" placeholder="0" /></div>
+          <div><label>تاريخ الانتهاء (اختياري)</label><input type="date" id="promoExpiresAt" /></div>
+          <div style="grid-column:1/-1">
+            <label>ملاحظات داخلية (اختياري)</label>
+            <input type="text" id="promoNotes" placeholder="حملة يوم المؤثر" />
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="savePromoCodeForm()">💾 حفظ الكود</button>
+          <button class="btn btn-ghost" onclick="resetPromoCodeForm()">↺ إفراغ النموذج</button>
+          <button class="btn btn-ghost" onclick="loadPromoCodesList()">🔄 تحديث القائمة</button>
+        </div>
+      </div>
+
+      <!-- Usage log -->
+      <div class="panel" id="promoUsesPanel">
+        <div class="panel-h"><h2>📜 سجل استخدام الأكواد</h2></div>
+        <p style="margin:-4px 0 14px;color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.7">
+          كل مرة يتم فيها استخدام كود خصم في طلب ناجح، يُسجّل هنا مع تفاصيل الخصم والعمولة.
+        </p>
+        <div id="promoUsesList" style="display:flex;flex-direction:column;gap:8px;font-size:.88rem">
+          <div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>
+        </div>
+        <div style="margin-top:14px">
+          <button class="btn btn-ghost" onclick="loadPromoUsesList()">🔄 تحديث</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -849,7 +1035,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
-<script src="/js/codes.js?v=113"></script>
+<script src="/js/codes.js?v=114"></script>
 <script src="/js/phone-auth.js?v=100"></script>
 <script src="/js/account.js?v=100"></script>
 <script>
@@ -1059,6 +1245,7 @@
       if (t.dataset.tab === 'resellers') loadResellers();
       if (t.dataset.tab === 'pricing') loadPricing();
       if (t.dataset.tab === 'packages') { loadSettingsForm(); loadPackagesList(); loadFaqList(); }
+      if (t.dataset.tab === 'marketing') { loadMarketingTab(); }
       if (t.dataset.tab === 'wallet') loadWallet();
     };
   });
@@ -2917,6 +3104,415 @@
   window.saveFaqForm = saveFaqForm;
   window.resetFaqForm = resetFaqForm;
   window.loadFaqList = loadFaqList;
+
+  // ============== MARKETING (admin) — affiliates + promo codes ==============
+  let editingAffiliateId = null;
+  let editingPromoCode = null;
+  let AFFILIATES_CACHE = [];
+
+  function mkEscape(str) {
+    return String(str || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function fmtMoney(n, currencySym) {
+    const num = Math.round((Number(n) || 0) * 100) / 100;
+    return num.toLocaleString('ar-EG') + ' ' + (currencySym || 'EGP');
+  }
+
+  async function loadMarketingTab() {
+    // Load settings toggles + populate package selector
+    try {
+      const [s, packages, affiliates] = await Promise.all([
+        TPCodes.getSettings(),
+        TPCodes.listPackages(),
+        TPCodes.listAffiliates(),
+      ]);
+      const spm = document.getElementById('setSinglePackageMode'); if (spm) spm.checked = !!s.singlePackageMode;
+      const pe = document.getElementById('setPromoEnabled');       if (pe)  pe.checked = s.promoEnabled !== false;
+
+      const pkgSel = document.getElementById('setFeaturedPackageId');
+      if (pkgSel) {
+        pkgSel.innerHTML = '<option value="">— تلقائي (المميّزة) —</option>' +
+          packages.map(p => '<option value="' + mkEscape(p.id) + '"' + (s.featuredPackageId === p.id ? ' selected' : '') + '>' + mkEscape(p.name || p.id) + ' — ' + (Number(p.price) || 0) + ' ' + mkEscape(p.currency || s.currency || 'EGP') + '</option>').join('');
+      }
+
+      AFFILIATES_CACHE = affiliates || [];
+      const affSel = document.getElementById('promoAffiliateId');
+      if (affSel) {
+        affSel.innerHTML = '<option value="">— بدون مسوّق (خصم عام) —</option>' +
+          AFFILIATES_CACHE.filter(a => a.active !== false).map(a => '<option value="' + mkEscape(a.id) + '">' + mkEscape(a.name || a.id) + '</option>').join('');
+      }
+    } catch (e) { console.warn('loadMarketingTab settings', e); }
+
+    loadAffiliatesList();
+    loadPromoCodesList();
+    loadPromoUsesList();
+    refreshMarketingStats();
+  }
+
+  async function refreshMarketingStats() {
+    try {
+      const [affs, codes] = await Promise.all([
+        TPCodes.listAffiliates(),
+        TPCodes.listPromoCodes(),
+      ]);
+      const affActive = affs.filter(a => a.active !== false).length;
+      const codeActive = codes.filter(c => c.status === 'active').length;
+      const pending = affs.reduce((sum, a) => sum + (Number(a.pendingCommission) || 0), 0);
+      const paid = affs.reduce((sum, a) => sum + (Number(a.paidCommission) || 0), 0);
+      const settings = await TPCodes.getSettings();
+      const sym = settings.currency || 'EGP';
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set('mkStatAffiliates', String(affActive));
+      set('mkStatPromoActive', String(codeActive));
+      set('mkStatPending', fmtMoney(pending, sym));
+      set('mkStatPaid', fmtMoney(paid, sym));
+    } catch (_) {}
+  }
+
+  async function saveMarketingSettings() {
+    const s = {
+      singlePackageMode: !!document.getElementById('setSinglePackageMode').checked,
+      promoEnabled:      !!document.getElementById('setPromoEnabled').checked,
+      featuredPackageId: (document.getElementById('setFeaturedPackageId').value || '').trim(),
+    };
+    try { await TPCodes.setSettings(s); toast('✓ تم حفظ إعدادات التسويق'); refreshMarketingStats(); }
+    catch (e) { toast('فشل الحفظ: ' + (e.message || e), true); }
+  }
+
+  // ---------- Affiliates ----------
+
+  async function loadAffiliatesList() {
+    const box = document.getElementById('affiliatesList');
+    if (!box) return;
+    box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>';
+    try {
+      const items = await TPCodes.listAffiliates();
+      AFFILIATES_CACHE = items;
+      if (!items.length) {
+        box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">لا يوجد مسوّقون بعد — أضف أول مسوّق من النموذج تحت.</div>';
+        return;
+      }
+      const s = await TPCodes.getSettings();
+      const sym = s.currency || 'EGP';
+      box.innerHTML = items.map(a => {
+        const active = a.active !== false;
+        const pending = Number(a.pendingCommission || 0);
+        return (
+          '<div style="padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">' +
+          '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">' +
+          '<div style="flex:1;min-width:200px">' +
+          '<div style="font-weight:800;font-size:1rem;margin-bottom:4px">' + mkEscape(a.name || a.id) + ' <span style="font-size:.72rem;color:rgba(255,255,255,.5)">#' + mkEscape(a.id) + '</span></div>' +
+          '<div style="color:rgba(255,255,255,.55);font-size:.82rem;direction:ltr">' + mkEscape(a.phone || '') + '</div>' +
+          '</div>' +
+          '<div style="text-align:end;font-size:.82rem">' +
+          '<div style="color:rgba(255,255,255,.55)">طلبات: <b style="color:#fff">' + (a.totalOrders || 0) + '</b></div>' +
+          '<div style="color:#4ade80;margin-top:4px">مستحق: <b>' + fmtMoney(pending, sym) + '</b></div>' +
+          '<div style="color:#fbbf24;margin-top:2px">مصروف: ' + fmtMoney(a.paidCommission || 0, sym) + '</div>' +
+          '<div style="margin-top:4px;color:' + (active ? '#4ade80' : '#fbbf24') + '">' + (active ? '✓ فعّال' : '⚠ موقوف') + '</div>' +
+          '</div></div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">' +
+          '<button class="btn btn-ghost btn-sm" onclick="editAffiliate(\'' + mkEscape(a.id) + '\')">✏️ تعديل</button>' +
+          (pending > 0 ? '<button class="btn btn-ghost btn-sm" onclick="payAffiliate(\'' + mkEscape(a.id) + '\')" style="color:#4ade80">💰 صرف عمولة</button>' : '') +
+          '<button class="btn btn-ghost btn-sm" onclick="deleteAffiliateItem(\'' + mkEscape(a.id) + '\')" style="color:#f87171">🗑 حذف</button>' +
+          '</div></div>'
+        );
+      }).join('');
+      refreshMarketingStats();
+    } catch (e) {
+      box.innerHTML = '<div class="empty" style="padding:14px;color:#f87171">تعذّر التحميل: ' + mkEscape(e.message || e) + '</div>';
+    }
+  }
+
+  async function editAffiliate(id) {
+    try {
+      const a = await TPCodes.getAffiliate(id);
+      if (!a) { toast('غير موجود', true); return; }
+      editingAffiliateId = id;
+      document.getElementById('affFormTitle').textContent = '✏️ تعديل المسوّق #' + id;
+      document.getElementById('affId').value = id;
+      document.getElementById('affId').setAttribute('readonly', 'readonly');
+      document.getElementById('affName').value = a.name || '';
+      document.getElementById('affPhone').value = a.phone || '';
+      document.getElementById('affEmail').value = a.email || '';
+      document.getElementById('affPayoutMethod').value = a.payoutMethod || 'instapay';
+      document.getElementById('affPayoutRef').value = a.payoutRef || '';
+      document.getElementById('affDefaultCommissionType').value = a.defaultCommissionType || 'percent';
+      document.getElementById('affDefaultCommissionValue').value = a.defaultCommissionValue || 0;
+      document.getElementById('affActive').checked = a.active !== false;
+      document.getElementById('affNotes').value = a.notes || '';
+      document.getElementById('affiliatesPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (e) { toast('تعذّر التحميل: ' + (e.message || e), true); }
+  }
+
+  function resetAffiliateForm() {
+    editingAffiliateId = null;
+    document.getElementById('affFormTitle').textContent = '➕ إضافة مسوّق جديد';
+    ['affId','affName','affPhone','affEmail','affPayoutRef','affDefaultCommissionValue','affNotes'].forEach(k => {
+      const el = document.getElementById(k); if (el) el.value = '';
+    });
+    document.getElementById('affId').removeAttribute('readonly');
+    document.getElementById('affPayoutMethod').value = 'instapay';
+    document.getElementById('affDefaultCommissionType').value = 'percent';
+    document.getElementById('affActive').checked = true;
+  }
+
+  async function saveAffiliateForm() {
+    const rawId = (document.getElementById('affId').value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!rawId) { toast('معرّف غير صالح', true); return; }
+    const name = (document.getElementById('affName').value || '').trim();
+    if (!name) { toast('الاسم إلزامي', true); return; }
+    try {
+      await TPCodes.saveAffiliate(rawId, {
+        name,
+        phone: (document.getElementById('affPhone').value || '').trim(),
+        email: (document.getElementById('affEmail').value || '').trim(),
+        active: !!document.getElementById('affActive').checked,
+        payoutMethod: document.getElementById('affPayoutMethod').value,
+        payoutRef: (document.getElementById('affPayoutRef').value || '').trim(),
+        defaultCommissionType: document.getElementById('affDefaultCommissionType').value,
+        defaultCommissionValue: Number(document.getElementById('affDefaultCommissionValue').value) || 0,
+        notes: (document.getElementById('affNotes').value || '').trim(),
+      });
+      toast(editingAffiliateId ? '✓ تم تحديث المسوّق' : '✓ تم إضافة المسوّق');
+      resetAffiliateForm();
+      loadMarketingTab();
+    } catch (e) {
+      toast('فشل: ' + (e.message || e), true);
+    }
+  }
+
+  async function deleteAffiliateItem(id) {
+    if (!confirm('حذف المسوّق #' + id + ' نهائياً؟\nملاحظة: الأكواد المربوطة بيه هتفضل موجودة بدون مسوّق.')) return;
+    try {
+      await TPCodes.deleteAffiliate(id);
+      toast('✓ تم الحذف');
+      if (editingAffiliateId === id) resetAffiliateForm();
+      loadMarketingTab();
+    } catch (e) { toast('فشل: ' + (e.message || e), true); }
+  }
+
+  async function payAffiliate(id) {
+    const a = AFFILIATES_CACHE.find(x => x.id === id);
+    if (!a) return;
+    const pending = Number(a.pendingCommission || 0);
+    if (pending <= 0) { toast('لا يوجد رصيد مستحق'); return; }
+    const raw = prompt('كم المبلغ الذي دفعته للمسوّق ' + (a.name || a.id) + '؟\nالمستحق حالياً: ' + fmtMoney(pending, 'EGP'), String(pending));
+    if (raw === null) return;
+    const amt = Number(raw);
+    if (!amt || amt <= 0 || amt > pending + 0.01) { toast('مبلغ غير صالح', true); return; }
+    const note = prompt('ملاحظة (اختياري): مثلاً "InstaPay 2026-09-15"', '') || '';
+    try {
+      await TPCodes.markCommissionPaid(id, amt, note);
+      toast('✓ تم تسجيل الصرف: ' + fmtMoney(amt, 'EGP'));
+      loadMarketingTab();
+    } catch (e) { toast('فشل: ' + (e.message || e), true); }
+  }
+
+  // ---------- Promo Codes ----------
+
+  async function loadPromoCodesList() {
+    const box = document.getElementById('promoCodesList');
+    if (!box) return;
+    box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>';
+    try {
+      const items = await TPCodes.listPromoCodes();
+      if (!items.length) {
+        box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">لا يوجد أكواد بعد — أضف أول كود من النموذج تحت.</div>';
+        return;
+      }
+      const s = await TPCodes.getSettings();
+      const sym = s.currency || 'EGP';
+      box.innerHTML = items.map(c => {
+        const disc = c.discountType === 'percent'
+          ? (Number(c.discountValue) || 0) + '%'
+          : fmtMoney(c.discountValue, sym);
+        const comm = c.commissionType === 'percent'
+          ? (Number(c.commissionValue) || 0) + '%'
+          : fmtMoney(c.commissionValue, sym);
+        const stColor = { active: '#4ade80', disabled: '#fbbf24', expired: '#f87171' }[c.status] || '#94a3b8';
+        return (
+          '<div style="padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)">' +
+          '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">' +
+          '<div style="flex:1;min-width:200px">' +
+          '<div style="font-family:ui-monospace,monospace;font-weight:900;font-size:1.05rem;letter-spacing:.05em;color:#c084fc;direction:ltr;text-align:start">' + mkEscape(c.code) + '</div>' +
+          '<div style="color:rgba(255,255,255,.55);font-size:.82rem;margin-top:4px">' +
+          'خصم: <b style="color:#4ade80">' + disc + '</b>' +
+          ' · عمولة: <b style="color:#fbbf24">' + comm + '</b>' +
+          (c.affiliateName ? ' · للمسوّق: <b>' + mkEscape(c.affiliateName) + '</b>' : ' · <em>خصم عام</em>') +
+          '</div>' +
+          '</div>' +
+          '<div style="text-align:end;font-size:.82rem">' +
+          '<div style="color:' + stColor + '">● ' + (c.status || 'active') + '</div>' +
+          '<div style="color:rgba(255,255,255,.55);margin-top:4px">استخدامات: ' + (c.usedCount || 0) + (c.usageLimit ? '/' + c.usageLimit : '') + '</div>' +
+          '</div></div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">' +
+          '<button class="btn btn-ghost btn-sm" onclick="editPromoCode(\'' + mkEscape(c.code) + '\')">✏️ تعديل</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="togglePromoStatus(\'' + mkEscape(c.code) + '\')">' + (c.status === 'active' ? '⏸ إيقاف' : '▶ تفعيل') + '</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="copyPromoLink(\'' + mkEscape(c.code) + '\')">🔗 نسخ الرابط</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="deletePromoCodeItem(\'' + mkEscape(c.code) + '\')" style="color:#f87171">🗑 حذف</button>' +
+          '</div></div>'
+        );
+      }).join('');
+    } catch (e) {
+      box.innerHTML = '<div class="empty" style="padding:14px;color:#f87171">تعذّر التحميل: ' + mkEscape(e.message || e) + '</div>';
+    }
+  }
+
+  async function editPromoCode(code) {
+    try {
+      const c = await TPCodes.getPromoCode(code);
+      if (!c) { toast('غير موجود', true); return; }
+      editingPromoCode = c.code;
+      document.getElementById('promoFormTitle').textContent = '✏️ تعديل الكود #' + c.code;
+      document.getElementById('promoCode').value = c.code;
+      document.getElementById('promoCode').setAttribute('readonly', 'readonly');
+      document.getElementById('promoStatus').value = c.status || 'active';
+      document.getElementById('promoDiscountType').value = c.discountType || 'percent';
+      document.getElementById('promoDiscountValue').value = c.discountValue || 0;
+      document.getElementById('promoAffiliateId').value = c.affiliateId || '';
+      document.getElementById('promoCommissionType').value = c.commissionType || 'percent';
+      document.getElementById('promoCommissionValue').value = c.commissionValue || 0;
+      document.getElementById('promoMinOrderAmount').value = c.minOrderAmount || 0;
+      document.getElementById('promoUsageLimit').value = c.usageLimit || 0;
+      if (c.expiresAt) {
+        const d = new Date(Number(c.expiresAt));
+        if (!isNaN(d.getTime())) {
+          document.getElementById('promoExpiresAt').value = d.toISOString().slice(0, 10);
+        }
+      } else {
+        document.getElementById('promoExpiresAt').value = '';
+      }
+      document.getElementById('promoNotes').value = c.notes || '';
+      document.getElementById('promoCodesPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (e) { toast('تعذّر التحميل: ' + (e.message || e), true); }
+  }
+
+  function resetPromoCodeForm() {
+    editingPromoCode = null;
+    document.getElementById('promoFormTitle').textContent = '➕ إنشاء كود جديد';
+    ['promoCode','promoDiscountValue','promoCommissionValue','promoMinOrderAmount','promoUsageLimit','promoExpiresAt','promoNotes'].forEach(k => {
+      const el = document.getElementById(k); if (el) el.value = '';
+    });
+    document.getElementById('promoCode').removeAttribute('readonly');
+    document.getElementById('promoStatus').value = 'active';
+    document.getElementById('promoDiscountType').value = 'percent';
+    document.getElementById('promoCommissionType').value = 'percent';
+    document.getElementById('promoAffiliateId').value = '';
+  }
+
+  async function savePromoCodeForm() {
+    const rawCode = (document.getElementById('promoCode').value || '').toUpperCase().trim();
+    if (!rawCode) { toast('الكود إلزامي', true); return; }
+    const affId = (document.getElementById('promoAffiliateId').value || '').trim();
+    let affName = '';
+    if (affId) {
+      const a = AFFILIATES_CACHE.find(x => x.id === affId);
+      if (a) affName = a.name || '';
+    }
+    const expiresRaw = (document.getElementById('promoExpiresAt').value || '').trim();
+    const expiresAt = expiresRaw ? new Date(expiresRaw).getTime() : 0;
+    try {
+      await TPCodes.savePromoCode(rawCode, {
+        status: document.getElementById('promoStatus').value,
+        discountType: document.getElementById('promoDiscountType').value,
+        discountValue: Number(document.getElementById('promoDiscountValue').value) || 0,
+        affiliateId: affId,
+        affiliateName: affName,
+        commissionType: document.getElementById('promoCommissionType').value,
+        commissionValue: Number(document.getElementById('promoCommissionValue').value) || 0,
+        minOrderAmount: Number(document.getElementById('promoMinOrderAmount').value) || 0,
+        usageLimit: Number(document.getElementById('promoUsageLimit').value) || 0,
+        expiresAt,
+        notes: (document.getElementById('promoNotes').value || '').trim(),
+      });
+      toast(editingPromoCode ? '✓ تم تحديث الكود' : '✓ تم إنشاء الكود');
+      resetPromoCodeForm();
+      loadPromoCodesList();
+    } catch (e) {
+      toast('فشل: ' + (e.message || e), true);
+    }
+  }
+
+  async function togglePromoStatus(code) {
+    try {
+      const c = await TPCodes.getPromoCode(code);
+      if (!c) return;
+      const next = c.status === 'active' ? 'disabled' : 'active';
+      await TPCodes.setPromoCodeStatus(code, next);
+      toast(next === 'active' ? '✓ الكود فعّال' : '✓ تم إيقاف الكود');
+      loadPromoCodesList();
+    } catch (e) { toast('فشل: ' + (e.message || e), true); }
+  }
+
+  async function deletePromoCodeItem(code) {
+    if (!confirm('حذف الكود ' + code + ' نهائياً؟\n(سجل الاستخدامات القديم يبقى محفوظاً.)')) return;
+    try {
+      await TPCodes.deletePromoCode(code);
+      toast('✓ تم الحذف');
+      if (editingPromoCode === code) resetPromoCodeForm();
+      loadPromoCodesList();
+    } catch (e) { toast('فشل: ' + (e.message || e), true); }
+  }
+
+  function copyPromoLink(code) {
+    const url = (location.origin || 'https://teleplay.online') + '/?promo=' + encodeURIComponent(code);
+    navigator.clipboard.writeText(url).then(() => toast('✓ تم نسخ الرابط: ' + url));
+  }
+
+  // ---------- Promo uses log ----------
+
+  async function loadPromoUsesList() {
+    const box = document.getElementById('promoUsesList');
+    if (!box) return;
+    box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">⏳ جاري التحميل...</div>';
+    try {
+      const items = await TPCodes.listPromoUses({ limit: 50 });
+      if (!items.length) {
+        box.innerHTML = '<div class="empty" style="padding:14px;color:rgba(255,255,255,.55)">لا يوجد استخدامات بعد.</div>';
+        return;
+      }
+      const s = await TPCodes.getSettings();
+      const sym = s.currency || 'EGP';
+      box.innerHTML = items.map(u => {
+        const when = u.at ? new Date(u.at).toLocaleString('ar-EG') : '—';
+        const statusColor = { confirmed: '#4ade80', pending: '#fbbf24', refunded: '#f87171' }[u.status] || '#94a3b8';
+        return (
+          '<div style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">' +
+          '<div style="flex:1;min-width:180px">' +
+          '<div style="font-family:ui-monospace,monospace;font-weight:700;color:#c084fc;direction:ltr;text-align:start">' + mkEscape(u.code || '') + ' → ' + mkEscape(u.orderId || '') + '</div>' +
+          '<div style="color:rgba(255,255,255,.5);font-size:.78rem;margin-top:2px">' + mkEscape(when) + '</div>' +
+          '</div>' +
+          '<div style="font-size:.82rem;text-align:end">' +
+          '<div>خصم: <span style="color:#4ade80">' + fmtMoney(u.discountAmount || 0, sym) + '</span></div>' +
+          '<div>عمولة: <span style="color:#fbbf24">' + fmtMoney(u.commissionEarned || 0, sym) + '</span></div>' +
+          '<div style="color:' + statusColor + ';margin-top:2px">● ' + (u.status || 'confirmed') + '</div>' +
+          '</div></div>'
+        );
+      }).join('');
+    } catch (e) {
+      box.innerHTML = '<div class="empty" style="padding:14px;color:#f87171">تعذّر التحميل: ' + mkEscape(e.message || e) + '</div>';
+    }
+  }
+
+  window.loadMarketingTab = loadMarketingTab;
+  window.saveMarketingSettings = saveMarketingSettings;
+  window.loadAffiliatesList = loadAffiliatesList;
+  window.editAffiliate = editAffiliate;
+  window.resetAffiliateForm = resetAffiliateForm;
+  window.saveAffiliateForm = saveAffiliateForm;
+  window.deleteAffiliateItem = deleteAffiliateItem;
+  window.payAffiliate = payAffiliate;
+  window.loadPromoCodesList = loadPromoCodesList;
+  window.editPromoCode = editPromoCode;
+  window.resetPromoCodeForm = resetPromoCodeForm;
+  window.savePromoCodeForm = savePromoCodeForm;
+  window.togglePromoStatus = togglePromoStatus;
+  window.deletePromoCodeItem = deletePromoCodeItem;
+  window.copyPromoLink = copyPromoLink;
+  window.loadPromoUsesList = loadPromoUsesList;
 
   // ============== PACKAGES (admin) ==============
   let editingPkgId = null;

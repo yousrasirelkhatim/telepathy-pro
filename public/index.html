@@ -551,6 +551,66 @@ details > p { margin:0 20px 18px; color:var(--text-muted); line-height:1.7; font
   text-align:center; color:var(--text-dim); font-size:.82rem;
   padding-top:20px; border-top:1px solid var(--border);
 }
+
+/* Promo code block inside Buy modal */
+.promo-block {
+  margin:16px 0 4px; padding:14px 14px 12px;
+  border-radius:14px; background:rgba(168,85,247,.06);
+  border:1px dashed rgba(168,85,247,.28);
+}
+.promo-toggle {
+  width:100%; padding:8px 4px; background:transparent; border:0;
+  color:var(--purple); font-family:inherit; font-weight:700; font-size:.9rem;
+  cursor:pointer; text-align:center;
+}
+.promo-toggle:hover { color:var(--pink); }
+.promo-input-row {
+  display:flex; gap:8px; margin-top:10px; align-items:center;
+  flex-wrap:wrap;
+}
+.promo-input-row input {
+  flex:1; min-width:150px; padding:10px 12px;
+  border-radius:10px; border:1px solid var(--border);
+  background:rgba(0,0,0,.25); color:var(--text);
+  font-family:ui-monospace,monospace; font-size:.95rem;
+  letter-spacing:.05em; text-transform:uppercase;
+  direction:ltr;
+}
+.promo-input-row input:focus {
+  outline:none; border-color:var(--purple);
+  box-shadow:0 0 0 3px rgba(168,85,247,.2);
+}
+.btn.btn-sm { padding:8px 14px; font-size:.85rem; }
+.promo-status {
+  margin-top:8px; font-size:.82rem; min-height:0;
+  line-height:1.6;
+}
+.promo-status.error { color:#f87171; }
+.promo-status.success { color:#4ade80; }
+.promo-summary {
+  margin-top:12px; padding-top:12px;
+  border-top:1px dashed rgba(168,85,247,.2);
+  display:flex; flex-direction:column; gap:6px;
+  font-size:.88rem;
+}
+.promo-line { display:flex; justify-content:space-between; }
+.promo-line span:first-child { color:var(--text-muted); }
+.promo-line span:last-child { color:var(--text); font-weight:700; }
+.promo-line.promo-discount span:last-child { color:#4ade80; }
+.promo-line.promo-final {
+  padding-top:8px; margin-top:4px;
+  border-top:1px solid rgba(255,255,255,.06);
+  font-size:.95rem;
+}
+.promo-line.promo-final span:last-child {
+  color:var(--purple); font-weight:900; font-size:1.05rem;
+}
+.promo-affiliate {
+  margin-top:8px; padding:8px 10px; font-size:.78rem;
+  color:var(--text-dim); background:rgba(52,211,153,.08);
+  border-radius:8px; border:1px solid rgba(52,211,153,.18);
+  text-align:center;
+}
 .footer-attribution { margin-bottom:6px; }
 .footer-attribution a {
   color:var(--purple); font-weight:700; text-decoration:none;
@@ -1035,6 +1095,23 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
             <small data-i18n="buy_account_note">الطلب يُسجَّل برقم حسابك تلقائياً</small>
           </div>
         </div>
+
+        <div id="promoBlock" class="promo-block hidden">
+          <button type="button" id="promoToggle" class="promo-toggle" data-i18n="promo_toggle">🎫 عندك كود خصم؟ (اختياري)</button>
+          <div id="promoInputRow" class="promo-input-row hidden">
+            <input id="promoInput" type="text" autocomplete="off" spellcheck="false" placeholder="مثال: AHMED10" data-i18n-ph="promo_placeholder" />
+            <button type="button" id="promoApplyBtn" class="btn btn-secondary btn-sm" data-i18n="promo_apply">✓ تحقق</button>
+            <button type="button" id="promoClearBtn" class="btn btn-ghost btn-sm hidden" data-i18n="promo_clear">✕ إزالة</button>
+          </div>
+          <div id="promoStatus" class="promo-status"></div>
+          <div id="promoSummary" class="promo-summary hidden">
+            <div class="promo-line"><span data-i18n="promo_original">السعر الأصلي</span><span id="promoOriginal">—</span></div>
+            <div class="promo-line promo-discount"><span data-i18n="promo_discount">خصم مطبّق</span><span id="promoDiscount">—</span></div>
+            <div class="promo-line promo-final"><span data-i18n="promo_final">السعر النهائي</span><span id="promoFinal">—</span></div>
+            <div id="promoAffiliate" class="promo-affiliate"></div>
+          </div>
+        </div>
+
         <button id="placeOrderBtn" type="button" class="hidden" aria-hidden="true"></button>
         <div class="pay-methods" id="payMethods">
           <button type="button" class="btn btn-primary" id="payStripeBtn" onclick="placeOrderStripe()">💳 الدفع بالفيزا — تفعيل فوري</button>
@@ -1071,10 +1148,10 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
-<script src="/js/codes.js?v=113"></script>
+<script src="/js/codes.js?v=114"></script>
 <script src="/js/phone-auth.js?v=91"></script>
 <script src="/js/account.js?v=91"></script>
-<script src="/js/payments.js?v=107"></script>
+<script src="/js/payments.js?v=108"></script>
 <script>
   TPCodes.init();
 
@@ -1120,6 +1197,24 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       footer_privacy: 'بعد الشراء: حسابك في /my — بطاقات جلسات + رابط أو كود لكل تحدي.',
       footer_nav: 'روابط', footer_faq: 'الأسئلة الشائعة',
       footer_contact: 'تواصل معنا', footer_operated_by: 'التحدي تابع لشركة',
+      promo_toggle: '🎫 عندك كود خصم؟ (اختياري)',
+      promo_placeholder: 'AHMED10',
+      promo_apply: '✓ تحقق',
+      promo_clear: '✕ إزالة',
+      promo_original: 'السعر الأصلي',
+      promo_discount: 'خصم مطبّق',
+      promo_final: 'السعر النهائي',
+      promo_by: 'كود بواسطة:',
+      promo_saving: 'جاري التحقق...',
+      promo_empty: 'أدخل كود الخصم أولاً',
+      promo_not_found: 'كود الخصم غير موجود',
+      promo_disabled: 'كود الخصم موقوف',
+      promo_expired: 'كود الخصم منتهي الصلاحية',
+      promo_used_up: 'تم استهلاك عدد استخدامات الكود',
+      promo_below_min: 'قيمة الطلب أقل من الحد الأدنى المطلوب',
+      promo_self_use: 'لا يمكنك استخدام كودك الخاص',
+      promo_error: 'تعذّر التحقق من الكود — حاول لاحقاً',
+      promo_applied: 'تم تطبيق الخصم ✓',
       modal_code_btn: 'ابدأ',
       buy_h: '🛒 شراء باقة', buy_desc: 'سجّل دخولك أو أنشئ حساباً — ثم أكمل الطلب هنا مباشرة.',
       buy_step1: '① حساب', buy_step2: '② تأكيد', buy_step3: '③ الطلب',
@@ -1186,6 +1281,24 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
       footer_privacy: 'After purchase: your account at /my — session cards with invite link or code.',
       footer_nav: 'Links', footer_faq: 'FAQ',
       footer_contact: 'Contact us', footer_operated_by: 'Operated by',
+      promo_toggle: '🎫 Have a promo code? (optional)',
+      promo_placeholder: 'AHMED10',
+      promo_apply: '✓ Apply',
+      promo_clear: '✕ Remove',
+      promo_original: 'Original price',
+      promo_discount: 'Discount applied',
+      promo_final: 'Final price',
+      promo_by: 'Code by:',
+      promo_saving: 'Checking...',
+      promo_empty: 'Enter a promo code first',
+      promo_not_found: 'Promo code not found',
+      promo_disabled: 'Promo code is disabled',
+      promo_expired: 'Promo code has expired',
+      promo_used_up: 'This code has reached its usage limit',
+      promo_below_min: 'Order amount is below the code minimum',
+      promo_self_use: 'You cannot use your own code',
+      promo_error: 'Could not verify code — try again later',
+      promo_applied: 'Discount applied ✓',
       modal_code_btn: 'Start',
       buy_h: '🛒 Buy a package', buy_desc: 'Sign in or create an account — complete your order right here.',
       buy_step1: '① Account', buy_step2: '② Verify', buy_step3: '③ Order',
@@ -1409,12 +1522,21 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
 
   async function openBuyModal() {
     resetBuyModal();
+    resetPromoState();
+    // Show promo block only if enabled in settings
+    const promoBlock = document.getElementById('promoBlock');
+    if (promoBlock) {
+      const enabled = SETTINGS && SETTINGS.promoEnabled !== false;
+      promoBlock.classList.toggle('hidden', !enabled);
+    }
+    bindPromoUI();
     document.getElementById('buyModal').classList.add('open');
     await syncOrderAccountUI();
   }
   function closeBuyModal() {
     document.getElementById('buyModal').classList.remove('open');
     resetBuyModal();
+    resetPromoState();
     TPPhoneAuth.resetRecaptcha();
   }
   function copyOrderId() {
@@ -1431,6 +1553,126 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
   let PACKAGES = [];
   let CURRENT_PACKAGE = null;
 
+  // Promo code state (applies only to current buy modal session)
+  let CURRENT_PROMO = null;    // { code, discountAmount, finalPrice, affiliateName }
+  let promoBusy = false;
+
+  function resetPromoState() {
+    CURRENT_PROMO = null;
+    const inp = document.getElementById('promoInput');    if (inp) inp.value = '';
+    const status = document.getElementById('promoStatus'); if (status) { status.textContent = ''; status.className = 'promo-status'; }
+    const sum = document.getElementById('promoSummary');   if (sum) sum.classList.add('hidden');
+    const row = document.getElementById('promoInputRow');  if (row) row.classList.add('hidden');
+    const clr = document.getElementById('promoClearBtn');  if (clr) clr.classList.add('hidden');
+  }
+
+  function renderPromoSummary(originalPrice, discountAmount, finalPrice, affiliateName) {
+    const sym = currencySymbol((CURRENT_PACKAGE && CURRENT_PACKAGE.currency) || SETTINGS.currency);
+    const sum = document.getElementById('promoSummary');
+    document.getElementById('promoOriginal').textContent = originalPrice + ' ' + sym;
+    document.getElementById('promoDiscount').textContent = '- ' + discountAmount + ' ' + sym;
+    document.getElementById('promoFinal').textContent = finalPrice + ' ' + sym;
+    const aff = document.getElementById('promoAffiliate');
+    if (affiliateName) {
+      aff.textContent = t('promo_by') + ' ' + affiliateName;
+      aff.style.display = 'block';
+    } else {
+      aff.textContent = '';
+      aff.style.display = 'none';
+    }
+    sum.classList.remove('hidden');
+    document.getElementById('promoClearBtn').classList.remove('hidden');
+  }
+
+  async function applyPromoFromInput() {
+    if (promoBusy) return;
+    const input = document.getElementById('promoInput');
+    const status = document.getElementById('promoStatus');
+    const raw = (input.value || '').trim();
+    if (!raw) {
+      status.textContent = t('promo_empty');
+      status.className = 'promo-status error';
+      return;
+    }
+    if (!CURRENT_PACKAGE) return;
+
+    promoBusy = true;
+    status.textContent = t('promo_saving');
+    status.className = 'promo-status';
+    try {
+      if (typeof firebase === 'undefined' || typeof firebase.functions !== 'function') {
+        throw new Error('functions_not_loaded');
+      }
+      const fn = firebase.app().functions('us-central1').httpsCallable('applyPromoCode');
+      const res = await fn({
+        code: raw,
+        price: Number(CURRENT_PACKAGE.price) || 0,
+        packageId: CURRENT_PACKAGE.id || '',
+      });
+      const d = res && res.data ? res.data : {};
+      if (!d.ok) {
+        const reasonKey = 'promo_' + (d.reason || 'not_found');
+        status.textContent = t(reasonKey) !== reasonKey ? t(reasonKey) : t('promo_not_found');
+        status.className = 'promo-status error';
+        CURRENT_PROMO = null;
+        document.getElementById('promoSummary').classList.add('hidden');
+        return;
+      }
+      CURRENT_PROMO = {
+        code: d.code,
+        discountAmount: d.discountAmount,
+        finalPrice: d.finalPrice,
+        affiliateName: d.affiliateName || '',
+      };
+      status.textContent = t('promo_applied');
+      status.className = 'promo-status success';
+      renderPromoSummary(
+        Number(CURRENT_PACKAGE.price) || 0,
+        d.discountAmount,
+        d.finalPrice,
+        d.affiliateName || ''
+      );
+    } catch (e) {
+      status.textContent = (e && e.message) || t('promo_error');
+      status.className = 'promo-status error';
+      CURRENT_PROMO = null;
+    } finally {
+      promoBusy = false;
+    }
+  }
+
+  function bindPromoUI() {
+    const toggle = document.getElementById('promoToggle');
+    const row = document.getElementById('promoInputRow');
+    const applyBtn = document.getElementById('promoApplyBtn');
+    const clearBtn = document.getElementById('promoClearBtn');
+    const input = document.getElementById('promoInput');
+
+    if (toggle && !toggle.__bound) {
+      toggle.__bound = true;
+      toggle.addEventListener('click', () => { row.classList.toggle('hidden'); if (!row.classList.contains('hidden')) input.focus(); });
+    }
+    if (applyBtn && !applyBtn.__bound) {
+      applyBtn.__bound = true;
+      applyBtn.addEventListener('click', applyPromoFromInput);
+    }
+    if (input && !input.__bound) {
+      input.__bound = true;
+      input.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); applyPromoFromInput(); } });
+    }
+    if (clearBtn && !clearBtn.__bound) {
+      clearBtn.__bound = true;
+      clearBtn.addEventListener('click', () => {
+        CURRENT_PROMO = null;
+        input.value = '';
+        document.getElementById('promoStatus').textContent = '';
+        document.getElementById('promoStatus').className = 'promo-status';
+        document.getElementById('promoSummary').classList.add('hidden');
+        clearBtn.classList.add('hidden');
+      });
+    }
+  }
+
   function escapeHtml(s) {
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
@@ -1440,7 +1682,15 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
   function renderPackages() {
     const grid = document.getElementById('pricingGrid');
     if (!grid) return;
-    const visible = PACKAGES.filter(p => p.visible !== false);
+    let visible = PACKAGES.filter(p => p.visible !== false);
+    // singlePackageMode: show only ONE package on landing (featured, or first)
+    if (SETTINGS && SETTINGS.singlePackageMode && visible.length > 1) {
+      const featuredId = String(SETTINGS.featuredPackageId || '').trim();
+      let chosen = null;
+      if (featuredId) chosen = visible.find(p => p.id === featuredId);
+      if (!chosen) chosen = visible.find(p => p.featured) || visible[0];
+      visible = [chosen];
+    }
     if (!visible.length) {
       grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5)">' + t('pkg_empty') + '</div>';
       return;
@@ -1539,7 +1789,8 @@ html[lang="en"] input, html[lang="en"] textarea { font-family:'Inter','Tajawal',
         source: 'landing',
         paymentMethod: provider || 'paymob',
       });
-      await TPPayments.startCardCheckout(order.id, paySettings);
+      const promoCode = (CURRENT_PROMO && CURRENT_PROMO.code) || '';
+      await TPPayments.startCardCheckout(order.id, paySettings, { promoCode });
     } catch (e) {
       setBuyMsg(TPPayments.friendlyError(e), false);
       document.getElementById('orderMsg')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
