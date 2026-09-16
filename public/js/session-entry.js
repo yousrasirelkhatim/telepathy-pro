@@ -70,6 +70,31 @@
     return d.ref('accessRooms/' + normalizeCode(accessCode));
   }
 
+  /**
+   * Pure predicate — is this room a healthy, resumable session for `code`?
+   * A room is only resumable when it is NOT expired, its accessCode matches,
+   * a host (player1) is still present, and its sessions aren't used up.
+   *
+   * This is what fixes the two reported bugs:
+   *  - Orphaned rooms (host disconnected mid-play → player1 removed by
+   *    onDisconnect, player2 left behind) are NO LONGER resolved, so the owner
+   *    self-heals into a fresh room instead of a broken/"unavailable" one.
+   *  - A used-up / expired room never masquerades as an active session, so an
+   *    active paid code is never reported as "expired" via a stale room.
+   * Exposed on TPSession for unit testing.
+   */
+  function isResumableRoom(room, code) {
+    if (!room || typeof room !== 'object') return false;
+    if (room.expired) return false;
+    if (normalizeCode(room.accessCode) !== normalizeCode(code)) return false;
+    var players = room.players || {};
+    if (!players.player1) return false; // orphaned — host gone
+    var maxUses = Number(room.maxUses || 0);
+    var totalUses = Number(room.totalUses || 0);
+    if (maxUses > 0 && totalUses >= maxUses) return false; // already consumed
+    return true;
+  }
+
   async function resolveSessionRoomCode(sessionCode) {
     var code = normalizeCode(sessionCode);
     if (!/^JS-/i.test(code)) return '';
@@ -80,8 +105,7 @@
       var idx = idxSnap.val();
       if (idx && isRoomCode(idx.roomId)) {
         var roomSnap = await d.ref('rooms/' + idx.roomId).once('value');
-        var room = roomSnap.val();
-        if (room && !room.expired && room.accessCode === code) return idx.roomId;
+        if (isResumableRoom(roomSnap.val(), code)) return idx.roomId;
       }
     } catch (_) {}
     try {
@@ -89,8 +113,7 @@
       var marker = markerSnap.val();
       if (marker && isRoomCode(marker.roomId)) {
         var roomSnap2 = await d.ref('rooms/' + marker.roomId).once('value');
-        var room2 = roomSnap2.val();
-        if (room2 && !room2.expired && room2.accessCode === code) return marker.roomId;
+        if (isResumableRoom(roomSnap2.val(), code)) return marker.roomId;
       }
     } catch (_) {}
     return '';
@@ -381,6 +404,7 @@
     markLocalSessionOwner: markLocalSessionOwner,
     clearLocalSessionOwner: clearLocalSessionOwner,
     resolveSessionRoomCode: resolveSessionRoomCode,
+    isResumableRoom: isResumableRoom,
     inspectAccessRoom: inspectAccessRoom,
     setJoinCode: setJoinCode,
     setAccessCodeContext: setAccessCodeContext,
