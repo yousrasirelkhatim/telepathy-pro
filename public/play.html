@@ -2021,7 +2021,7 @@ body.friend-mode .photo-social-hint { color:rgba(255,255,255,0.78); font-weight:
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="/js/codes.js?v=112"></script>
-<script src="/js/session-entry.js?v=112"></script>
+<script src="/js/session-entry.js?v=116"></script>
 <script>
 // Firebase config
 const firebaseConfig = {
@@ -2595,7 +2595,12 @@ async function joinRoom() {
   }
 
   if (playerKeys.length >= 2) return showToast('الغرفة مشغولة الآن');
-  if (!players.player1 && players.player2) return showToast('الغرفة غير جاهزة الآن. أنشئ غرفة جديدة');
+  // Orphaned room: host (player1) disconnected mid-play, only player2 remains.
+  // The friend can't host with someone else's code — guide them to a fresh link
+  // instead of the old dead-end "create a new room" (which they cannot do).
+  if (!players.player1 && players.player2) {
+    return showToast('المضيف خرج من الغرفة — اطلب منه إعادة فتح اللعبة وإرسال رابط دعوة جديد');
+  }
 
   roomCode = code;
   roomRef = ref;
