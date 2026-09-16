@@ -123,6 +123,10 @@ async function fulfillPaidOrder(orderId, paymentMeta, provider) {
 /**
  * Idempotently record a promo use + credit the affiliate's pending commission.
  * Guarded by `orderPromoIndex/{orderId}` — safe to re-invoke from retries.
+ *
+ * Idempotency contract: the transaction ABORTS (returns undefined) when the
+ * index entry already exists, so `committed === false` on any repeat call.
+ * Returning the existing value instead would commit and double-settle.
  */
 async function settleAffiliateForOrder(orderId, order, provider, paymentMeta) {
   const code = String(order.promoCode || '').trim();
@@ -130,9 +134,8 @@ async function settleAffiliateForOrder(orderId, order, provider, paymentMeta) {
   if (!code || !affiliateId) return { skipped: 'no_promo' };
 
   const indexRef = db.ref(`orderPromoIndex/${orderId}`);
-  const tx = await indexRef.transaction((cur) => (cur ? cur : code));
-  if (!tx.committed) return { skipped: 'index_conflict' };
-  if (tx.snapshot.val() !== code) return { skipped: 'already_settled' };
+  const tx = await indexRef.transaction((cur) => (cur === null ? code : undefined));
+  if (!tx.committed) return { skipped: 'already_settled' };
 
   const originalPrice = Math.max(0, Number(order.originalPrice) || Number(order.price) || 0);
   const discountAmount = Math.max(0, Number(order.discountAmount) || 0);
@@ -423,22 +426,22 @@ exports.paymobWebhook = publicHttp(async (req, res) => {
     }
 
     if (paymob.isTxnSuccess(obj)) {
-      const dedupeRef = db.ref(`paymobProcessed/${txnId}`);
-      const existing = txnId ? await dedupeRef.once('value') : null;
-      if (existing && existing.exists()) {
-        res.json({ received: true, duplicate: true });
-        return;
+      // Transactional dedupe — atomic claim BEFORE fulfillment so two
+      // concurrent deliveries of the same transaction can never both proceed.
+      if (txnId) {
+        const dedupeRef = db.ref(`paymobProcessed/${txnId}`);
+        const tx = await dedupeRef.transaction((cur) => (cur === null ? { orderId, at: Date.now() } : undefined));
+        if (!tx.committed) {
+          res.json({ received: true, duplicate: true });
+          return;
+        }
       }
 
-      const result = await fulfillPaidOrder(orderId, {
+      await fulfillPaidOrder(orderId, {
         transactionId: txnId,
         intentionId: obj.payment_key_claims?.next_payment_intention || '',
         paymobOrderId: obj.order?.id || '',
       }, 'paymob');
-
-      if (txnId) {
-        await dedupeRef.set({ orderId, at: Date.now() });
-      }
     } else {
       await db.ref(`orders/${orderId}`).update({
         paymentStatus: 'failed',
@@ -602,6 +605,18 @@ exports.stripeWebhook = publicHttp(async (req, res) => {
       const session = event.data.object;
       const orderId = session.metadata?.orderId || session.client_reference_id;
       if (orderId) {
+        // Dedupe by Stripe event id (mirrors paymobProcessed pattern) —
+        // Stripe retries webhooks on any non-2xx / timeout, and concurrent
+        // duplicate deliveries are possible.
+        const eventId = String(event.id || '');
+        if (eventId) {
+          const dedupeRef = db.ref(`stripeProcessed/${eventId}`);
+          const tx = await dedupeRef.transaction((cur) => (cur === null ? { orderId, at: Date.now() } : undefined));
+          if (!tx.committed) {
+            res.json({ received: true, duplicate: true });
+            return;
+          }
+        }
         await fulfillPaidOrder(orderId, {
           sessionId: session.id,
           paymentIntentId: session.payment_intent,

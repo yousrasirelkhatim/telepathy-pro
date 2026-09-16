@@ -1,11 +1,15 @@
 'use strict';
 
+const crypto = require('crypto');
+
 const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+// CSPRNG — session codes are bearer credentials (whoever holds JS-XXXXXX can
+// enter the session), so they must not come from a predictable PRNG.
 function randomCode(prefix, len = 6) {
   let s = '';
   for (let i = 0; i < len; i += 1) {
-    s += ALPHA[Math.floor(Math.random() * ALPHA.length)];
+    s += ALPHA[crypto.randomInt(ALPHA.length)];
   }
   return prefix ? `${prefix}-${s}` : s;
 }
